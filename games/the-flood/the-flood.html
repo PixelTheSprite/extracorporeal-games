@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>THE FLOOD — Gish Gallop Trainer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #111114;
+      --surface:  #1C1C21;
+      --surface2: #26262D;
+      --border:   #36363F;
+      --red:      #FF3B30;
+      --amber:    #FF9F0A;
+      --green:    #30D158;
+      --blue:     #4DA3FF;
+      --text:     #F2F2F7;
+      --muted:    #8E8E9A;
+      --dim:      #44444F;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── HEADER ─── */
+    .header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 48px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+    }
+
+    .header-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 17px;
+      letter-spacing: 4px;
+      color: var(--red);
+    }
+
+    .header-stats {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      gap: 20px;
+    }
+
+    .stat-val { color: var(--text); }
+
+    .header-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-sm {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      padding: 5px 10px;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      min-height: 28px;
+    }
+    .btn-sm:hover { border-color: var(--muted); color: var(--text); }
+
+    /* ─── SCREENS ─── */
+    .main { padding-top: 48px; min-height: 100vh; }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    #screen-intro.active,
+    #screen-evaluating.active {
+      display: flex;
+    }
+
+    /* ─── INTRO ─── */
+    #screen-intro {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 48px);
+      padding: 40px 20px 80px;
+      text-align: center;
+    }
+
+    .intro-eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 5px;
+      color: var(--red);
+      margin-bottom: 20px;
+    }
+
+    .intro-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(80px, 18vw, 160px);
+      line-height: 0.88;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .intro-rule {
+      width: 60px;
+      height: 2px;
+      background: var(--red);
+      margin: 20px auto 20px;
+    }
+
+    .intro-description {
+      max-width: 460px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--muted);
+      margin-bottom: 44px;
+    }
+
+    .intro-description strong { color: var(--amber); font-weight: 600; }
+
+    .topic-label-row {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--dim);
+      margin-bottom: 14px;
+    }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      max-width: 600px;
+      width: 100%;
+      margin-bottom: 32px;
+    }
+
+    .topic-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 16px 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      min-height: 44px;
+    }
+
+    .topic-card:hover { border-color: rgba(255,59,48,0.5); background: rgba(255,59,48,0.05); }
+    .topic-card.selected {
+      border-color: var(--red);
+      background: rgba(255,59,48,0.1);
+      box-shadow: 0 0 0 1px var(--red);
+    }
+
+    .topic-icon { font-size: 22px; margin-bottom: 8px; }
+    .topic-label { font-size: 11px; font-weight: 600; line-height: 1.3; color: var(--muted); }
+    .topic-card.selected .topic-label { color: var(--text); }
+
+    .btn-primary {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 3px;
+      padding: 14px 44px;
+      background: var(--red);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-height: 44px;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: #ff5448;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(255,59,48,0.35);
+    }
+    .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* ─── FLOOD ─── */
+    #screen-flood {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 0 20px;
+      width: 100%;
+    }
+
+    .flood-header {
+      padding: 36px 0 24px;
+      text-align: center;
+    }
+
+    .flood-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--red);
+      border: 1px solid rgba(255,59,48,0.3);
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+
+    .flood-badge-dot {
+      width: 6px; height: 6px;
+      background: var(--red);
+      border-radius: 50%;
+      animation: pulse 1s infinite;
+    }
+
+    .flood-topic {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 5px;
+      color: var(--muted);
+    }
+
+    .flood-loading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      padding: 20px 0;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.75); }
+    }
+
+    .claims-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .claim-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--red);
+      border-radius: 4px;
+      padding: 12px 14px;
+      opacity: 0;
+      transform: translateX(-10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .claim-item.visible { opacity: 1; transform: translateX(0); }
+
+    .claim-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--red);
+      min-width: 28px;
+      padding-top: 2px;
+      opacity: 0.8;
+    }
+
+    .claim-text {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text);
+    }
+
+    .flood-cta {
+      text-align: center;
+      padding: 20px 0 48px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .flood-cta.visible { opacity: 1; }
+
+    .flood-cta-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--amber);
+      margin-bottom: 12px;
+    }
+
+    .flood-cta-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      letter-spacing: 6px;
+      margin-bottom: 24px;
+    }
+
+    /* ─── STRATEGY / RESPONSE SHARED ─── */
+    .step-screen {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 20px;
+      width: 100%;
+    }
+
+    .section-header {
+      text-align: center;
+      padding: 36px 0 28px;
+    }
+
+    .section-eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--amber);
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      letter-spacing: 5px;
+    }
+
+    /* ─── STRATEGY ─── */
+    .strategy-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .strategy-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .strategy-card:hover { border-color: rgba(255,159,10,0.5); background: rgba(255,159,10,0.05); }
+    .strategy-card.selected {
+      border-color: var(--amber);
+      background: rgba(255,159,10,0.08);
+      box-shadow: 0 0 0 1px var(--amber);
+    }
+
+    .strategy-icon {
+      font-size: 18px;
+      margin-bottom: 12px;
+      color: var(--muted);
+    }
+    .strategy-card.selected .strategy-icon { color: var(--amber); }
+
+    .strategy-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 19px;
+      letter-spacing: 2px;
+      margin-bottom: 7px;
+    }
+
+    .strategy-desc {
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    /* ─── RESPONSE ─── */
+    .response-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .response-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 18px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      min-height: 44px;
+    }
+    .response-card:hover { border-color: rgba(77,163,255,0.5); background: rgba(77,163,255,0.05); }
+    .response-card.selected {
+      border-color: var(--blue);
+      background: rgba(77,163,255,0.08);
+      box-shadow: 0 0 0 1px var(--blue);
+    }
+
+    .response-letter {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      color: var(--blue);
+      min-width: 20px;
+      padding-top: 2px;
+    }
+
+    .response-text {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--text);
+    }
+
+    /* ─── EVALUATING ─── */
+    #screen-evaluating {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 48px);
+      gap: 20px;
+    }
+
+    .eval-ring {
+      width: 52px; height: 52px;
+      border: 2px solid var(--border);
+      border-top-color: var(--amber);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .eval-status {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 2px;
+    }
+
+    /* ─── DEBRIEF ─── */
+    #screen-debrief {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 20px;
+      width: 100%;
+    }
+
+    .score-banner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 32px 24px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .score-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 88px;
+      line-height: 1;
+      margin-bottom: 6px;
+      transition: color 0.3s;
+    }
+
+    .score-sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--dim);
+    }
+
+    .score-badges {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      padding: 4px 11px;
+      border-radius: 20px;
+    }
+    .badge-excellent { background: rgba(48,209,88,0.12); color: var(--green); border: 1px solid rgba(48,209,88,0.25); }
+    .badge-good      { background: rgba(255,159,10,0.12); color: var(--amber); border: 1px solid rgba(255,159,10,0.25); }
+    .badge-poor      { background: rgba(255,59,48,0.12); color: var(--red);   border: 1px solid rgba(255,59,48,0.25); }
+
+    .debrief-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 14px;
+    }
+
+    .debrief-card-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--dim);
+      margin-bottom: 12px;
+    }
+
+    .debrief-feedback {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--text);
+    }
+
+    .debrief-opponent {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--amber);
+      font-style: italic;
+    }
+
+    .claims-debrief {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .claim-debrief-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 10px 12px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .claim-debrief-item.load-bearing {
+      background: rgba(255,59,48,0.07);
+      border-color: rgba(255,59,48,0.25);
+    }
+
+    .claim-debrief-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      min-width: 28px;
+      padding-top: 1px;
+      color: var(--dim);
+    }
+    .load-bearing .claim-debrief-num { color: var(--red); }
+
+    .lb-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 1px;
+      padding: 2px 7px;
+      background: rgba(255,59,48,0.18);
+      color: var(--red);
+      border-radius: 2px;
+      white-space: nowrap;
+      align-self: flex-start;
+      margin-top: 2px;
+    }
+
+    .lb-note {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .debrief-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      padding: 24px 0 60px;
+      flex-wrap: wrap;
+    }
+
+    .btn-ghost {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px;
+      letter-spacing: 2px;
+      padding: 12px 28px;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-height: 44px;
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+
+    /* ─── STATUS BAR ─── */
+    .status-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 7px 20px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--dim);
+      letter-spacing: 0.5px;
+    }
+
+    /* ─── CENTER ACTIONS ─── */
+    .center-action {
+      text-align: center;
+      margin-bottom: 44px;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 480px) {
+      .strategy-grid { grid-template-columns: 1fr; }
+      .topic-grid { grid-template-columns: repeat(3, 1fr); }
+      .intro-title { font-size: 80px; }
+      .header-stats { display: none; }
+      .score-number { font-size: 72px; }
+    }
+
+    @media (min-width: 481px) and (max-width: 1024px) {
+      .strategy-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-title">THE FLOOD</div>
+  <div class="header-stats">
+    <span>ROUNDS: <span class="stat-val" id="stat-rounds">0</span></span>
+    <span>AVG SCORE: <span class="stat-val" id="stat-avg">—</span></span>
+  </div>
+  <div class="header-controls">
+    <button class="btn-sm" onclick="saveSession()">💾 SAVE</button>
+    <button class="btn-sm" onclick="loadSession()">📂 LOAD</button>
+    <button class="btn-sm" onclick="confirmReset()">↺ RESET</button>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- ── INTRO ── -->
+  <section id="screen-intro" class="screen active">
+    <div class="intro-eyebrow">GISH GALLOP TRAINER · MEDIA LITERACY SERIES</div>
+    <div class="intro-title">THE<br>FLOOD</div>
+    <div class="intro-rule"></div>
+    <p class="intro-description">
+      A <strong>Gish gallop</strong> floods a debate with rapid-fire claims designed to overwhelm rather than argue. You can't refute everything — so don't try.
+      Pick a counter-strategy. Execute it with precision. Make the tactic <strong>visible</strong>.
+    </p>
+    <div class="topic-label-row">SELECT TOPIC</div>
+    <div class="topic-grid">
+      <div class="topic-card" data-topic="climate" onclick="selectTopic(this)">
+        <div class="topic-icon">🌡️</div>
+        <div class="topic-label">Climate Policy</div>
+      </div>
+      <div class="topic-card" data-topic="vaccines" onclick="selectTopic(this)">
+        <div class="topic-icon">💉</div>
+        <div class="topic-label">Vaccine Safety</div>
+      </div>
+      <div class="topic-card" data-topic="economy" onclick="selectTopic(this)">
+        <div class="topic-icon">📊</div>
+        <div class="topic-label">Economic Policy</div>
+      </div>
+      <div class="topic-card" data-topic="history" onclick="selectTopic(this)">
+        <div class="topic-icon">📜</div>
+        <div class="topic-label">Historical Revision</div>
+      </div>
+      <div class="topic-card" data-topic="elections" onclick="selectTopic(this)">
+        <div class="topic-icon">🗳️</div>
+        <div class="topic-label">Election Integrity</div>
+      </div>
+    </div>
+    <button class="btn-primary" id="start-btn" disabled onclick="startRound()">BEGIN DRILL</button>
+  </section>
+
+  <!-- ── FLOOD ── -->
+  <section id="screen-flood" class="screen">
+    <div class="flood-header">
+      <div class="flood-badge">
+        <div class="flood-badge-dot"></div>
+        INCOMING TRANSMISSION
+      </div>
+      <div class="flood-topic" id="flood-topic-label">—</div>
+    </div>
+    <div id="flood-loading" class="flood-loading" style="display:none">
+      <div class="flood-badge-dot"></div>
+      <span>GENERATING GALLOP...</span>
+    </div>
+    <div class="claims-feed" id="claims-feed"></div>
+    <div class="flood-cta" id="flood-cta">
+      <div class="flood-cta-label">◈ TRANSMISSION COMPLETE · 7 CLAIMS RECEIVED ◈</div>
+      <div class="flood-cta-title">YOUR MOVE</div>
+      <button class="btn-primary" onclick="goToStrategy()">SELECT STRATEGY →</button>
+    </div>
+  </section>
+
+  <!-- ── STRATEGY ── -->
+  <section id="screen-strategy" class="screen">
+    <div class="step-screen">
+      <div class="section-header">
+        <div class="section-eyebrow">STEP 01 OF 02</div>
+        <div class="section-title">CHOOSE YOUR STANCE</div>
+      </div>
+      <div class="strategy-grid">
+        <div class="strategy-card" data-strategy="name" onclick="selectStrategy(this)">
+          <div class="strategy-icon">⚑</div>
+          <div class="strategy-name">Name the Technique</div>
+          <div class="strategy-desc">Expose the tactic itself. Make the method visible to the audience before engaging any individual claim.</div>
+        </div>
+        <div class="strategy-card" data-strategy="loadbearing" onclick="selectStrategy(this)">
+          <div class="strategy-icon">◎</div>
+          <div class="strategy-name">Find the Load-Bearer</div>
+          <div class="strategy-desc">Identify the one claim everything else depends on. Collapse it — the pile loses coherence without its foundation.</div>
+        </div>
+        <div class="strategy-card" data-strategy="burden" onclick="selectStrategy(this)">
+          <div class="strategy-icon">⊘</div>
+          <div class="strategy-name">Demand Sourcing</div>
+          <div class="strategy-desc">Force them to prioritize. Assertion isn't evidence. Ask for their strongest claim and a primary source.</div>
+        </div>
+        <div class="strategy-card" data-strategy="reframe" onclick="selectStrategy(this)">
+          <div class="strategy-icon">◈</div>
+          <div class="strategy-name">Meta-Reframe</div>
+          <div class="strategy-desc">Step out of the object level. Address the audience, not the galloper. Make the format itself the subject.</div>
+        </div>
+      </div>
+      <div class="center-action">
+        <button class="btn-primary" id="strategy-next-btn" disabled onclick="goToResponse()">CHOOSE RESPONSE →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── RESPONSE ── -->
+  <section id="screen-response" class="screen">
+    <div class="step-screen">
+      <div class="section-header">
+        <div class="section-eyebrow">STEP 02 OF 02</div>
+        <div class="section-title" id="response-title">—</div>
+      </div>
+      <div class="response-options" id="response-options"></div>
+      <div class="center-action">
+        <button class="btn-primary" id="response-submit-btn" disabled onclick="submitResponse()">SUBMIT RESPONSE →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── EVALUATING ── -->
+  <section id="screen-evaluating" class="screen">
+    <div class="eval-ring"></div>
+    <div class="eval-status" id="eval-status">ANALYZING RESPONSE...</div>
+  </section>
+
+  <!-- ── DEBRIEF ── -->
+  <section id="screen-debrief" class="screen">
+    <div id="screen-debrief-inner" style="max-width:680px;margin:0 auto;padding:0 20px;width:100%">
+      <div class="section-header">
+        <div class="section-eyebrow">ROUND COMPLETE</div>
+        <div class="section-title">DEBRIEF</div>
+      </div>
+
+      <div class="score-banner">
+        <div class="score-number" id="debrief-score">—</div>
+        <div class="score-sub">EFFECTIVENESS SCORE</div>
+        <div class="score-badges" id="debrief-badges"></div>
+      </div>
+
+      <div class="debrief-card">
+        <div class="debrief-card-label">▸ COACH FEEDBACK</div>
+        <div class="debrief-feedback" id="debrief-feedback">—</div>
+      </div>
+
+      <div class="debrief-card">
+        <div class="debrief-card-label">▸ OPPONENT'S LIKELY NEXT MOVE</div>
+        <div class="debrief-opponent" id="debrief-opponent">—</div>
+      </div>
+
+      <div class="debrief-card">
+        <div class="debrief-card-label">▸ CLAIM ANATOMY — LOAD-BEARING HIGHLIGHTED</div>
+        <div class="claims-debrief" id="debrief-claims"></div>
+      </div>
+
+      <div class="debrief-actions">
+        <button class="btn-ghost" onclick="goToIntro()">← NEW TOPIC</button>
+        <button class="btn-primary" onclick="startRound()">NEXT ROUND ↺</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="status-bar" id="status-bar">READY · THE FLOOD v1.0</div>
+
+<script>
+// ─────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────
+
+const TOPICS = {
+  climate:   'Climate Change Policy',
+  vaccines:  'Vaccine Safety',
+  economy:   'Economic Policy',
+  history:   'Historical Revisionism',
+  elections: 'Election Integrity'
+};
+
+const STRATEGY_LABELS = {
+  name:        'NAME THE TECHNIQUE',
+  loadbearing: 'FIND THE LOAD-BEARER',
+  burden:      'DEMAND SOURCING',
+  reframe:     'META-REFRAME'
+};
+
+const RESPONSES = {
+  name: [
+    "This is a Gish gallop — a debate tactic where volume substitutes for validity. I'm naming the technique, because the method is part of the message. I won't chase every claim. Let's examine your strongest one.",
+    "You've just deployed a firehose of unverified assertions. That approach has a name in rhetoric: the Gish gallop. I'm flagging it before we proceed, because how we're arguing matters as much as what we're arguing.",
+    "What just happened has a label: the Gish gallop. Flooding a debate with rapid-fire claims isn't designed to find truth — it's designed to exhaust. I'm not going to pretend otherwise or play along."
+  ],
+  loadbearing: [
+    "Set everything else aside. Your entire argument structurally depends on one core claim. Let me focus there — because if that foundation fails, nothing else on your list holds up.",
+    "Of all those claims, only one actually matters structurally. I'm going to examine that single point precisely rather than play whack-a-mole. If it doesn't stand, the rest collapses with it.",
+    "I notice a dozen claims — but there's one load-bearing pillar underneath all of them. Let's test that. The rest is decoration if the foundation is wrong."
+  ],
+  burden: [
+    "You've made seven assertions in thirty seconds. Assertions aren't evidence. Which of these do you have the strongest support for? Pick your best — I'd like to see a primary source before we continue.",
+    "I count seven separate claims. I want a source for just one — your strongest. That's not an unreasonable ask. Which claim can you actually back up?",
+    "Before I respond to any of this, I need you to identify your best-supported claim. Nine assertions without evidence isn't an argument — it's a list. Let's start with your strongest and work from there."
+  ],
+  reframe: [
+    "I want to step back from the list. What just happened — a rapid cascade of claims with no sourcing — isn't designed to produce understanding. It's designed to exhaust. Let's acknowledge that structure before we examine any single claim.",
+    "Notice what was just presented: many claims, rapid delivery, no evidence. That format is doing rhetorical work independent of whether any individual claim is true. Worth naming for anyone following this exchange.",
+    "Rather than dive into the pile, I want to flag the format itself. Volume is being used as a proxy for credibility here — the sheer number of claims is meant to signal authority. That's a pattern worth naming before we proceed."
+  ]
+};
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+
+let appState = {
+  screen: 'intro',
+  topic: null,
+  claims: [],
+  selectedStrategy: null,
+  selectedResponse: null,
+  evaluation: null,
+  roundHistory: [],
+  totalScore: 0,
+  roundCount: 0
+};
+
+let fileHandle = null;
+
+// ─────────────────────────────────────────────
+// SCREEN MANAGEMENT
+// ─────────────────────────────────────────────
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + id);
+  if (el) el.classList.add('active');
+  appState.screen = id;
+  window.scrollTo(0, 0);
+}
+
+// ─────────────────────────────────────────────
+// INTRO
+// ─────────────────────────────────────────────
+
+function selectTopic(el) {
+  document.querySelectorAll('.topic-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  appState.topic = el.dataset.topic;
+  document.getElementById('start-btn').disabled = false;
+}
+
+function goToIntro() {
+  showScreen('intro');
+  setStatus('READY — SELECT A TOPIC TO BEGIN');
+}
+
+// ─────────────────────────────────────────────
+// START ROUND
+// ─────────────────────────────────────────────
+
+async function startRound() {
+  if (!appState.topic) return;
+
+  // Reset round state
+  appState.claims = [];
+  appState.selectedStrategy = null;
+  appState.selectedResponse = null;
+  appState.evaluation = null;
+
+  // Reset UI selections
+  document.querySelectorAll('.strategy-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('strategy-next-btn').disabled = true;
+
+  showScreen('flood');
+  document.getElementById('flood-topic-label').textContent = TOPICS[appState.topic].toUpperCase();
+
+  const loadingEl = document.getElementById('flood-loading');
+  const feedEl    = document.getElementById('claims-feed');
+  const ctaEl     = document.getElementById('flood-cta');
+
+  loadingEl.style.display = 'flex';
+  feedEl.innerHTML = '';
+  ctaEl.classList.remove('visible');
+
+  setStatus('GENERATING GALLOP FOR: ' + TOPICS[appState.topic].toUpperCase() + '...');
+
+  try {
+    const claims = await generateGallop(appState.topic);
+    appState.claims = claims;
+    loadingEl.style.display = 'none';
+    await animateClaims(claims);
+    ctaEl.querySelector('.flood-cta-label').textContent =
+      `◈ TRANSMISSION COMPLETE · ${claims.length} CLAIMS RECEIVED ◈`;
+    ctaEl.classList.add('visible');
+    setStatus('TRANSMISSION COMPLETE — ' + claims.length + ' CLAIMS RECEIVED');
+  } catch (err) {
+    loadingEl.style.display = 'none';
+    feedEl.innerHTML = `<div style="color:var(--red);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:20px;border:1px solid rgba(255,59,48,0.3);border-radius:4px;background:rgba(255,59,48,0.05)">
+      ⚠ ERROR GENERATING GALLOP<br><br>${escapeHtml(err.message)}<br><br>Check that the Anthropic API is reachable.
+    </div>`;
+    setStatus('ERROR: ' + err.message);
+  }
+}
+
+// ─────────────────────────────────────────────
+// AI: GENERATE GALLOP
+// ─────────────────────────────────────────────
+
+async function generateGallop(topic) {
+  const topicDescriptions = {
+    climate:   'climate change and climate/environmental policy',
+    vaccines:  'vaccine safety and childhood vaccine mandates',
+    economy:   'progressive economic policy — minimum wage increases, wealth taxes, increased regulation',
+    history:   'historical revisionism — downplaying atrocities, colonialism, or uncomfortable national histories',
+    elections: 'election integrity, voter fraud, and voting security measures'
+  };
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: `You are simulating a bad-faith debater deploying a classic Gish gallop. Generate exactly 7 distinct claims that together form a realistic Gish gallop on the topic provided.
+
+Each claim must:
+- Be stated assertively without evidence
+- Touch on a DIFFERENT sub-aspect of the topic (no repetition)
+- Include realistic bad-faith rhetorical moves: misleading statistics, false equivalences, cherry-picked facts, slippery slopes, appeals to conspiracy, strawmen, or outright falsehoods
+- Sound like something an actual bad-faith actor would say — not obviously cartoonish, but genuinely manipulative
+
+Return ONLY a valid JSON array of exactly 7 strings. No preamble. No backticks. No markdown. Raw JSON array only.`,
+      messages: [{ role: 'user', content: 'Generate a Gish gallop on: ' + topicDescriptions[topic] }]
+    })
+  });
+
+  if (!res.ok) throw new Error(`API ${res.status}: ${res.statusText}`);
+
+  const data = await res.json();
+  const text = data.content.map(i => i.text || '').join('');
+  const clean = text.replace(/```json|```/g, '').trim();
+  return JSON.parse(clean);
+}
+
+// ─────────────────────────────────────────────
+// ANIMATE CLAIMS
+// ─────────────────────────────────────────────
+
+async function animateClaims(claims) {
+  const feed = document.getElementById('claims-feed');
+  for (let i = 0; i < claims.length; i++) {
+    await delay(300 + i * 60);
+    const item = document.createElement('div');
+    item.className = 'claim-item';
+    item.innerHTML = `<span class="claim-num">#${String(i+1).padStart(2,'0')}</span><span class="claim-text">${escapeHtml(claims[i])}</span>`;
+    feed.appendChild(item);
+    await delay(20);
+    item.classList.add('visible');
+  }
+}
+
+// ─────────────────────────────────────────────
+// STRATEGY
+// ─────────────────────────────────────────────
+
+function goToStrategy() {
+  showScreen('strategy');
+  setStatus('CHOOSE YOUR COUNTER-STRATEGY');
+}
+
+function selectStrategy(el) {
+  document.querySelectorAll('.strategy-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  appState.selectedStrategy = el.dataset.strategy;
+  document.getElementById('strategy-next-btn').disabled = false;
+}
+
+// ─────────────────────────────────────────────
+// RESPONSE
+// ─────────────────────────────────────────────
+
+function goToResponse() {
+  if (!appState.selectedStrategy) return;
+
+  document.getElementById('response-title').textContent = STRATEGY_LABELS[appState.selectedStrategy];
+
+  const options = RESPONSES[appState.selectedStrategy];
+  const container = document.getElementById('response-options');
+  container.innerHTML = '';
+  appState.selectedResponse = null;
+  document.getElementById('response-submit-btn').disabled = true;
+
+  options.forEach((text, i) => {
+    const card = document.createElement('div');
+    card.className = 'response-card';
+    card.dataset.idx = i;
+    card.innerHTML = `<span class="response-letter">${String.fromCharCode(65 + i)}</span><span class="response-text">${escapeHtml(text)}</span>`;
+    card.onclick = () => selectResponse(card, i);
+    container.appendChild(card);
+  });
+
+  showScreen('response');
+  setStatus('SELECT YOUR RESPONSE');
+}
+
+function selectResponse(el, idx) {
+  document.querySelectorAll('.response-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  appState.selectedResponse = idx;
+  document.getElementById('response-submit-btn').disabled = false;
+}
+
+// ─────────────────────────────────────────────
+// SUBMIT → EVALUATE
+// ─────────────────────────────────────────────
+
+async function submitResponse() {
+  if (appState.selectedResponse === null) return;
+  showScreen('evaluating');
+
+  const phases = [
+    'ANALYZING RESPONSE...',
+    'IDENTIFYING LOAD-BEARING CLAIMS...',
+    'PROJECTING OPPONENT MOVE...',
+    'COMPILING DEBRIEF...'
+  ];
+  let pi = 0;
+  const ticker = setInterval(() => {
+    pi = (pi + 1) % phases.length;
+    document.getElementById('eval-status').textContent = phases[pi];
+  }, 1100);
+
+  try {
+    const ev = await evaluateResponse();
+    appState.evaluation = ev;
+
+    appState.roundCount++;
+    appState.totalScore += ev.score;
+    appState.roundHistory.push({
+      topic: appState.topic,
+      strategy: appState.selectedStrategy,
+      responseIndex: appState.selectedResponse,
+      score: ev.score,
+      timestamp: Date.now()
+    });
+
+    updateHeaderStats();
+    autoSave();
+    clearInterval(ticker);
+    renderDebrief(ev);
+    showScreen('debrief');
+    setStatus('ROUND ' + appState.roundCount + ' COMPLETE — SCORE: ' + ev.score + '/100');
+  } catch (err) {
+    clearInterval(ticker);
+    setStatus('EVALUATION ERROR: ' + err.message);
+    showScreen('response');
+    alert('Evaluation failed: ' + err.message);
+  }
+}
+
+// ─────────────────────────────────────────────
+// AI: EVALUATE
+// ─────────────────────────────────────────────
+
+async function evaluateResponse() {
+  const responseText = RESPONSES[appState.selectedStrategy][appState.selectedResponse];
+  const claimsText   = appState.claims.map((c, i) => `${i+1}. ${c}`).join('\n');
+
+  const prompt = `You are a sharp, honest debate coach evaluating a student's response to a Gish gallop.
+
+TOPIC: ${TOPICS[appState.topic]}
+
+GALLOP (7 claims the student received):
+${claimsText}
+
+STUDENT'S CHOSEN STRATEGY: ${STRATEGY_LABELS[appState.selectedStrategy]}
+
+STUDENT'S RESPONSE TEXT:
+"${responseText}"
+
+Evaluate how well this strategy and response handled the specific gallop above.
+
+Return ONLY valid JSON — no preamble, no backticks, no markdown:
+{
+  "score": <integer 0-100>,
+  "strategyFit": "<excellent|good|poor>",
+  "executionFit": "<excellent|good|poor>",
+  "feedback": "<2-3 honest sentences: what worked, what could be sharper, and why>",
+  "opponentMove": "<1 sentence describing the skilled opponent's most likely counter-move>",
+  "loadBearingIndices": [<0-based indices of the 1-2 most structurally important claims>],
+  "loadBearingExplanation": "<1 sentence: why these claims are the structural pillars>"
+}`;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  if (!res.ok) throw new Error(`API ${res.status}: ${res.statusText}`);
+
+  const data = await res.json();
+  const text  = data.content.map(i => i.text || '').join('');
+  const clean = text.replace(/```json|```/g, '').trim();
+  return JSON.parse(clean);
+}
+
+// ─────────────────────────────────────────────
+// RENDER DEBRIEF
+// ─────────────────────────────────────────────
+
+function renderDebrief(ev) {
+  const scoreEl = document.getElementById('debrief-score');
+  scoreEl.textContent = ev.score;
+  scoreEl.style.color = ev.score >= 75 ? 'var(--green)'
+                      : ev.score >= 50 ? 'var(--amber)'
+                      : 'var(--red)';
+
+  document.getElementById('debrief-badges').innerHTML = `
+    <span class="badge badge-${ev.strategyFit}">STRATEGY: ${ev.strategyFit.toUpperCase()}</span>
+    <span class="badge badge-${ev.executionFit}">EXECUTION: ${ev.executionFit.toUpperCase()}</span>
+  `;
+
+  document.getElementById('debrief-feedback').textContent = ev.feedback;
+  document.getElementById('debrief-opponent').textContent = '\u201c' + ev.opponentMove + '\u201d';
+
+  const claimsEl = document.getElementById('debrief-claims');
+  claimsEl.innerHTML = '';
+
+  appState.claims.forEach((claim, i) => {
+    const lb   = Array.isArray(ev.loadBearingIndices) && ev.loadBearingIndices.includes(i);
+    const item = document.createElement('div');
+    item.className = 'claim-debrief-item' + (lb ? ' load-bearing' : '');
+    item.innerHTML = `
+      <span class="claim-debrief-num">#${String(i+1).padStart(2,'0')}</span>
+      <span style="flex:1;color:${lb ? 'var(--text)' : 'var(--muted)'}">${escapeHtml(claim)}</span>
+      ${lb ? '<span class="lb-tag">LOAD-BEARING</span>' : ''}
+    `;
+    claimsEl.appendChild(item);
+  });
+
+  if (ev.loadBearingExplanation) {
+    const note = document.createElement('div');
+    note.className = 'lb-note';
+    note.textContent = '→ ' + ev.loadBearingExplanation;
+    claimsEl.appendChild(note);
+  }
+}
+
+// ─────────────────────────────────────────────
+// STATS
+// ─────────────────────────────────────────────
+
+function updateHeaderStats() {
+  document.getElementById('stat-rounds').textContent = appState.roundCount;
+  const avg = appState.roundCount > 0
+    ? Math.round(appState.totalScore / appState.roundCount)
+    : '—';
+  document.getElementById('stat-avg').textContent = avg;
+}
+
+// ─────────────────────────────────────────────
+// PERSISTENCE
+// ─────────────────────────────────────────────
+
+function getSessionData() {
+  return {
+    roundHistory: appState.roundHistory,
+    totalScore:   appState.totalScore,
+    roundCount:   appState.roundCount
+  };
+}
+
+function applySessionData(data) {
+  if (!data) return;
+  appState.roundHistory = data.roundHistory || [];
+  appState.totalScore   = data.totalScore   || 0;
+  appState.roundCount   = data.roundCount   || 0;
+  updateHeaderStats();
+}
+
+function autoSave() {
+  try {
+    localStorage.setItem('the_flood_session', JSON.stringify(getSessionData()));
+  } catch(e) {}
+}
+
+async function saveSession() {
+  try {
+    if (!fileHandle) {
+      fileHandle = await window.showSaveFilePicker({
+        suggestedName: 'flood-session.json',
+        types: [{ description: 'JSON File', accept: { 'application/json': ['.json'] } }]
+      });
+    }
+    const writable = await fileHandle.createWritable();
+    await writable.write(JSON.stringify(getSessionData(), null, 2));
+    await writable.close();
+    setStatus('SESSION SAVED TO FILE · ' + appState.roundCount + ' ROUNDS');
+  } catch(e) {
+    if (e.name !== 'AbortError') {
+      autoSave();
+      setStatus('SAVED TO LOCAL STORAGE (File API unavailable)');
+    }
+  }
+}
+
+async function loadSession() {
+  try {
+    [fileHandle] = await window.showOpenFilePicker({
+      types: [{ description: 'JSON File', accept: { 'application/json': ['.json'] } }]
+    });
+    const file = await fileHandle.getFile();
+    const data = JSON.parse(await file.text());
+    applySessionData(data);
+    setStatus('SESSION LOADED · ' + data.roundCount + ' ROUNDS');
+  } catch(e) {
+    if (e.name !== 'AbortError') {
+      try {
+        const raw = localStorage.getItem('the_flood_session');
+        if (raw) {
+          applySessionData(JSON.parse(raw));
+          setStatus('LOADED FROM LOCAL STORAGE');
+        } else {
+          setStatus('NO SAVED SESSION FOUND');
+        }
+      } catch(e2) {
+        setStatus('LOAD FAILED');
+      }
+    }
+  }
+}
+
+function confirmReset() {
+  if (!confirm('Reset all session stats and history?')) return;
+  appState.roundHistory = [];
+  appState.totalScore   = 0;
+  appState.roundCount   = 0;
+  fileHandle = null;
+  try { localStorage.removeItem('the_flood_session'); } catch(e) {}
+  updateHeaderStats();
+  goToIntro();
+  setStatus('SESSION RESET');
+}
+
+// ─────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────
+
+function setStatus(msg) {
+  const el = document.getElementById('status-bar');
+  if (el) el.textContent = msg;
+}
+
+function delay(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+
+(function init() {
+  try {
+    const raw = localStorage.getItem('the_flood_session');
+    if (raw) applySessionData(JSON.parse(raw));
+  } catch(e) {}
+  setStatus('READY · THE FLOOD v1.0 · SELECT A TOPIC TO BEGIN');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Stacks — Research Skills Academy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --wood:         #2C1A0A;
+      --wood-mid:     #5C3820;
+      --wood-light:   #9B6B45;
+      --parchment:    #F2EAD0;
+      --cream:        #FAF7EE;
+      --brass:        #B5892A;
+      --brass-light:  #D4A843;
+      --ink:          #1C1208;
+      --stamp-red:    #8B1A1A;
+      --stamp-blue:   #1A3564;
+      --stamp-green:  #1E5C2A;
+      --muted:        #7A6A52;
+      --border:       #C8B589;
+      --shadow:       rgba(44,26,10,0.28);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--wood);
+      background-image:
+        repeating-linear-gradient(88deg, transparent 0, transparent 6px, rgba(0,0,0,.025) 6px, rgba(0,0,0,.025) 7px),
+        repeating-linear-gradient(2deg,  transparent 0, transparent 25px, rgba(255,255,255,.012) 25px, rgba(255,255,255,.012) 26px);
+      min-height: 100vh;
+      color: var(--ink);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Screens ── */
+    .screen { width: 100%; max-width: 820px; display: none; }
+    .screen.active { display: block; animation: fadeUp .3s ease; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── App Header ── */
+    .app-header {
+      text-align: center;
+      padding: 22px 0 14px;
+    }
+    .app-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.9rem, 6vw, 3rem);
+      color: var(--parchment);
+      letter-spacing: .06em;
+      text-shadow: 2px 3px 10px rgba(0,0,0,.5);
+    }
+    .app-subtitle {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--brass-light);
+      font-size: clamp(.75rem, 2.5vw, .95rem);
+      letter-spacing: .14em;
+      margin-top: 4px;
+    }
+    .header-rule {
+      border: none;
+      border-top: 1px solid rgba(181,137,42,.45);
+      width: 180px;
+      margin: 12px auto 0;
+    }
+
+    /* ── Stats Bar ── */
+    .stats-bar {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .stat-chip {
+      background: rgba(242,234,208,.1);
+      border: 1px solid rgba(181,137,42,.4);
+      border-radius: 3px;
+      padding: 5px 14px;
+      color: rgba(242,234,208,.8);
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+    .stat-chip strong { color: var(--brass-light); font-size: .95rem; font-family: 'Playfair Display', serif; }
+
+    /* ── Home intro ── */
+    .home-intro {
+      text-align: center;
+      color: rgba(242,234,208,.65);
+      font-size: .86rem;
+      max-width: 460px;
+      margin: 0 auto 22px;
+      line-height: 1.65;
+    }
+
+    /* ── Section headings ── */
+    .section-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      color: var(--parchment);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .section-sub {
+      font-size: .74rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: rgba(242,234,208,.45);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* ── Game Grid ── */
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 12px;
+    }
+    .game-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 20px;
+      cursor: pointer;
+      transition: transform .18s, box-shadow .18s;
+      position: relative;
+      overflow: hidden;
+    }
+    .game-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 4px; height: 100%;
+      background: var(--brass);
+      border-radius: 4px 0 0 4px;
+    }
+    .game-card:hover {
+      transform: translateY(-3px) translateX(2px);
+      box-shadow: 0 10px 28px var(--shadow);
+    }
+    .game-card:focus-visible {
+      outline: 2px solid var(--brass-light);
+      outline-offset: 2px;
+    }
+    .game-card-icon { font-size: 1.7rem; margin-bottom: 8px; display: block; }
+    .game-card-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+    .game-card-desc  { font-size: .76rem; color: var(--muted); line-height: 1.45; }
+    .game-card-stars { margin-top: 10px; font-size: .95rem; color: var(--brass); letter-spacing: 3px; }
+    .game-card-stars .e { color: var(--border); }
+    .game-card-best  { font-size: .7rem; color: var(--muted); margin-top: 3px; }
+
+    /* ── Reset btn ── */
+    .reset-btn {
+      display: block;
+      margin: 18px auto 0;
+      background: transparent;
+      border: 1px solid rgba(181,137,42,.3);
+      color: rgba(242,234,208,.4);
+      border-radius: 3px;
+      padding: 7px 16px;
+      font-size: .73rem;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      letter-spacing: .06em;
+      transition: all .15s;
+    }
+    .reset-btn:hover { border-color: rgba(181,137,42,.7); color: var(--brass-light); }
+
+    /* ══════════════════ GAME SCREEN ══════════════════ */
+    .game-top-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      padding: 10px 0 14px;
+      flex-wrap: wrap;
+    }
+    .exit-btn {
+      background: transparent;
+      border: 1.5px solid rgba(242,234,208,.3);
+      color: rgba(242,234,208,.6);
+      border-radius: 3px;
+      padding: 7px 14px;
+      font-size: .78rem;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .exit-btn:hover { border-color: var(--parchment); color: var(--parchment); }
+
+    .game-header {
+      background: var(--parchment);
+      border-radius: 4px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      box-shadow: 0 3px 10px var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .game-title-sm {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .game-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: .8rem;
+      color: var(--muted);
+      font-weight: 500;
+      flex-wrap: wrap;
+    }
+    .score-disp {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      color: var(--stamp-blue);
+      font-weight: 700;
+    }
+    .streak-badge-inline {
+      color: var(--brass);
+      font-weight: 600;
+      font-size: .8rem;
+    }
+
+    /* Timer ring */
+    .timer-ring { width: 44px; height: 44px; position: relative; flex-shrink: 0; }
+    .timer-ring svg { transform: rotate(-90deg); display: block; }
+    .timer-ring circle { fill: none; stroke-width: 4; }
+    .timer-bg { stroke: var(--border); }
+    .timer-fg { stroke: var(--stamp-blue); stroke-linecap: round; transition: stroke-dashoffset 1s linear, stroke .3s; }
+    .timer-num {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--ink);
+      transition: color .3s;
+    }
+
+    /* Progress bar */
+    .progress-track {
+      background: rgba(242,234,208,.12);
+      border-radius: 2px;
+      height: 5px;
+      width: 100%;
+      margin-bottom: 12px;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg, var(--stamp-blue), var(--brass));
+      height: 100%;
+      border-radius: 2px;
+      transition: width .4s ease;
+    }
+
+    /* Question card */
+    .question-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 26px 24px 22px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 8px var(--shadow);
+      position: relative;
+      min-height: 100px;
+    }
+    .q-label {
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .q-text {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(.95rem, 2.8vw, 1.15rem);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+    .q-code {
+      display: block;
+      font-family: 'Courier New', Courier, monospace;
+      background: rgba(44,26,10,.06);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 12px 16px;
+      margin-top: 13px;
+      font-size: .85rem;
+      line-height: 1.65;
+      color: var(--ink);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Stamps */
+    .stamp {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) rotate(-12deg) scale(0);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      border: 3px solid;
+      padding: 7px 16px;
+      border-radius: 3px;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .stamp-ok  { color: var(--stamp-green); border-color: var(--stamp-green); background: rgba(230,245,232,.92); }
+    .stamp-bad { color: var(--stamp-red);   border-color: var(--stamp-red);   background: rgba(245,232,232,.92); }
+    .stamp.pop { animation: stampIn .4s cubic-bezier(.25,.46,.45,.94) forwards; }
+    @keyframes stampIn {
+      0%   { transform: translate(-50%,-50%) rotate(-12deg) scale(3); opacity: 0; }
+      55%  { transform: translate(-50%,-50%) rotate(-12deg) scale(.96); opacity: 1; }
+      100% { transform: translate(-50%,-50%) rotate(-12deg) scale(1);   opacity: 1; }
+    }
+
+    /* Answers */
+    .answers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-bottom: 12px;
+    }
+    .ans-btn {
+      background: var(--parchment);
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      padding: 13px 14px;
+      text-align: left;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      color: var(--ink);
+      line-height: 1.4;
+      cursor: pointer;
+      transition: transform .12s, box-shadow .12s, border-color .12s, background .12s;
+      min-height: 58px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .ans-btn:hover:not(:disabled) {
+      border-color: var(--brass);
+      background: var(--cream);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+    .ans-btn:focus-visible { outline: 2px solid var(--brass-light); outline-offset: 2px; }
+    .ans-btn:disabled { cursor: default; }
+    .ans-btn.correct { background: #EBF5EC; border-color: var(--stamp-green); color: var(--stamp-green); font-weight: 600; }
+    .ans-btn.wrong   { background: #F5EDED; border-color: var(--stamp-red); color: var(--stamp-red); text-decoration: line-through; opacity: .7; }
+    .ans-letter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      background: var(--border);
+      border-radius: 2px;
+      font-size: .68rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+    .ans-btn.correct .ans-letter { background: var(--stamp-green); color: #fff; }
+    .ans-btn.wrong   .ans-letter { background: var(--stamp-red);   color: #fff; }
+
+    /* Explanation */
+    .explanation {
+      background: rgba(181,137,42,.1);
+      border-left: 3px solid var(--brass);
+      border-radius: 0 4px 4px 0;
+      padding: 11px 15px;
+      font-size: .83rem;
+      color: var(--ink);
+      line-height: 1.55;
+      display: none;
+      animation: fadeUp .25s ease;
+    }
+    .explanation.show { display: block; }
+    .explanation strong { color: var(--wood-mid); }
+
+    /* Next / Continue button */
+    .next-btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--stamp-blue);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .93rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: .04em;
+      transition: background .15s, transform .1s;
+      display: none;
+      margin-top: 10px;
+      animation: fadeUp .2s ease;
+    }
+    .next-btn.show  { display: block; }
+    .next-btn:hover { background: #122650; transform: translateY(-1px); }
+
+    /* Floating streak toast */
+    .streak-toast {
+      position: fixed;
+      top: 18px; right: 18px;
+      background: var(--brass);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 3px;
+      font-weight: 600;
+      font-size: .84rem;
+      box-shadow: 0 4px 14px rgba(0,0,0,.3);
+      pointer-events: none;
+      z-index: 200;
+      animation: toastIn .45s ease forwards;
+    }
+    @keyframes toastIn {
+      0%   { transform: scale(.6) translateY(8px); opacity: 0; }
+      60%  { transform: scale(1.06); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ══════════════════ RESULTS ══════════════════ */
+    .results-wrap {
+      background: var(--parchment);
+      border-radius: 4px;
+      padding: clamp(22px, 5vw, 42px);
+      text-align: center;
+      box-shadow: 0 4px 22px var(--shadow);
+    }
+    .res-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .res-game  { font-size: .82rem; color: var(--muted); margin-top: 4px; }
+    .res-score {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      color: var(--stamp-blue);
+      margin: 14px 0 6px;
+      line-height: 1;
+    }
+    .res-stars { font-size: 1.9rem; letter-spacing: 6px; margin: 10px 0; }
+    .res-stars .s  { color: var(--brass-light); }
+    .res-stars .es { color: var(--border); }
+    .xp-pill {
+      display: inline-block;
+      background: var(--stamp-green);
+      color: #fff;
+      padding: 5px 16px;
+      border-radius: 3px;
+      font-weight: 600;
+      font-size: .87rem;
+      margin-top: 6px;
+    }
+    .dots-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin: 18px 0 10px;
+    }
+    .dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .88rem;
+      font-weight: 700;
+    }
+    .dot.hit  { background: #EBF5EC; color: var(--stamp-green); }
+    .dot.miss { background: #F5EDED; color: var(--stamp-red); }
+    .res-summary {
+      font-size: .84rem;
+      color: var(--ink);
+      line-height: 1.6;
+      background: rgba(181,137,42,.08);
+      border-radius: 4px;
+      padding: 13px 16px;
+      text-align: left;
+      margin-top: 8px;
+    }
+    .res-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: var(--stamp-blue);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 11px 24px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+      letter-spacing: .04em;
+    }
+    .btn-primary:hover { background: #122650; transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--wood-mid);
+      border: 2px solid var(--wood-mid);
+      border-radius: 4px;
+      padding: 11px 22px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .btn-secondary:hover { background: var(--wood-mid); color: #fff; }
+
+    button:focus-visible { outline: 2px solid var(--brass-light); outline-offset: 2px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      body { padding: 10px; }
+      .answers-grid { grid-template-columns: 1fr; }
+      .game-grid    { grid-template-columns: 1fr; }
+      .question-card { padding: 18px 14px; }
+      .q-code { font-size: .78rem; padding: 10px 12px; }
+    }
+    @media (min-width: 600px) {
+      .game-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 820px) {
+      .game-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════ HOME ═══════════════════ -->
+<div id="screen-home" class="screen">
+  <div class="app-header">
+    <div class="app-title">✦ The Stacks ✦</div>
+    <div class="app-subtitle">Research Skills Academy</div>
+    <hr class="header-rule">
+  </div>
+
+  <div class="stats-bar" id="home-stats">
+    <div class="stat-chip">Level <strong id="s-level">1</strong></div>
+    <div class="stat-chip"><strong id="s-xp">0</strong> XP</div>
+    <div class="stat-chip">Games <strong id="s-games">0</strong></div>
+  </div>
+
+  <p class="home-intro">
+    Master the skills every researcher needs — from call numbers to citation styles.
+    Earn stars, level up, and become a true library detective.
+  </p>
+
+  <div class="section-heading">Choose Your Challenge</div>
+  <div class="section-sub">◆ Earn 3 stars in all games to master The Stacks ◆</div>
+
+  <div class="game-grid" id="game-grid"></div>
+
+  <button class="reset-btn" onclick="resetProgress()">↺ Reset All Progress</button>
+</div>
+
+<!-- ═══════════════════ GAME ═══════════════════ -->
+<div id="screen-game" class="screen">
+  <div class="game-top-bar">
+    <button class="exit-btn" onclick="exitGame()">← Exit</button>
+    <div class="app-title" style="font-size:1.5rem;">✦ The Stacks</div>
+  </div>
+
+  <div class="game-header">
+    <div>
+      <div class="game-title-sm" id="g-title">—</div>
+      <div class="game-meta">
+        <span>Q <strong id="g-qnum">1</strong> / <strong id="g-qtotal">10</strong></span>
+        <span class="score-disp" id="g-score">0 pts</span>
+        <span class="streak-badge-inline" id="g-streak" style="display:none;">🔥 <span id="g-scount">0</span>×</span>
+      </div>
+    </div>
+    <div class="timer-ring">
+      <svg width="44" height="44" viewBox="0 0 44 44">
+        <circle class="timer-bg" cx="22" cy="22" r="18"/>
+        <circle class="timer-fg" id="t-circle" cx="22" cy="22" r="18"
+          stroke-dasharray="113.1" stroke-dashoffset="0"/>
+      </svg>
+      <div class="timer-num" id="t-num">20</div>
+    </div>
+  </div>
+
+  <div class="progress-track">
+    <div class="progress-fill" id="g-progress" style="width:0%"></div>
+  </div>
+
+  <div class="question-card" id="q-card">
+    <div class="q-label" id="q-label">Question</div>
+    <div class="q-text"  id="q-text">Loading…</div>
+    <code class="q-code"  id="q-code"  style="display:none;"></code>
+    <div class="stamp stamp-ok"  id="s-ok">✓ CORRECT</div>
+    <div class="stamp stamp-bad" id="s-bad">✗ WRONG</div>
+  </div>
+
+  <div class="answers-grid" id="ans-grid"></div>
+  <div class="explanation" id="explanation"></div>
+  <button class="next-btn" id="next-btn" onclick="nextQuestion()">Continue →</button>
+</div>
+
+<!-- ═══════════════════ RESULTS ═══════════════════ -->
+<div id="screen-results" class="screen">
+  <div class="app-header" style="padding:10px 0 12px;">
+    <div class="app-title" style="font-size:1.7rem;">✦ The Stacks</div>
+  </div>
+  <div class="results-wrap">
+    <div class="res-title"  id="r-title">Well Done!</div>
+    <div class="res-game"   id="r-game">—</div>
+    <div class="res-score"  id="r-score">0</div>
+    <div class="res-stars"  id="r-stars"></div>
+    <div class="xp-pill"    id="r-xp">+0 XP</div>
+    <div class="dots-row"   id="r-dots"></div>
+    <div class="res-summary" id="r-summary"></div>
+    <div class="res-actions">
+      <button class="btn-primary"   onclick="startGame(currentGameId)">↺ Play Again</button>
+      <button class="btn-secondary" onclick="showScreen('home')">◀ All Games</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  QUESTION BANKS
+// ═══════════════════════════════════════════════════════
+
+const GAMES = {
+
+  dewey: {
+    id:'dewey', icon:'📚',
+    title:'Dewey Decimal Dash',
+    desc:'Assign books to their correct Dewey Decimal class (000s–900s)',
+    qs:[
+      { q:'A comprehensive guide to machine learning and artificial intelligence',
+        choices:['000s – Computer Science & General Works','100s – Philosophy & Psychology','500s – Pure Sciences','600s – Technology & Engineering'],
+        ans:0, exp:'Computer science and information technology lives in the 000s — the same class as encyclopedias and library science.' },
+      { q:'Introduction to Kantian Ethics and Moral Philosophy',
+        choices:['200s – Religion','100s – Philosophy & Psychology','300s – Social Sciences','800s – Literature'],
+        ans:1, exp:'Philosophy (including ethics, logic, and metaphysics) is shelved in the 100s alongside psychology.' },
+      { q:'The Sacred Texts of Buddhism: A Reader',
+        choices:['100s – Philosophy & Psychology','300s – Social Sciences','200s – Religion','900s – History & Geography'],
+        ans:2, exp:'All world religions and religious texts — Christianity, Islam, Buddhism, Hinduism — are classed in the 200s.' },
+      { q:'Urban Sociology: Class, Race, and Modern Cities',
+        choices:['300s – Social Sciences','100s – Philosophy & Psychology','700s – Arts & Recreation','900s – History'],
+        ans:0, exp:'The 300s cover all social sciences: sociology, education, economics, political science, and law.' },
+      { q:'Mastering French Grammar: From Beginner to Fluent',
+        choices:['800s – Literature','000s – Computer Science','400s – Language & Linguistics','300s – Social Sciences'],
+        ans:2, exp:'Language study, dictionaries, and linguistics all live in the 400s — separate from literature (800s).' },
+      { q:'Quantum Mechanics: Principles and Applications',
+        choices:['600s – Technology','500s – Pure Sciences & Mathematics','000s – Computer Science','100s – Philosophy'],
+        ans:1, exp:'Physics, chemistry, biology, and mathematics are pure sciences, shelved in the 500s.' },
+      { q:'Advanced Electrical Engineering: Circuit Design Handbook',
+        choices:['500s – Pure Sciences','000s – Computer Science','600s – Applied Science & Technology','300s – Social Sciences'],
+        ans:2, exp:'Applied sciences — engineering, medicine, agriculture, cooking — are all in the 600s.' },
+      { q:'The History of Jazz: From New Orleans to Today',
+        choices:['800s – Literature','900s – History','700s – Arts, Recreation & Music','300s – Social Sciences'],
+        ans:2, exp:'Music, fine arts, photography, sports, and recreation fall under the 700s.' },
+      { q:'The Complete Works of William Shakespeare',
+        choices:['900s – History','700s – Arts','400s – Language','800s – Literature & Rhetoric'],
+        ans:3, exp:'Literature — poetry, drama, fiction, essays — is the 800s. Note: language study (grammar, dictionaries) is the 400s.' },
+      { q:'The Roman Empire: Rise, Peak, and Fall',
+        choices:['300s – Social Sciences','200s – Religion','900s – History & Geography','800s – Literature'],
+        ans:2, exp:'History, geography, travel, and biography all live in the 900s.' },
+      { q:'Encyclopedia Britannica: Complete General Reference',
+        choices:['000s – Computer Science & General Works','300s – Social Sciences','900s – History','100s – Philosophy'],
+        ans:0, exp:'General encyclopedias and reference works go in the 000s — the "catch-all" class for knowledge itself.' },
+      { q:'Cognitive Behavioral Therapy: A Practical Clinical Guide',
+        choices:['300s – Social Sciences','100s – Philosophy & Psychology','600s – Medicine','500s – Sciences'],
+        ans:1, exp:'Psychology — including therapy methods, mental health, and behavior — is in the 100s, sharing a class with philosophy.' },
+      { q:'French Cuisine: Classic Techniques and Recipes',
+        choices:['700s – Arts & Recreation','600s – Applied Science (includes cooking)','300s – Social Sciences','400s – Language'],
+        ans:1, exp:'Cooking and food science are applied sciences — they live at 641.5 within the 600s class.' },
+      { q:'World Atlas: Political Maps and Geographic Data',
+        choices:['500s – Sciences','000s – General Works','300s – Social Sciences','900s – History & Geography'],
+        ans:3, exp:'Atlases, maps, and geographic reference tools are part of the 900s class (geography sits alongside history).' },
+      { q:'Economic Theories of the 20th Century',
+        choices:['100s – Philosophy','300s – Social Sciences (including Economics)','500s – Sciences','900s – History'],
+        ans:1, exp:'Economics is a social science and belongs in the 300s, alongside sociology, political science, and law.' }
+    ]
+  },
+
+  lc: {
+    id:'lc', icon:'🗂️',
+    title:'LC Call Letter',
+    desc:'Match subjects to their Library of Congress classification letter',
+    qs:[
+      { q:'A scholarly study of ancient Egyptian civilization and artifacts',
+        choices:['B – Philosophy, Psychology & Religion','D – World History','E/F – History of the Americas','G – Geography & Anthropology'],
+        ans:1, exp:'Class D covers World History, including ancient civilizations, medieval Europe, and modern non-American history.' },
+      { q:'The Collected Novels of Toni Morrison',
+        choices:['M – Music','N – Fine Arts','P – Language & Literature','Z – Bibliography & Library Science'],
+        ans:2, exp:'Class P covers all language and literature — fiction, poetry, drama, and literary criticism in any language.' },
+      { q:'Organic Chemistry: Structure, Reactivity, and Synthesis',
+        choices:['R – Medicine','S – Agriculture','T – Technology','Q – Science'],
+        ans:3, exp:'Pure sciences — biology, chemistry, physics, mathematics — are all under class Q.' },
+      { q:'Constitutional Law: Cases, Commentary, and Doctrine',
+        choices:['H – Social Sciences','J – Political Science','K – Law','L – Education'],
+        ans:2, exp:'All law — constitutional, international, comparative, criminal — falls under class K.' },
+      { q:'World Religions: An Encyclopedia of Faith and Practice',
+        choices:['B – Philosophy, Psychology & Religion','A – General Works','D – World History','H – Social Sciences'],
+        ans:0, exp:'Class B combines philosophy, psychology, and religion — making it the home for theology, ethics, and spirituality.' },
+      { q:'Integrated Pest Management in Modern Agriculture',
+        choices:['Q – Science','S – Agriculture','T – Technology','G – Geography'],
+        ans:1, exp:'Agriculture and plant science — farming, animal husbandry, forestry, fisheries — live under class S.' },
+      { q:'Military Strategy and Doctrine in the 21st Century',
+        choices:['D – World History','J – Political Science','U – Military Science','V – Naval Science'],
+        ans:2, exp:'Class U is Military Science: strategy, tactics, weapons, military history. Naval science is its own class, V.' },
+      { q:'Library Cataloging Standards and Metadata Practices',
+        choices:['A – General Works','L – Education','Z – Bibliography & Library Science','P – Language & Literature'],
+        ans:2, exp:'Class Z is the home for bibliography, library science, information science, and book history.' },
+      { q:'Piano Technique for the Advanced Student',
+        choices:['N – Fine Arts','M – Music','P – Language & Literature','L – Education'],
+        ans:1, exp:'Music — scores, music theory, and books about music — all fall under class M.' },
+      { q:'Sociology of the Contemporary Family',
+        choices:['J – Political Science','H – Social Sciences','B – Psychology','L – Education'],
+        ans:1, exp:'Class H covers all social sciences: economics, sociology, statistics, commerce, and social history.' },
+      { q:'Foundations of Modern Nursing Practice',
+        choices:['Q – Science','S – Agriculture','R – Medicine','T – Technology'],
+        ans:2, exp:'Class R covers medicine and health sciences, including nursing, pharmacy, dentistry, and public health.' },
+      { q:'Battles and Campaigns of the American Civil War',
+        choices:['D – World History','E/F – History of the Americas','U – Military Science','G – Geography'],
+        ans:1, exp:'Class E and F are reserved specifically for the History of the Americas — United States, Canada, Latin America.' },
+      { q:'Contemporary Sculpture: Materials, Process, and Meaning',
+        choices:['M – Music','N – Fine Arts','P – Language & Literature','T – Technology'],
+        ans:1, exp:'Class N is Fine Arts — painting, sculpture, drawing, photography, architecture, and art history.' },
+      { q:'Curriculum Design and Assessment in K-12 Education',
+        choices:['H – Social Sciences','J – Political Science','B – Psychology','L – Education'],
+        ans:3, exp:'Class L covers all education — teaching methods, curriculum, educational institutions, and pedagogy.' },
+      { q:'Political Theory: From Plato to Contemporary Rawls',
+        choices:['B – Philosophy & Psychology','H – Social Sciences','J – Political Science','K – Law'],
+        ans:2, exp:'Class J is Political Science — theory, government systems, political institutions, and voting behavior.' }
+    ]
+  },
+
+  sources: {
+    id:'sources', icon:'🔍',
+    title:'Source Spotter',
+    desc:'Identify primary, secondary, and tertiary sources',
+    qs:[
+      { q:'A diary written by a Union soldier during the American Civil War',
+        choices:['Primary Source','Secondary Source','Tertiary Source','Cannot be determined'],
+        ans:0, exp:'A first-hand account created during the event by someone who was there is the definition of a primary source. Diaries, letters, and personal journals are classic examples.' },
+      { q:'A history textbook chapter analyzing the root causes of World War I',
+        choices:['Primary Source','Secondary Source','Tertiary Source','Cannot be determined'],
+        ans:1, exp:'Secondary sources interpret, analyze, or synthesize primary sources. A textbook written after the fact, examining causes, is firmly secondary.' },
+      { q:'An encyclopedia entry summarizing the French Revolution',
+        choices:['Primary Source','Secondary Source','Tertiary Source','Cannot be determined'],
+        ans:2, exp:'Encyclopedias compile and condense information from both primary and secondary sources — that makes them tertiary sources.' },
+      { q:'Raw temperature and CO₂ measurements collected directly from a climate experiment',
+        choices:['Primary Source','Secondary Source','Tertiary Source','Cannot be determined'],
+        ans:0, exp:'Original experimental data is always a primary source — it hasn\'t yet been interpreted or filtered through anyone else\'s analysis.' },
+      { q:'A newspaper article from July 21, 1969 reporting the Apollo 11 moon landing',
+        choices:['Primary Source','Secondary Source','Tertiary Source','Cannot be determined'],
+        ans:0, exp:'Contemporary accounts published during or immediately after an event are primary sources. They capture the moment in real time.' },
+      { q:'A 2012 biography of Marie Curie based on her letters, notebooks, and historical records',
+        choices:['Primary Source','Secondary Source','Tertiary Source','Cannot be determined'],
+        ans:1, exp:'A biography written after the fact — using evidence to reconstruct a life — is secondary. It analyzes and synthesizes primary materials.' },
+      { q:'A database indexing thousands of peer-reviewed medical research articles by subject',
+        choices:['Primary Source','Secondary Source','Tertiary Source','Cannot be determined'],
+        ans:2, exp:'Indexes and databases that organize and point to other sources (like PubMed or JSTOR) are tertiary sources.' },
+      { q:'The transcript of Martin Luther King Jr.\'s "I Have a Dream" speech (August 28, 1963)',
+        choices:['Primary Source','Secondary Source','Tertiary Source','Cannot be determined'],
+        ans:0, exp:'Original speeches and documents created by the person involved are primary sources — they are the direct record of the historical moment.' },
+      { q:'A documentary film exploring the causes and legacy of the Vietnam War',
+        choices:['Primary Source','Secondary Source','Tertiary Source','Cannot be determined'],
+        ans:1, exp:'A documentary that analyzes and interprets historical events is secondary, even if it includes some archival (primary) footage.' },
+      { q:'A personal letter written by Marie Curie to her sister in 1903',
+        choices:['Primary Source','Secondary Source','Tertiary Source','Cannot be determined'],
+        ans:0, exp:'A letter written by the person themselves is a primary source — it is their direct, unmediated voice from the time.' },
+      { q:'A published review article synthesizing 50 different studies on the effects of caffeine',
+        choices:['Primary Source','Secondary Source','Tertiary Source','Cannot be determined'],
+        ans:1, exp:'Literature reviews and meta-analyses synthesize existing research — they are secondary sources that analyze primary research articles.' },
+      { q:'The World Almanac and Book of Facts: statistics, events, and world records',
+        choices:['Primary Source','Secondary Source','Tertiary Source','Cannot be determined'],
+        ans:2, exp:'Almanacs, fact books, and similar ready-reference tools are tertiary sources — they compile data from many primary and secondary sources.' },
+      { q:'Photographs taken by photojournalist Charles Moore during the 1965 Selma to Montgomery marches',
+        choices:['Primary Source','Secondary Source','Tertiary Source','Cannot be determined'],
+        ans:0, exp:'Photographs taken at the time of an event by someone present are primary sources — direct documentation of the moment.' },
+      { q:'An academic journal\'s book review analyzing the arguments in a newly published historical monograph',
+        choices:['Primary Source','Secondary Source','Tertiary Source','Cannot be determined'],
+        ans:1, exp:'A review that critiques and analyzes another work is secondary — it interprets the primary work (the book) rather than documenting original events.' },
+      { q:'A peer-reviewed article in Nature reporting original experimental results on a new mRNA vaccine',
+        choices:['Primary Source','Secondary Source','Tertiary Source','Cannot be determined'],
+        ans:0, exp:'Original research articles reporting new experimental findings are primary sources in the sciences — they present fresh data from the researchers themselves.' }
+    ]
+  },
+
+  citations: {
+    id:'citations', icon:'📝',
+    title:'Citation Station',
+    desc:'Identify citation styles: APA, MLA, Chicago, or IEEE',
+    qs:[
+      { q:'Which citation style is this book entry?',
+        code:'Smith, J. A. (2019). The art of research: Methods and practice. Academic Press.',
+        choices:['APA (7th ed.)','MLA (9th ed.)','Chicago (17th ed.)','IEEE'],
+        ans:0, exp:'APA: Author initials, (Year) in parentheses right after the author, sentence-case title, and publisher. The year placement and initials are the signature giveaways.' },
+      { q:'Which citation style is this book entry?',
+        code:'Smith, John. The Art of Research: Methods and Practice. Academic Press, 2019.',
+        choices:['APA (7th ed.)','MLA (9th ed.)','Chicago (17th ed.)','IEEE'],
+        ans:1, exp:'MLA: full first name, title-case title, no publication city, year at the very end. MLA moved away from requiring city of publication in the 8th edition.' },
+      { q:'Which citation style is this book entry?',
+        code:'Smith, John. The Art of Research: Methods and Practice. New York: Academic Press, 2019.',
+        choices:['APA (7th ed.)','MLA (9th ed.)','Chicago (17th ed.)','IEEE'],
+        ans:2, exp:'Chicago bibliography: "City: Publisher, Year." The publication city before the publisher is Chicago\'s most recognizable feature (not used in MLA or APA).' },
+      { q:'Which citation style is this journal article entry?',
+        code:'J. A. Smith, "The art of research," J. Res. Methods, vol. 5, no. 2, pp. 10–25, Mar. 2019.',
+        choices:['APA (7th ed.)','MLA (9th ed.)','Chicago (17th ed.)','IEEE'],
+        ans:3, exp:'IEEE: initials before surname, lowercase article title in quotes, abbreviated journal name, "vol./no./pp." format, month + year at end.' },
+      { q:'Which citation style is this journal article entry?',
+        code:'Johnson, M. K., & Lee, S. (2021). Climate change impacts on polar ecosystems. Environmental Science Quarterly, 14(2), 45–62.',
+        choices:['APA (7th ed.)','MLA (9th ed.)','Chicago (17th ed.)','IEEE'],
+        ans:0, exp:'APA journal format: "&" for multiple authors, (Year) after authors, sentence-case title, journal in italics, Volume(Issue), pages — no "pp."' },
+      { q:'Which citation style is this journal article entry?',
+        code:'Johnson, Mary K., and Sarah Lee. "Climate Change Impacts on Polar Ecosystems." Environmental Science Quarterly, vol. 14, no. 2, 2021, pp. 45–62.',
+        choices:['APA (7th ed.)','MLA (9th ed.)','Chicago (17th ed.)','IEEE'],
+        ans:1, exp:'MLA: full names with "and," article title in quotes, "vol." and "no." spelled out, year near the end before "pp."' },
+      { q:'Which citation style is this journal article entry?',
+        code:'Johnson, Mary K., and Sarah Lee. "Climate Change Impacts on Polar Ecosystems." Environmental Science Quarterly 14, no. 2 (2021): 45–62.',
+        choices:['APA (7th ed.)','MLA (9th ed.)','Chicago (17th ed.)','IEEE'],
+        ans:2, exp:'Chicago journal format: Volume, no. Issue (Year): Pages — the year in parentheses after the issue number is the tell-tale Chicago pattern.' },
+      { q:'Which citation style includes a DOI link at the end?',
+        code:'García, E., & Patel, R. (2020). The digital divide in rural communities. Journal of Communication Studies, 22(4), 88–104. https://doi.org/10.xxxx/jcs.22.4',
+        choices:['APA (7th ed.)','MLA (9th ed.)','Chicago (17th ed.)','IEEE'],
+        ans:0, exp:'APA 7th edition requires a DOI hyperlink at the end when available. The "&" and "(Year)" are also APA markers.' },
+      { q:'Which citation style is this book entry?',
+        code:'López, Carlos. A History of Modern Art. Chicago: University of Chicago Press, 2015.',
+        choices:['APA (7th ed.)','MLA (9th ed.)','Chicago (17th ed.)','IEEE'],
+        ans:2, exp:'Chicago bibliography: full name, title in title case, then "City: Publisher, Year." The city placement before the publisher is Chicago\'s signature.' },
+      { q:'Which citation style is this book entry?',
+        code:'López, Carlos. A History of Modern Art. University of Chicago Press, 2015.',
+        choices:['APA (7th ed.)','MLA (9th ed.)','Chicago (17th ed.)','IEEE'],
+        ans:1, exp:'MLA: full name, title in title case, publisher without city (no city needed in MLA 8th/9th ed.), year at end.' },
+      { q:'Which citation style is this — and what gives it away?',
+        code:'Brown, A. R. (2018). Mindfulness and stress reduction (3rd ed.). Wellness Institute Press.',
+        choices:['APA (7th ed.)','MLA (9th ed.)','Chicago (17th ed.)','IEEE'],
+        ans:0, exp:'APA: "(Year)" after author initials, edition noted as "(3rd ed.)" in parentheses after the title, no city, publisher at end.' },
+      { q:'Which citation style is this edited volume entry?',
+        code:'Brown, Angela R. Mindfulness and Stress Reduction. 3rd ed., Wellness Institute Press, 2018.',
+        choices:['APA (7th ed.)','MLA (9th ed.)','Chicago (17th ed.)','IEEE'],
+        ans:1, exp:'MLA: full first name, title in title case, edition listed as "3rd ed." followed by a comma, publisher, and year at end.' },
+      { q:'Which citation style is this conference paper entry?',
+        code:'T. Williams and C. Nguyen, "Deep learning for image classification," in Proc. IEEE Conf. Comput. Vision, Seattle, WA, 2022, pp. 1122–1130.',
+        choices:['APA (7th ed.)','MLA (9th ed.)','Chicago (17th ed.)','IEEE'],
+        ans:3, exp:'IEEE conference paper format: initials + surname, title in quotes, "in Proc." abbreviation, abbreviated conference name, city, year, pages.' },
+      { q:'Which citation style is this website entry?',
+        code:'National Institutes of Health. (2023, April 5). How clinical trials work. U.S. Department of Health and Human Services. https://www.nih.gov/health-information/nih-clinical-research-trials-you/how-clinical-trials-work',
+        choices:['APA (7th ed.)','MLA (9th ed.)','Chicago (17th ed.)','IEEE'],
+        ans:0, exp:'APA website: Organization. (Year, Month Day). Title in sentence case. Site Name. URL. The date in parentheses after the organization is the APA tell.' },
+      { q:'Which citation style is this — note the author-date format in parentheses?',
+        code:'Johnson, Sarah. "Rethinking Urban Green Space." City Planning Journal 8, no. 3 (2019): 201–218.',
+        choices:['APA (7th ed.)','MLA (9th ed.)','Chicago (17th ed.)','IEEE'],
+        ans:2, exp:'Chicago Author-Date journal style: Volume, no. Issue (Year): Pages. This is distinct from APA\'s Volume(Issue), pages format and MLA\'s vol./no. notation.' }
+    ]
+  },
+
+  boolean: {
+    id:'boolean', icon:'🔎',
+    title:'Boolean Blitz',
+    desc:'Choose the most effective database search strategy',
+    qs:[
+      { q:'You need articles about social media\'s effects on teenage mental health. Which search is most precise?',
+        choices:['"social media" mental health','social media OR mental health OR teenagers','"social media" AND "mental health" AND teenagers','NOT social media teenagers'],
+        ans:2, exp:'AND narrows results by requiring all terms to appear. This retrieves only articles addressing all three topics together. OR would return anything mentioning any of them — far too broad.' },
+      { q:'You want research on EITHER renewable energy OR nuclear power as climate solutions.',
+        choices:['"renewable energy" AND "nuclear power" AND climate','"renewable energy" OR "nuclear power" AND climate','"climate solutions" NOT "nuclear power"','renewable nuclear climate solution'],
+        ans:1, exp:'OR expands results to include either option. Note: AND has higher precedence than OR, so this reads as: ("renewable energy") OR ("nuclear power" AND climate) — adding parentheses like ("renewable energy" OR "nuclear power") AND climate would be even better.' },
+      { q:'You\'re researching vaccine safety but want to exclude results about flu vaccines.',
+        choices:['"vaccine safety" flu','"vaccine safety" AND flu','"vaccine safety" NOT flu','"vaccine safety" OR flu'],
+        ans:2, exp:'NOT (or AND NOT) excludes a term. "vaccine safety" NOT flu returns articles about vaccine safety that don\'t mention flu — exactly what you want.' },
+      { q:'You want results containing the exact phrase "global supply chain" — not just those words separately.',
+        choices:['global supply chain','global AND supply AND chain','"global supply chain"','global OR supply OR chain'],
+        ans:2, exp:'Quotation marks force a phrase search — the words must appear together in that exact order. Without quotes, a database might find the words scattered throughout an irrelevant article.' },
+      { q:'You need research on any type of music therapy (piano therapy, drum therapy, choral therapy, etc.).',
+        choices:['piano therapy AND drum therapy AND choral therapy','music* AND therapy','"music therapy" NOT instruments','music therapy'],
+        ans:1, exp:'The wildcard asterisk (*) truncates a word to capture all variations — music*, musical, musician, musicology. Combined with AND therapy, this efficiently catches all music therapy types.' },
+      { q:'Which search finds articles about climate change AND agriculture but NOT in developing countries?',
+        choices:['"climate change" AND agriculture','"climate change" AND agriculture AND "developing countries"','"climate change" AND agriculture NOT "developing countries"','climate OR agriculture NOT developing'],
+        ans:2, exp:'AND connects your required topics; NOT excludes the unwanted scope. This is a textbook use of combining Boolean operators.' },
+      { q:'What does the asterisk (*) do in the search term "educat*"?',
+        choices:['Finds only the exact word "educator"','Excludes the word "education"','Finds all words starting with "educat": educate, educated, education, educational, educator…','Requires "educat" to appear in the title field only'],
+        ans:2, exp:'The asterisk is a wildcard / truncation symbol. It replaces any number of characters at that position. "educat*" captures educate, educating, educated, education, educational, educator, etc.' },
+      { q:'How does most database software evaluate: cats AND dogs OR birds',
+        choices:['As (cats AND dogs) OR birds — articles with both cats+dogs, OR any bird article','As cats AND (dogs OR birds) — articles about cats, that also discuss dogs or birds','Returns an error — invalid syntax','As the literal phrase "cats AND dogs OR birds"'],
+        ans:0, exp:'Most search engines give AND higher precedence than OR (like multiplication before addition in math). So "cats AND dogs OR birds" = (cats AND dogs) OR birds. Use parentheses to override: cats AND (dogs OR birds).' },
+      { q:'You get 500,000+ results searching "artificial intelligence." What\'s the best next step?',
+        choices:['Switch to OR to broaden further','Add NOT to randomly exclude results','Add AND + a more specific concept to narrow down','Remove keywords to simplify'],
+        ans:2, exp:'When results are too broad, AND narrows. Add a specific concept: "artificial intelligence" AND "medical diagnosis" — now you\'re finding exactly your sub-topic.' },
+      { q:'What is the purpose of parentheses in: (anxiety OR stress) AND (teenagers OR adolescents)?',
+        choices:['To limit the search to title fields only','To group OR synonyms, then connect the groups with AND','To exclude the terms inside parentheses','Parentheses have no effect in databases'],
+        ans:1, exp:'Parentheses control evaluation order. The OR synonyms are resolved first, then the AND connects the groups. This finds articles about (anxiety or stress) in (teenagers or adolescents) — catching different vocabulary for the same concepts.' },
+      { q:'You\'re searching for "women" but also want results about "woman," "female," and "girls." Best approach?',
+        choices:['woman AND women AND female AND girls','wom* AND female AND girl*','woman OR women OR female OR girls','"woman" AND "female"'],
+        ans:2, exp:'OR is used for synonyms and equivalent terms. Using AND between synonyms would require all four words in the same article — that\'s far too restrictive. Use OR to cast a wider net across different vocabulary.' },
+      { q:'What is a subject heading search vs. a keyword search in a library database?',
+        choices:['They are identical — both search the same fields','Subject headings use controlled vocabulary assigned by catalogers; keywords search all text fields','Keywords are more precise than subject headings','Subject headings only work in Google Scholar'],
+        ans:1, exp:'Subject headings (e.g., MeSH in PubMed) use standardized terms catalogers assign to each article. They catch articles regardless of how the author phrased the topic. Keywords are broader but may miss articles using different terminology.' },
+      { q:'You want only articles published in the last five years. Best approach?',
+        choices:['Add "recent" as a keyword','Use the database\'s date limiter / filter to restrict the publication year range','Add AND 2020 AND 2021 AND 2022 AND 2023 AND 2024','Only search Google Scholar'],
+        ans:1, exp:'Every major database (JSTOR, PubMed, EBSCOhost, etc.) has a date limiter in the search filters. Using it is reliable and precise. Adding years as keywords is inconsistent — many articles don\'t contain their publication year in searchable text.' },
+      { q:'Which string correctly finds articles about "college students" and their "time management" OR "study habits"?',
+        choices:['"college students" AND "time management" OR "study habits"','"college students" AND ("time management" OR "study habits")','"college students" OR "time management" AND "study habits"','"college students" NOT "time management" OR "study habits"'],
+        ans:1, exp:'Parentheses group the OR synonyms first, then AND connects them to "college students." Without parentheses, option A is evaluated as ("college students" AND "time management") OR "study habits" — returning every article about study habits regardless of whether it involves college students.' },
+      { q:'You find a .com website selling supplements that cites its own products as sources. By evaluation criteria, this site likely fails which test?',
+        choices:['Currency — the information is too old','Authority — the author or organization lacks credible credentials','Accuracy — the information contains obvious errors','Purpose — the site exists to sell, not to inform objectively'],
+        ans:3, exp:'The CRAAP/SIFT test includes Purpose: why does this source exist? A site selling products that cites only itself has a clear commercial bias. Evaluating purpose (and potential conflicts of interest) is a core source-evaluation skill.' }
+    ]
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+//  APP STATE & PERSISTENCE
+// ═══════════════════════════════════════════════════════
+
+let appState = {
+  player: { xp: 0, level: 1, gamesPlayed: 0, gameScores: {} }
+};
+let currentGameId = null;
+let cg = null;  // current game session
+let timerInterval = null;
+let timeLeft = 20;
+let answered = false;
+
+function saveProgress() {
+  try { localStorage.setItem('stacks_v1', JSON.stringify(appState.player)); } catch(e){}
+}
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem('stacks_v1');
+    if (raw) appState.player = JSON.parse(raw);
+  } catch(e){}
+}
+function resetProgress() {
+  if (!confirm('Reset all progress? This cannot be undone.')) return;
+  localStorage.removeItem('stacks_v1');
+  appState.player = { xp:0, level:1, gamesPlayed:0, gameScores:{} };
+  renderHome();
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  if (id === 'home') renderHome();
+}
+
+function exitGame() {
+  if (!confirm('Exit? Current game progress will be lost.')) return;
+  clearInterval(timerInterval);
+  showScreen('home');
+}
+
+// ═══════════════════════════════════════════════════════
+//  HOME
+// ═══════════════════════════════════════════════════════
+
+function renderHome() {
+  const p = appState.player;
+  document.getElementById('s-level').textContent = p.level;
+  document.getElementById('s-xp').textContent    = p.xp;
+  document.getElementById('s-games').textContent = p.gamesPlayed || 0;
+
+  document.getElementById('game-grid').innerHTML = Object.values(GAMES).map(g => {
+    const sc    = p.gameScores[g.id];
+    const stars = sc ? sc.stars : 0;
+    const starH = [1,2,3].map(i => `<span class="${i<=stars?'':'e'}">${i<=stars?'★':'☆'}</span>`).join('');
+    const best  = sc && sc.bestScore > 0 ? `<div class="game-card-best">Best: ${sc.bestScore.toLocaleString()} pts</div>` : '';
+    return `<div class="game-card" onclick="startGame('${g.id}')" tabindex="0"
+                 onkeypress="if(event.key==='Enter')startGame('${g.id}')">
+              <span class="game-card-icon">${g.icon}</span>
+              <div class="game-card-title">${g.title}</div>
+              <div class="game-card-desc">${g.desc}</div>
+              <div class="game-card-stars">${starH}</div>
+              ${best}
+            </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  GAME ENGINE
+// ═══════════════════════════════════════════════════════
+
+function startGame(gameId) {
+  currentGameId = gameId;
+  const game = GAMES[gameId];
+  const shuffled = [...game.qs].sort(() => Math.random() - .5).slice(0, 10);
+  cg = { id: gameId, qs: shuffled, qi: 0, score: 0, streak: 0, log: [] };
+  showScreen('game');
+  document.getElementById('g-title').textContent = game.title;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = cg.qs[cg.qi];
+
+  // Header stats
+  document.getElementById('g-qnum').textContent  = cg.qi + 1;
+  document.getElementById('g-qtotal').textContent = cg.qs.length;
+  document.getElementById('g-score').textContent = cg.score.toLocaleString() + ' pts';
+  const strEl = document.getElementById('g-streak');
+  if (cg.streak >= 2) {
+    strEl.style.display = 'inline';
+    document.getElementById('g-scount').textContent = cg.streak;
+  } else { strEl.style.display = 'none'; }
+
+  // Progress
+  document.getElementById('g-progress').style.width = (cg.qi / cg.qs.length * 100) + '%';
+
+  // Question text
+  document.getElementById('q-label').textContent = `Question ${cg.qi+1} of ${cg.qs.length}`;
+  document.getElementById('q-text').textContent  = q.q;
+  const codeEl = document.getElementById('q-code');
+  if (q.code) { codeEl.textContent = q.code; codeEl.style.display = 'block'; }
+  else          { codeEl.style.display = 'none'; }
+
+  // Reset stamps, explanation, next btn
+  document.getElementById('s-ok').classList.remove('pop');
+  document.getElementById('s-bad').classList.remove('pop');
+  const expEl = document.getElementById('explanation');
+  expEl.classList.remove('show'); expEl.innerHTML = '';
+  const nxt = document.getElementById('next-btn');
+  nxt.classList.remove('show');
+
+  // Answer buttons
+  const letters = ['A','B','C','D'];
+  document.getElementById('ans-grid').innerHTML = q.choices.map((ch, i) => `
+    <button class="ans-btn" id="a${i}" onclick="selectAnswer(${i})">
+      <span class="ans-letter">${letters[i]}</span>${ch}
+    </button>`).join('');
+
+  answered = false;
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = 20;
+  updateTimer();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimer();
+    if (timeLeft <= 0) { clearInterval(timerInterval); if (!answered) selectAnswer(-1); }
+  }, 1000);
+}
+
+function updateTimer() {
+  const circ = document.getElementById('t-circle');
+  const numEl = document.getElementById('t-num');
+  const offset = 113.1 * (1 - timeLeft / 20);
+  circ.style.strokeDashoffset = offset;
+  numEl.textContent = timeLeft;
+  if (timeLeft <= 5)       { circ.style.stroke = 'var(--stamp-red)';  numEl.style.color = 'var(--stamp-red)'; }
+  else if (timeLeft <= 10) { circ.style.stroke = 'var(--brass)';       numEl.style.color = 'var(--brass)'; }
+  else                     { circ.style.stroke = 'var(--stamp-blue)';  numEl.style.color = 'var(--ink)'; }
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+
+  const q = cg.qs[cg.qi];
+  const hit = idx === q.ans;
+
+  // Disable all buttons + colour correct/wrong
+  document.querySelectorAll('.ans-btn').forEach((b, i) => {
+    b.disabled = true;
+    if (i === q.ans)  b.classList.add('correct');
+    else if (i === idx) b.classList.add('wrong');
+  });
+
+  // Stamp
+  if (hit) document.getElementById('s-ok').classList.add('pop');
+  else      document.getElementById('s-bad').classList.add('pop');
+
+  // Score
+  let pts = 0;
+  if (hit) {
+    const timePts  = Math.floor(timeLeft * 2.5);          // up to +50
+    const mult     = cg.streak >= 3 ? 1.5 : cg.streak >= 2 ? 1.25 : 1;
+    pts = Math.round((100 + timePts) * mult);
+    cg.score  += pts;
+    cg.streak++;
+    if (cg.streak >= 3) showToast(`🔥 ${cg.streak}× Streak!`);
+  } else { cg.streak = 0; }
+
+  cg.log.push({ hit, pts });
+  document.getElementById('g-score').textContent = cg.score.toLocaleString() + ' pts';
+
+  // Explanation
+  const expEl = document.getElementById('explanation');
+  expEl.innerHTML = `<strong>${hit ? '✓ Correct!' : (idx === -1 ? '⏱ Time\'s up!' : '✗ Not quite.')}</strong> ${q.exp}`;
+  expEl.classList.add('show');
+
+  // Next button
+  const nxt = document.getElementById('next-btn');
+  nxt.textContent = cg.qi < cg.qs.length - 1 ? 'Continue →' : 'See Results →';
+  nxt.classList.add('show');
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'streak-toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+function nextQuestion() {
+  cg.qi++;
+  if (cg.qi >= cg.qs.length) endGame();
+  else renderQuestion();
+}
+
+function endGame() {
+  clearInterval(timerInterval);
+  const correct = cg.log.filter(l => l.hit).length;
+
+  // Stars: based on % correct (not score, so bonus/streak don't inflate stars)
+  const pct = correct / cg.qs.length;
+  const stars = pct >= .9 ? 3 : pct >= .6 ? 2 : pct >= .3 ? 1 : 0;
+
+  // XP
+  const xp = Math.round(cg.score * .1) + stars * 25 + correct * 5;
+  const p  = appState.player;
+  p.xp += xp;
+  p.gamesPlayed = (p.gamesPlayed || 0) + 1;
+  p.level = Math.floor(p.xp / 200) + 1;
+  const prev = p.gameScores[cg.id] || { bestScore:0, stars:0, attempts:0 };
+  p.gameScores[cg.id] = {
+    bestScore: Math.max(prev.bestScore, cg.score),
+    stars:     Math.max(prev.stars,     stars),
+    attempts:  prev.attempts + 1
+  };
+  saveProgress();
+
+  // Render results screen
+  const titles = ['Keep Practicing!','Good Effort!','Well Done!','Outstanding!'];
+  document.getElementById('r-title').textContent = titles[stars];
+  document.getElementById('r-game').textContent  = GAMES[cg.id].title;
+  document.getElementById('r-score').textContent = cg.score.toLocaleString() + ' pts';
+  document.getElementById('r-xp').textContent    = `+${xp} XP`;
+
+  document.getElementById('r-stars').innerHTML =
+    [1,2,3].map(i=>`<span class="${i<=stars?'s':'es'}">${i<=stars?'★':'☆'}</span>`).join('');
+
+  document.getElementById('r-dots').innerHTML =
+    cg.log.map((l,i)=>`<div class="dot ${l.hit?'hit':'miss'}" title="Q${i+1}: ${l.hit?'✓':'✗'}">${l.hit?'✓':'✗'}</div>`).join('');
+
+  document.getElementById('r-summary').innerHTML =
+    `You answered <strong>${correct} of ${cg.qs.length}</strong> correctly for
+    <strong>${cg.score.toLocaleString()} points</strong>. You earned <strong>+${xp} XP</strong>
+    and are now <strong>Level ${p.level}</strong>
+    (${p.xp} total XP).`;
+
+  showScreen('results');
+}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+loadProgress();
+renderHome();
+showScreen('home');
+</script>
+</body>
+</html>

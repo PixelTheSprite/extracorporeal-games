@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grand Works — A Collector's Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper:      #F2E4C6;
+  --paper-mid:  #E8D5A8;
+  --paper-dark: #D9C390;
+  --ink:        #1C0E04;
+  --ink-faded:  #4A3520;
+  --ink-light:  #7A5E3C;
+  --sepia:      #8B6638;
+  --red:        #7A1E1E;
+  --gold:       #7A5C10;
+  --common:     #6B5238;
+  --uncommon:   #2E5438;
+  --rare:       #1A3260;
+  --superrare:  #6E1820;
+  --ultrarare:  #7A5A08;
+  --omegarare:  #3E1560;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background-color: var(--paper-mid);
+  background-image:
+    repeating-linear-gradient(0deg,   transparent, transparent 28px, rgba(28,14,4,.022) 28px, rgba(28,14,4,.022) 29px),
+    repeating-linear-gradient(90deg,  transparent, transparent 28px, rgba(28,14,4,.016) 28px, rgba(28,14,4,.016) 29px),
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(180,140,60,.10) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 80% 90%, rgba(100,60,20,.08)  0%, transparent 55%);
+  color: var(--ink);
+  font-family: 'IM Fell English', Georgia, serif;
+  min-height: 100vh;
+}
+
+/* ── HEADER ─────────────────────────────────────────────── */
+header {
+  text-align: center;
+  padding: 1.5rem 1rem 1.1rem;
+  border-top: 5px double var(--ink);
+  border-bottom: 5px double var(--ink);
+  background: linear-gradient(180deg, rgba(242,228,198,.95) 0%, rgba(232,213,168,.95) 100%);
+}
+.masthead-rule {
+  display: flex; align-items: center; justify-content: center;
+  gap: .75rem;
+  font-size: .72rem; letter-spacing: .35em; color: var(--ink-light);
+  text-transform: uppercase; margin-bottom: .35rem;
+}
+.masthead-rule::before,.masthead-rule::after {
+  content:''; flex:1; max-width:100px; height:1px; background:var(--ink-light);
+}
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 5.5vw, 3.4rem);
+  font-weight: 900; color: var(--ink);
+  letter-spacing: .06em; line-height: 1; text-transform: uppercase;
+}
+.masthead-sub {
+  font-family: 'IM Fell English', serif; font-style: italic;
+  font-size: .85rem; color: var(--ink-faded); margin-top: .3rem; letter-spacing: .1em;
+}
+.masthead-ornament {
+  color: var(--sepia); font-size: .9rem; letter-spacing: .7em;
+  display: block; margin-top: .4rem; opacity: .6;
+}
+
+/* ── TABS ─────────────────────────────────────────────────── */
+.tabs {
+  display: flex; justify-content: center; padding: 1rem 1rem 0;
+}
+.tab {
+  font-family: 'Playfair Display', serif; font-size: .78rem; font-weight: 700;
+  letter-spacing: .14em; padding: .5rem 2rem;
+  border: 1px solid var(--ink-faded);
+  background: var(--paper-mid); color: var(--ink-light);
+  cursor: pointer; transition: all .2s; text-transform: uppercase;
+}
+.tab:first-child { border-radius: 2px 0 0 2px; }
+.tab:last-child  { border-radius: 0 2px 2px 0; border-left: none; }
+.tab.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.tab:not(.active):hover { background: var(--paper-dark); color: var(--ink); }
+
+/* ── STATS ───────────────────────────────────────────────── */
+.stats-bar {
+  display: flex; justify-content: center; gap: 3rem;
+  padding: .85rem 1rem; font-size: .78rem; color: var(--ink-light);
+  flex-wrap: wrap; border-bottom: 1px solid var(--paper-dark); font-style: italic;
+}
+.stat { display: flex; flex-direction: column; align-items: center; gap: .1rem; }
+.stat-value {
+  font-family: 'Playfair Display', serif; font-weight: 700; font-style: normal;
+  color: var(--ink); font-size: 1.1rem;
+}
+
+.view { display: none; padding: 1rem; max-width: 1320px; margin: 0 auto; }
+.view.active { display: block; }
+
+/* ── LEGEND & FILTERS ────────────────────────────────────── */
+.legend {
+  display: flex; gap: .6rem; flex-wrap: wrap; justify-content: center;
+  padding: .6rem 1rem; border: 1px solid var(--paper-dark); border-radius: 2px;
+  margin-bottom: .9rem; background: rgba(242,228,198,.5);
+}
+.leg-item { display: flex; align-items: center; gap: .35rem; font-size: .7rem; color: var(--ink-faded); }
+.leg-swatch { width:10px; height:10px; border-radius:1px; border:1px solid rgba(28,14,4,.25); transform:rotate(45deg); flex-shrink:0; }
+
+.collection-controls { display: flex; gap: .45rem; flex-wrap: wrap; margin-bottom: 1rem; align-items: center; }
+.filter-btn {
+  font-family: 'Playfair Display', serif; font-size: .65rem; font-weight: 700;
+  padding: .22rem .65rem; border-radius: 1px; border: 1px solid currentColor;
+  background: transparent; cursor: pointer; transition: all .15s;
+  letter-spacing: .08em; text-transform: uppercase; opacity: .5;
+}
+.filter-btn.active,.filter-btn:hover { opacity:1; background:rgba(28,14,4,.08); }
+.filter-btn.f-all { color:var(--ink-faded); border-color:var(--ink-faded); }
+.filter-btn.f-C   { color:var(--common); }
+.filter-btn.f-U   { color:var(--uncommon); }
+.filter-btn.f-R   { color:var(--rare); }
+.filter-btn.f-SR  { color:var(--superrare); }
+.filter-btn.f-UR  { color:var(--ultrarare); }
+.filter-btn.f-OR  { color:var(--omegarare); }
+
+/* ── CARD GRID ───────────────────────────────────────────── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: .7rem;
+}
+.card-wrap { position: relative; aspect-ratio: 5/7; }
+
+.c-card {
+  width:100%; height:100%; border-radius:2px;
+  border: 2px solid var(--bc);
+  outline: 1px solid rgba(28,14,4,.3); outline-offset: 1px;
+  overflow:hidden; cursor:pointer;
+  transition: transform .2s, box-shadow .2s, filter .2s;
+  position:relative; background:var(--paper);
+  display:flex; flex-direction:column;
+}
+.c-card:not(.unowned):hover {
+  transform: translateY(-5px) scale(1.08) rotate(-.5deg);
+  box-shadow: 4px 8px 24px rgba(28,14,4,.45), 0 0 0 2px var(--bc);
+  z-index: 5;
+}
+.c-card.unowned { filter: sepia(1) brightness(.42) contrast(.9); cursor:default; }
+.c-card .art { flex:1; display:block; width:100%; }
+.c-card .foot {
+  padding: .2rem .3rem .22rem; background:var(--paper);
+  border-top:1px solid rgba(28,14,4,.2); flex-shrink:0; text-align:center;
+}
+.c-card .cname {
+  font-family:'Playfair Display',serif; font-size:.43rem; font-weight:700;
+  color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.2;
+}
+.c-card .csource {
+  font-size:.37rem; color:var(--ink-light); font-style:italic;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.2;
+}
+.c-card .num { font-family:'Playfair Display',serif; font-size:.36rem; color:var(--ink-light); margin-top:.1rem; }
+.c-card .pips { display:flex; gap:1.5px; margin-top:1.5px; flex-wrap:wrap; justify-content:center; }
+
+/* Pip = rotated square (diamond) */
+.pip { width:5px; height:5px; background:var(--bc); transform:rotate(45deg); opacity:.8; flex-shrink:0; display:inline-block; }
+
+.count-badge {
+  position:absolute; top:3px; right:3px;
+  background:var(--ink); color:var(--paper);
+  font-family:'Playfair Display',serif; font-size:.55rem; font-weight:700;
+  min-width:16px; height:16px; border-radius:1px;
+  display:flex; align-items:center; justify-content:center; padding:0 2px;
+  box-shadow:1px 1px 4px rgba(0,0,0,.4);
+}
+
+/* ── ACQUIRE ─────────────────────────────────────────────── */
+.acquire-wrap { max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:1.5rem; }
+.panel {
+  background:linear-gradient(180deg,var(--paper) 0%,var(--paper-mid) 100%);
+  border:1px solid var(--ink-faded); border-radius:2px;
+  padding:1.6rem 1.75rem; position:relative;
+  box-shadow:inset 0 0 40px rgba(28,14,4,.04), 2px 3px 12px rgba(28,14,4,.1);
+}
+.panel::before {
+  content:''; position:absolute; inset:5px;
+  border:1px solid rgba(28,14,4,.16); pointer-events:none;
+}
+.panel-header { display:flex; align-items:baseline; gap:.6rem; margin-bottom:.35rem; }
+.panel-ornament { color:var(--sepia); font-size:1.1rem; }
+.panel-title {
+  font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:900;
+  color:var(--ink); letter-spacing:.06em; text-transform:uppercase;
+}
+.panel-desc { color:var(--ink-faded); font-style:italic; font-size:.9rem; line-height:1.6; margin-bottom:1.15rem; padding-left:1.7rem; }
+
+.btn {
+  font-family:'Playfair Display',serif; font-size:.72rem; font-weight:700;
+  letter-spacing:.14em; text-transform:uppercase; padding:.65rem 1.75rem;
+  border:none; border-radius:2px; cursor:pointer; transition:all .18s;
+}
+.btn-ink {
+  background:var(--ink); color:var(--paper);
+  box-shadow:2px 2px 0 var(--ink-faded);
+}
+.btn-ink:hover:not(:disabled) { background:var(--ink-faded); transform:translateY(-1px); box-shadow:3px 4px 0 var(--ink-faded); }
+.btn-ink:active:not(:disabled) { transform:translateY(1px); box-shadow:1px 1px 0 var(--ink-faded); }
+.btn-ink:disabled { opacity:.3; cursor:not-allowed; }
+.btn-outline {
+  background:transparent; border:1px solid var(--ink-faded);
+  color:var(--ink-faded); box-shadow:2px 2px 0 var(--paper-dark);
+}
+.btn-outline:hover:not(:disabled) { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+.btn-outline:disabled { opacity:.3; cursor:not-allowed; }
+
+/* Pack reveal */
+.pack-reveal {
+  display:flex; gap:.9rem; flex-wrap:wrap; justify-content:center;
+  margin-top:1.5rem; min-height:165px; align-items:flex-end;
+}
+.r-card {
+  width:92px; aspect-ratio:5/7; border-radius:2px;
+  border:2px solid var(--bc); outline:1px solid rgba(28,14,4,.28); outline-offset:1px;
+  overflow:hidden; position:relative; display:flex; flex-direction:column;
+  background:var(--paper); box-shadow:3px 4px 12px rgba(28,14,4,.4);
+  animation:cardFlip .55s ease-out both;
+}
+@keyframes cardFlip {
+  from { transform:rotateY(90deg) translateY(8px); opacity:0; }
+  to   { transform:rotateY(0deg) translateY(0);    opacity:1; }
+}
+.r-card .art  { flex:1; display:block; }
+.r-card .foot { padding:.25rem .35rem; background:var(--paper); border-top:1px solid rgba(28,14,4,.2); flex-shrink:0; text-align:center; }
+.r-card .card-name   { font-family:'Playfair Display',serif; font-size:.5rem; font-weight:700; color:var(--ink); line-height:1.2; }
+.r-card .card-source { font-size:.41rem; color:var(--ink-light); font-style:italic; line-height:1.2; }
+.r-card .card-rar    { font-family:'Playfair Display',serif; font-size:.42rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin-top:.1rem; }
+.r-card .pips        { display:flex; gap:2px; justify-content:center; margin-top:2px; }
+.r-card .pip         { width:4px; height:4px; }
+
+.new-badge {
+  position:absolute; top:4px; left:4px; background:var(--red); color:var(--paper);
+  font-family:'Playfair Display',serif; font-size:.48rem; font-weight:700;
+  letter-spacing:.04em; padding:1px 4px; border-radius:1px;
+}
+
+/* Trade grid */
+.trade-select-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr));
+  gap:.5rem; max-height:295px; overflow-y:auto; padding:.6rem;
+  background:rgba(28,14,4,.05); border:1px solid var(--paper-dark); border-radius:2px;
+  margin-bottom:1rem; scrollbar-width:thin; scrollbar-color:var(--ink-faded) var(--paper);
+}
+.t-card {
+  aspect-ratio:5/7; border-radius:2px; border:2px solid var(--bc);
+  outline:1px solid rgba(28,14,4,.22); outline-offset:1px;
+  overflow:hidden; cursor:pointer; position:relative; transition:all .15s;
+  background:var(--paper); display:flex; flex-direction:column;
+}
+.t-card .art  { flex:1; }
+.t-card .foot { padding:.18rem .25rem; background:var(--paper); border-top:1px solid rgba(28,14,4,.18); flex-shrink:0; text-align:center; }
+.t-card .pips { display:flex; gap:1.5px; justify-content:center; }
+.t-card .pip  { width:4px; height:4px; }
+.t-card.selected { outline:2px solid var(--ink); outline-offset:2px; transform:scale(1.06); box-shadow:3px 3px 0 var(--ink); }
+.t-sel-badge {
+  position:absolute; top:3px; right:3px; background:var(--ink); color:var(--paper);
+  font-family:'Playfair Display',serif; font-size:.52rem; font-weight:700;
+  min-width:15px; height:15px; border-radius:1px;
+  display:flex; align-items:center; justify-content:center; padding:0 2px;
+}
+.t-count {
+  position:absolute; top:3px; left:3px; background:rgba(28,14,4,.72); color:var(--paper);
+  font-family:'Playfair Display',serif; font-size:.48rem; padding:1px 3px; border-radius:1px;
+}
+.trade-controls { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+.sel-info { font-family:'Playfair Display',serif; font-size:.88rem; font-weight:700; color:var(--ink-faded); flex:1; }
+.trade-result-panel { display:flex; gap:1.5rem; align-items:center; margin-top:1.25rem; flex-wrap:wrap; padding-top:1rem; border-top:1px dashed var(--paper-dark); }
+
+/* ── MODAL ───────────────────────────────────────────────── */
+.modal-bg {
+  display:none; position:fixed; inset:0;
+  background:rgba(28,14,4,.82); z-index:100;
+  align-items:center; justify-content:center;
+  backdrop-filter:blur(3px) sepia(.3);
+}
+.modal-bg.open { display:flex; }
+.modal-inner { display:flex; gap:1.75rem; align-items:flex-start; flex-wrap:wrap; justify-content:center; padding:1rem; }
+.m-card {
+  width:210px; aspect-ratio:5/7; border-radius:3px;
+  border:3px solid var(--bc); outline:1px solid rgba(28,14,4,.4); outline-offset:2px;
+  overflow:hidden; box-shadow:6px 8px 30px rgba(28,14,4,.7);
+  display:flex; flex-direction:column; background:var(--paper);
+  animation:popIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn { from{transform:scale(.7) rotate(-2deg);opacity:0} to{transform:scale(1) rotate(0);opacity:1} }
+.m-card .art  { flex:1; display:block; }
+.m-card .foot { padding:.45rem .65rem .5rem; background:var(--paper); border-top:1px solid rgba(28,14,4,.2); flex-shrink:0; text-align:center; }
+.m-card .card-name   { font-family:'Playfair Display',serif; font-size:.82rem; font-weight:900; color:var(--ink); line-height:1.2; }
+.m-card .card-source { font-size:.68rem; font-style:italic; color:var(--ink-faded); margin:.15rem 0; line-height:1.3; }
+.m-card .card-rar    { font-family:'Playfair Display',serif; font-size:.62rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+.m-card .card-num    { font-size:.58rem; color:var(--ink-light); font-style:italic; margin-top:.1rem; }
+.m-card .pips        { display:flex; gap:3px; justify-content:center; margin:.25rem 0; }
+.m-card .pip         { width:8px; height:8px; }
+.modal-info {
+  background:var(--paper); border:1px solid var(--ink-faded); border-radius:2px;
+  padding:1.35rem 1.5rem; min-width:175px; max-width:210px;
+  box-shadow:3px 4px 16px rgba(28,14,4,.35); position:relative;
+}
+.modal-info::before { content:''; position:absolute; inset:5px; border:1px solid rgba(28,14,4,.12); pointer-events:none; }
+.modal-info h3 {
+  font-family:'Playfair Display',serif; font-size:.95rem; font-weight:900;
+  color:var(--ink); margin-bottom:.7rem; padding-bottom:.5rem; border-bottom:1px solid var(--paper-dark);
+}
+.modal-info .mi-row { font-size:.82rem; color:var(--ink-light); font-style:italic; margin:.3rem 0; display:flex; justify-content:space-between; gap:.5rem; }
+.modal-info .mi-val { font-style:normal; font-weight:normal; color:var(--ink); }
+.modal-info .mi-copies { font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; color:var(--ink); text-align:center; margin-top:.65rem; border-top:1px solid var(--paper-dark); padding-top:.5rem; line-height:1; }
+.modal-info .mi-copies-label { font-style:italic; font-size:.75rem; color:var(--ink-light); text-align:center; display:block; margin-top:.2rem; }
+.modal-close {
+  position:fixed; top:1rem; right:1rem; background:var(--paper);
+  border:1px solid var(--ink-faded); color:var(--ink-faded);
+  font-family:'Playfair Display',serif; font-size:1rem;
+  width:34px; height:34px; border-radius:2px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:all .15s;
+}
+.modal-close:hover { background:var(--ink); color:var(--paper); }
+
+/* ── TOAST ───────────────────────────────────────────────── */
+.toast {
+  position:fixed; top:1rem; left:50%;
+  transform:translateX(-50%) translateY(-80px);
+  background:var(--ink); border:1px solid var(--ink-faded); border-radius:2px;
+  padding:.6rem 1.5rem; font-family:'Playfair Display',serif; font-size:.78rem;
+  font-weight:700; color:var(--paper); z-index:300;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:3px 4px 16px rgba(28,14,4,.5);
+  white-space:nowrap; pointer-events:none; text-align:center; letter-spacing:.05em;
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+/* ── OMEGA SHIMMER ───────────────────────────────────────── */
+@keyframes omegaShimmer {
+  0%,100% { box-shadow:3px 4px 16px rgba(28,14,4,.4), 0 0 0 2px var(--bc); }
+  50%     { box-shadow:3px 4px 24px rgba(28,14,4,.5), 0 0 8px 3px var(--bc); }
+}
+.omega-shimmer { animation:omegaShimmer 2.5s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="masthead-rule">Est. MDCCCLXXXVII &nbsp;✦&nbsp; First Edition</div>
+  <h1>Grand Works</h1>
+  <div class="masthead-sub">A Collector's Edition of Literature's Immortal Figures</div>
+  <span class="masthead-ornament">— ✦ ✦ ✦ —</span>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('collection')">Collection</button>
+  <button class="tab"        onclick="switchTab('acquire')">Acquire</button>
+</div>
+
+<div class="stats-bar">
+  <div class="stat"><span class="stat-value" id="stat-owned">0</span><span>Copies Owned</span></div>
+  <div class="stat"><span class="stat-value" id="stat-unique">0 / 90</span><span>Unique Figures</span></div>
+  <div class="stat"><span class="stat-value" id="stat-packs">0</span><span>Packets Opened</span></div>
+</div>
+
+<!-- COLLECTION VIEW -->
+<div class="view active" id="view-collection">
+  <div class="legend">
+    <div class="leg-item"><div class="leg-swatch" style="background:var(--common)"></div>Common ×45</div>
+    <div class="leg-item"><div class="leg-swatch" style="background:var(--uncommon)"></div>Uncommon ×20</div>
+    <div class="leg-item"><div class="leg-swatch" style="background:var(--rare)"></div>Rare ×12</div>
+    <div class="leg-item"><div class="leg-swatch" style="background:var(--superrare)"></div>Super Rare ×7</div>
+    <div class="leg-item"><div class="leg-swatch" style="background:var(--ultrarare)"></div>Ultra Rare ×4</div>
+    <div class="leg-item"><div class="leg-swatch" style="background:var(--omegarare)"></div>Omega Rare ×2</div>
+  </div>
+  <div class="collection-controls">
+    <button class="filter-btn f-all active" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn f-C"          onclick="setFilter('C',this)">Common</button>
+    <button class="filter-btn f-U"          onclick="setFilter('U',this)">Uncommon</button>
+    <button class="filter-btn f-R"          onclick="setFilter('R',this)">Rare</button>
+    <button class="filter-btn f-SR"         onclick="setFilter('SR',this)">Super Rare</button>
+    <button class="filter-btn f-UR"         onclick="setFilter('UR',this)">Ultra Rare</button>
+    <button class="filter-btn f-OR"         onclick="setFilter('OR',this)">Omega Rare</button>
+    <button class="filter-btn f-all" style="margin-left:auto" onclick="setFilter('owned',this)">Owned Only</button>
+  </div>
+  <div class="card-grid" id="cardGrid"></div>
+</div>
+
+<!-- ACQUIRE VIEW -->
+<div class="view" id="view-acquire">
+  <div class="acquire-wrap">
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-ornament">✦</span>
+        <div class="panel-title">Open a Packet</div>
+      </div>
+      <div class="panel-desc">Each sealed packet contains five figures drawn at random from the complete set. Common figures appear most frequently, though fortune may yet deliver something extraordinary.</div>
+      <button class="btn btn-ink" id="packBtn" onclick="openPack()">Open Packet</button>
+      <div class="pack-reveal" id="packReveal"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-ornament">✦</span>
+        <div class="panel-title">Trade Up</div>
+      </div>
+      <div class="panel-desc">Select exactly five cards from your collection to exchange — click a card repeatedly to include multiple copies of that figure. You will receive one figure of the next rarity above your rarest selection.</div>
+      <div class="trade-select-grid" id="tradeGrid"></div>
+      <div class="trade-controls">
+        <div class="sel-info" id="selInfo">0 / 5 selected</div>
+        <button class="btn btn-outline" id="tradeBtn" onclick="doTrade()" disabled>Exchange</button>
+      </div>
+      <div class="trade-result-panel" id="tradeResult"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal" onclick="closeModal(event)">
+  <div class="modal-inner" id="modalInner"></div>
+  <button class="modal-close" onclick="closeModal()">✕</button>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── RARITIES ─────────────────────────────────────────────────
+const RARITIES = [
+  { id:'C',  label:'Common',     color:'#6B5238', count:45, weight:65  },
+  { id:'U',  label:'Uncommon',   color:'#2E5438', count:20, weight:22  },
+  { id:'R',  label:'Rare',       color:'#1A3260', count:12, weight:9   },
+  { id:'SR', label:'Super Rare', color:'#6E1820', count:7,  weight:2.5 },
+  { id:'UR', label:'Ultra Rare', color:'#7A5A08', count:4,  weight:.9  },
+  { id:'OR', label:'Omega Rare', color:'#3E1560', count:2,  weight:.1  },
+];
+const RARITY_ORDER = RARITIES.map(r => r.id);
+
+// ─── 90 PUBLIC DOMAIN SUBJECTS ────────────────────────────────
+const SUBJECTS = [
+  // Common (45) — beloved characters from classic literature
+  { name:'Tom Sawyer',              source:'The Adventures of Tom Sawyer' },
+  { name:'Huckleberry Finn',        source:'Adventures of Huckleberry Finn' },
+  { name:'Becky Thatcher',          source:'The Adventures of Tom Sawyer' },
+  { name:'Aunt Polly',              source:'The Adventures of Tom Sawyer' },
+  { name:'Injun Joe',               source:'The Adventures of Tom Sawyer' },
+  { name:'Ichabod Crane',           source:'The Legend of Sleepy Hollow' },
+  { name:'Brom Bones',              source:'The Legend of Sleepy Hollow' },
+  { name:'Rip Van Winkle',          source:'Rip Van Winkle' },
+  { name:'Ebenezer Scrooge',        source:'A Christmas Carol' },
+  { name:'Tiny Tim',                source:'A Christmas Carol' },
+  { name:'Ghost of Christmas Past', source:'A Christmas Carol' },
+  { name:'The Mad Hatter',          source:"Alice's Adventures in Wonderland" },
+  { name:'The Red Queen',           source:"Alice's Adventures in Wonderland" },
+  { name:'The Cheshire Cat',        source:"Alice's Adventures in Wonderland" },
+  { name:'The White Rabbit',        source:"Alice's Adventures in Wonderland" },
+  { name:'Oliver Twist',            source:'Oliver Twist' },
+  { name:'The Artful Dodger',       source:'Oliver Twist' },
+  { name:'Fagin',                   source:'Oliver Twist' },
+  { name:'Jo March',                source:'Little Women' },
+  { name:'Meg March',               source:'Little Women' },
+  { name:'Amy March',               source:'Little Women' },
+  { name:'Beth March',              source:'Little Women' },
+  { name:'Pollyanna Whittier',      source:'Pollyanna' },
+  { name:'Anne Shirley',            source:'Anne of Green Gables' },
+  { name:'Gilbert Blythe',          source:'Anne of Green Gables' },
+  { name:'Don Quixote',             source:'Don Quixote' },
+  { name:'Sancho Panza',            source:'Don Quixote' },
+  { name:'Robinson Crusoe',         source:'Robinson Crusoe' },
+  { name:'Friday',                  source:'Robinson Crusoe' },
+  { name:'Lemuel Gulliver',         source:"Gulliver's Travels" },
+  { name:'Mowgli',                  source:'The Jungle Book' },
+  { name:'Baloo',                   source:'The Jungle Book' },
+  { name:'Shere Khan',              source:'The Jungle Book' },
+  { name:'Captain Hook',            source:'Peter Pan' },
+  { name:'Tinker Bell',             source:'Peter Pan' },
+  { name:'Jim Hawkins',             source:'Treasure Island' },
+  { name:'Long John Silver',        source:'Treasure Island' },
+  { name:'Natasha Rostova',         source:'War and Peace' },
+  { name:'Prince Andrei',           source:'War and Peace' },
+  { name:'Athos',                   source:'The Three Musketeers' },
+  { name:'Porthos',                 source:'The Three Musketeers' },
+  { name:'Aramis',                  source:'The Three Musketeers' },
+  { name:"d'Artagnan",              source:'The Three Musketeers' },
+  { name:'Jean Valjean',            source:'Les Misérables' },
+  { name:'Cosette',                 source:'Les Misérables' },
+  // Uncommon (20) — more celebrated figures
+  { name:'Sherlock Holmes',         source:'The Adventures of Sherlock Holmes' },
+  { name:'Dr. John Watson',         source:'The Adventures of Sherlock Holmes' },
+  { name:'Professor Moriarty',      source:'The Final Problem' },
+  { name:'Count Dracula',           source:'Dracula' },
+  { name:'Professor Van Helsing',   source:'Dracula' },
+  { name:"Frankenstein's Monster",  source:'Frankenstein' },
+  { name:'Victor Frankenstein',     source:'Frankenstein' },
+  { name:'Dr. Henry Jekyll',        source:'Strange Case of Dr Jekyll and Mr Hyde' },
+  { name:'Captain Nemo',            source:'Twenty Thousand Leagues Under the Sea' },
+  { name:'Phileas Fogg',            source:'Around the World in Eighty Days' },
+  { name:'Dorian Gray',             source:'The Picture of Dorian Gray' },
+  { name:'Elizabeth Bennet',        source:'Pride and Prejudice' },
+  { name:'Mr. Fitzwilliam Darcy',   source:'Pride and Prejudice' },
+  { name:'Jane Eyre',               source:'Jane Eyre' },
+  { name:'Heathcliff',              source:'Wuthering Heights' },
+  { name:'Cyrano de Bergerac',      source:'Cyrano de Bergerac' },
+  { name:'Quasimodo',               source:'The Hunchback of Notre-Dame' },
+  { name:'Edmond Dantès',           source:'The Count of Monte Cristo' },
+  { name:'Captain Ahab',            source:'Moby-Dick' },
+  { name:'Rodion Raskolnikov',      source:'Crime and Punishment' },
+  // Rare (12) — Shakespeare and the ancient world
+  { name:'Hamlet, Prince of Denmark', source:'Hamlet' },
+  { name:'Ophelia',                 source:'Hamlet' },
+  { name:'Iago',                    source:'Othello' },
+  { name:'Lady Macbeth',            source:'Macbeth' },
+  { name:'King Lear',               source:'King Lear' },
+  { name:'Prospero',                source:'The Tempest' },
+  { name:'Sir John Falstaff',       source:'Henry IV' },
+  { name:'Odysseus',                source:'The Odyssey' },
+  { name:'Achilles',                source:'The Iliad' },
+  { name:'Penelope',                source:'The Odyssey' },
+  { name:'Antigone',                source:'Antigone' },
+  { name:'Medea',                   source:'Medea' },
+  // Super Rare (7) — legendary and mythic
+  { name:'Faust',                   source:'Faust, Part One' },
+  { name:'Don Giovanni',            source:'Don Giovanni (Da Ponte)' },
+  { name:'Scheherazade',            source:'One Thousand and One Nights' },
+  { name:'Sinbad the Sailor',       source:'One Thousand and One Nights' },
+  { name:'Dante Alighieri',         source:'The Divine Comedy' },
+  { name:'Beatrice Portinari',      source:'La Vita Nuova' },
+  { name:'The Knight',              source:'The Canterbury Tales' },
+  // Ultra Rare (4) — Arthurian legend
+  { name:'King Arthur',             source:"Le Morte d'Arthur" },
+  { name:'Queen Guinevere',         source:"Le Morte d'Arthur" },
+  { name:'Sir Lancelot du Lac',     source:"Le Morte d'Arthur" },
+  { name:'Merlin the Wizard',       source:"Le Morte d'Arthur" },
+  // Omega Rare (2)
+  { name:'The Lady of Shalott',     source:'Idylls of the King' },
+  { name:'Excalibur',               source:"Le Morte d'Arthur" },
+];
+
+// Build the 90-card catalog
+const CARDS = [];
+let si = 0;
+for (const r of RARITIES) {
+  for (let i = 0; i < r.count; i++, si++) {
+    const id   = si + 1;
+    const pips = ((id * 7 + i * 3) % 6) + 1;
+    CARDS.push({ id, pips, rarity:r.id, rarityLabel:r.label, borderColor:r.color, name:SUBJECTS[si].name, source:SUBJECTS[si].source });
+  }
+}
+
+// ─── PORTRAIT SVG GENERATOR ───────────────────────────────────
+// Victorian portrait engraving style — oval frame, hatching, portrait silhouette.
+function cardSVG(card) {
+  const id  = card.id;
+  const ink = '#1C0E04', paper = '#F5E8C5';
+  const rc  = card.borderColor;
+  const ri  = RARITY_ORDER.indexOf(card.rarity);
+
+  // Per-card variation parameters
+  const skinL  = 68 + (id % 5) * 3;
+  const hairL  = 14 + (id % 6) * 9;
+  const hairH  = 22 + (id % 5) * 7;
+  const clothH = 22 + (id % 7) * 9;
+  const clothL = 28 + (id % 5) * 7;
+  const bgL    = 82 + (id % 4) * 3;
+  const face   = `hsl(26,42%,${skinL}%)`;
+  const hair   = `hsl(${hairH},48%,${hairL}%)`;
+  const cloth  = `hsl(${clothH},28%,${clothL}%)`;
+  const bg     = `hsl(${32+(id%5)*3},36%,${bgL}%)`;
+
+  // Geometry
+  const cx = 50, cy = 47;
+  const headR = 12 + (id % 3);
+  const ovalRx = 29, ovalRy = 35;
+  const sY = cy + headR + 7;    // shoulder base Y
+  const sW = headR + 11;        // shoulder half-width
+
+  // Hair / hat styles (8 variations)
+  const hairs = [
+    // 0: wavy long
+    `<ellipse cx="${cx}" cy="${cy-headR+2}" rx="${headR+2}" ry="7" fill="${hair}"/>
+     <rect x="${cx-headR-4}" y="${cy-6}" width="6" height="${sY-cy+10}" rx="3" fill="${hair}"/>
+     <rect x="${cx+headR-2}" y="${cy-6}" width="6" height="${sY-cy+10}" rx="3" fill="${hair}"/>`,
+    // 1: short slicked
+    `<ellipse cx="${cx}" cy="${cy-headR+3}" rx="${headR+1}" ry="6" fill="${hair}"/>`,
+    // 2: top hat
+    `<rect x="${cx-9}" y="${cy-headR-16}" width="18" height="13" rx="1" fill="${ink}" opacity=".85"/>
+     <rect x="${cx-13}" y="${cy-headR-4}" width="26" height="4" rx="1" fill="${ink}" opacity=".85"/>`,
+    // 3: bonnet
+    `<path d="M${cx-headR-4},${cy-headR+5} Q${cx},${cy-headR-16} ${cx+headR+4},${cy-headR+5}" fill="${cloth}" stroke="${ink}" stroke-width=".4"/>
+     <ellipse cx="${cx}" cy="${cy-headR-4}" rx="${headR-1}" ry="6" fill="${cloth}"/>`,
+    // 4: curly / voluminous
+    `<ellipse cx="${cx}" cy="${cy-headR+3}" rx="${headR+3}" ry="8" fill="${hair}"/>
+     <circle cx="${cx-headR-1}" cy="${cy+1}" r="4.5" fill="${hair}"/>
+     <circle cx="${cx+headR+1}" cy="${cy+1}" r="4.5" fill="${hair}"/>`,
+    // 5: flowing
+    `<ellipse cx="${cx}" cy="${cy-headR+2}" rx="${headR+1}" ry="7" fill="${hair}"/>
+     <path d="M${cx-headR-1},${cy+2} Q${cx-headR-7},${cy+10} ${cx-headR+1},${sY+8}" fill="${hair}"/>
+     <path d="M${cx+headR+1},${cy+2} Q${cx+headR+7},${cy+10} ${cx+headR-1},${sY+8}" fill="${hair}"/>`,
+    // 6: military cap
+    `<rect x="${cx-headR+2}" y="${cy-headR-9}" width="${(headR-2)*2}" height="9" rx="1" fill="${cloth}"/>
+     <rect x="${cx-headR-2}" y="${cy-headR}" width="${headR*2+4}" height="3" rx="1" fill="${cloth}"/>`,
+    // 7: bowler
+    `<ellipse cx="${cx}" cy="${cy-headR-3}" rx="${headR-2}" ry="7" fill="${ink}" opacity=".82"/>
+     <rect x="${cx-headR-3}" y="${cy-headR}" width="${headR*2+6}" height="3" rx="1" fill="${ink}" opacity=".82"/>`,
+  ];
+
+  // Clothing (6 variations)
+  const clothes = [
+    // 0: frock coat + cravat
+    `<path d="M${cx-sW},${sY+18} Q${cx-sW+4},${sY} ${cx-8},${sY-2} L${cx-4},${sY+5} L${cx},${sY-2} L${cx+4},${sY+5} L${cx+8},${sY-2} Q${cx+sW-4},${sY} ${cx+sW},${sY+18} Z" fill="${cloth}"/>
+     <polygon points="${cx},${sY-2} ${cx-5},${sY+7} ${cx+5},${sY+7}" fill="${paper}"/>`,
+    // 1: ruffled blouse
+    `<path d="M${cx-sW},${sY+18} Q${cx},${sY+2} ${cx+sW},${sY+18} Z" fill="${cloth}"/>
+     <ellipse cx="${cx}" cy="${sY}" rx="9" ry="5" fill="${paper}" stroke="${ink}" stroke-width=".3"/>`,
+    // 2: cloak
+    `<path d="M${cx-5},${sY-5} Q${cx-sW-5},${sY+6} ${cx-sW-2},${sY+20} L${cx+sW+2},${sY+20} Q${cx+sW+5},${sY+6} ${cx+5},${sY-5} Z" fill="${cloth}"/>`,
+    // 3: military uniform
+    `<path d="M${cx-sW},${sY+18} Q${cx-sW+3},${sY} ${cx-6},${sY-3} L${cx+6},${sY-3} Q${cx+sW-3},${sY} ${cx+sW},${sY+18} Z" fill="${cloth}"/>
+     <line x1="${cx}" y1="${sY-2}" x2="${cx}" y2="${sY+15}" stroke="hsl(45,55%,58%)" stroke-width="1.5"/>
+     <line x1="${cx-5}" y1="${sY+3}" x2="${cx+5}" y2="${sY+3}" stroke="hsl(45,55%,58%)" stroke-width="1"/>`,
+    // 4: waistcoat
+    `<path d="M${cx-sW},${sY+18} Q${cx},${sY-3} ${cx+sW},${sY+18} Z" fill="${cloth}"/>
+     <rect x="${cx-5}" y="${sY-5}" width="10" height="10" rx="1" fill="${paper}" opacity=".85"/>`,
+    // 5: academic robes
+    `<path d="M${cx-9},${sY-6} Q${cx-sW},${sY+5} ${cx-sW+2},${sY+20} L${cx+sW-2},${sY+20} Q${cx+sW},${sY+5} ${cx+9},${sY-6} Z" fill="${cloth}"/>`,
+  ];
+
+  // Rarity ornaments
+  let orn = '';
+  if (ri >= 1) {
+    const dPts = [[cx,cy-ovalRy-4],[cx,cy+ovalRy+4]];
+    if (ri >= 2) dPts.push([cx-ovalRx-5,cy],[cx+ovalRx+5,cy]);
+    dPts.forEach(([px,py]) => {
+      orn += `<path d="M${px},${py-3} L${px+3},${py} L${px},${py+3} L${px-3},${py} Z" fill="${rc}" opacity=".75"/>`;
+    });
+  }
+  if (ri >= 3) {
+    for (let i=0;i<12;i++){
+      const a = (i/12)*Math.PI*2;
+      orn += `<circle cx="${(cx+(ovalRx+3)*Math.cos(a)).toFixed(1)}" cy="${(cy+(ovalRy+3)*Math.sin(a)).toFixed(1)}" r="1.1" fill="${rc}" opacity=".5"/>`;
+    }
+  }
+  if (ri >= 4) orn += `<ellipse cx="${cx}" cy="${cy}" rx="${ovalRx+6}" ry="${ovalRy+6}" fill="none" stroke="${rc}" stroke-width=".7" stroke-dasharray="4,3" opacity=".5"/>`;
+  if (ri >= 5) orn += `
+    <rect x="2" y="2" width="96" height="96" fill="none" stroke="${rc}" stroke-width=".8" opacity=".4"/>
+    <path d="M2,2 l10,0 M2,2 l0,10 M98,2 l-10,0 M98,2 l0,10 M2,98 l10,0 M2,98 l0,-10 M98,98 l-10,0 M98,98 l0,-10" stroke="${rc}" stroke-width="2" opacity=".7"/>
+    <circle cx="${cx}" cy="${cy-ovalRy-11}" r="2.5" fill="${rc}" opacity=".7"/>
+    <circle cx="${cx}" cy="${cy+ovalRy+11}" r="2.5" fill="${rc}" opacity=".7"/>`;
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <pattern id="h${id}" width="5" height="5" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="5" x2="5" y2="0" stroke="${ink}" stroke-width=".35" opacity=".09"/>
+    </pattern>
+    <pattern id="v${id}" width="8" height="8" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="4" x2="8" y2="4" stroke="${ink}" stroke-width=".28" opacity=".055"/>
+      <line x1="4" y1="0" x2="4" y2="8" stroke="${ink}" stroke-width=".28" opacity=".055"/>
+    </pattern>
+    <clipPath id="oc${id}"><ellipse cx="${cx}" cy="${cy}" rx="${ovalRx-1}" ry="${ovalRy-1}"/></clipPath>
+    <radialGradient id="og${id}" cx="45%" cy="35%" r="70%">
+      <stop offset="0%"   stop-color="${bg}"/>
+      <stop offset="100%" stop-color="hsl(${28+(id%5)*3},26%,${bgL-9}%)"/>
+    </radialGradient>
+  </defs>
+  <rect width="100" height="100" fill="${paper}"/>
+  <rect width="100" height="100" fill="url(#h${id})"/>
+  <rect width="100" height="100" fill="url(#v${id})"/>
+  <ellipse cx="${cx}" cy="${cy}" rx="${ovalRx}" ry="${ovalRy}" fill="url(#og${id})"/>
+  <g clip-path="url(#oc${id})">
+    <ellipse cx="${cx}" cy="${sY+14}" rx="${sW+6}" ry="14" fill="${cloth}" opacity=".9"/>
+    ${clothes[id % 6]}
+    <rect x="${cx-4}" y="${cy+headR-1}" width="8" height="${sY-cy-headR+5}" rx="2" fill="${face}"/>
+    <ellipse cx="${cx}" cy="${cy}" rx="${headR}" ry="${headR+1}" fill="${face}"/>
+    ${hairs[id % 8]}
+    <ellipse cx="${cx-4.5}" cy="${cy-2}"   rx="1.8" ry="1.3" fill="${ink}" opacity=".58"/>
+    <ellipse cx="${cx+4.5}" cy="${cy-2}"   rx="1.8" ry="1.3" fill="${ink}" opacity=".58"/>
+    <circle  cx="${cx-4}"   cy="${cy-2.5}" r=".6"             fill="white" opacity=".45"/>
+    <circle  cx="${cx+5}"   cy="${cy-2.5}" r=".6"             fill="white" opacity=".45"/>
+    <path d="M${cx},${cy+2} Q${cx+2},${cy+5} ${cx+1.5},${cy+7} Q${cx},${cy+8} ${cx-1.5},${cy+7}" stroke="${ink}" stroke-width=".5" fill="none" opacity=".35"/>
+    <path d="M${cx-3},${cy+9.5} Q${cx},${cy+11.5} ${cx+3},${cy+9.5}" stroke="${ink}" stroke-width=".6" fill="none" opacity=".3"/>
+  </g>
+  <ellipse cx="${cx}" cy="${cy}" rx="${ovalRx}"   ry="${ovalRy}"   fill="none" stroke="${ink}" stroke-width="1.6" opacity=".7"/>
+  <ellipse cx="${cx}" cy="${cy}" rx="${ovalRx-2.5}" ry="${ovalRy-2.5}" fill="none" stroke="${ink}" stroke-width=".5" opacity=".2"/>
+  ${orn}
+  <path d="M4,4 l7,0 M4,4 l0,7 M96,4 l-7,0 M96,4 l0,7 M4,96 l7,0 M4,96 l0,-7 M96,96 l-7,0 M96,96 l0,-7" stroke="${ink}" stroke-width=".8" opacity=".26"/>
+</svg>`;
+}
+
+function svgDataUrl(card) {
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(cardSVG(card));
+}
+
+// ─── STATE ────────────────────────────────────────────────────
+let collection = {}, packsOpened = 0, activeFilter = 'all';
+let tradeSelected = new Map();
+
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem('grandworks_v1') || '{}');
+    collection = s.collection || {};
+    packsOpened = s.packsOpened || 0;
+  } catch(e) {}
+}
+function saveState() {
+  localStorage.setItem('grandworks_v1', JSON.stringify({ collection, packsOpened }));
+}
+
+// ─── BUILD CARD HTML ──────────────────────────────────────────
+function pipsHTML(card) {
+  return Array.from({length:card.pips}, () =>
+    `<span class="pip" style="background:${card.borderColor}"></span>`).join('');
+}
+
+function buildCardEl(card, mode) {
+  const owned = (collection[card.id] || 0) > 0;
+  const col   = card.borderColor;
+  const img   = svgDataUrl(card);
+  const ph    = pipsHTML(card);
+  const omega = card.rarity === 'OR' ? 'omega-shimmer' : '';
+
+  if (mode === 'grid') {
+    const cnt = collection[card.id] || 0;
+    return `<div class="card-wrap">
+      <div class="c-card ${owned?'':' unowned'} ${owned?omega:''}" style="--bc:${col}" onclick="${owned?`showModal(${card.id})`:''}">
+        <img class="art" src="${img}" alt="${card.name}" loading="lazy"/>
+        <div class="foot">
+          <div class="cname">${card.name}</div>
+          <div class="csource">${card.source}</div>
+          <div class="num">${String(card.id).padStart(3,'0')} / 090</div>
+          <div class="pips">${ph}</div>
+        </div>
+        ${cnt > 0 ? `<div class="count-badge">${cnt > 9 ? '9+' : cnt}</div>` : ''}
+      </div></div>`;
+  }
+
+  if (mode === 'reveal') {
+    const isNew = (collection[card.id] || 0) === 1;
+    return `<div class="r-card ${omega}" style="--bc:${col}">
+      <img class="art" src="${img}" alt="${card.name}" loading="lazy"/>
+      <div class="foot">
+        <div class="card-name">${card.name}</div>
+        <div class="card-source">${card.source}</div>
+        <div class="card-rar" style="color:${col}">${card.rarityLabel}</div>
+        <div class="pips">${ph}</div>
+      </div>
+      ${isNew ? '<div class="new-badge">New!</div>' : ''}
+    </div>`;
+  }
+
+  if (mode === 'trade') {
+    const cnt = collection[card.id] || 0;
+    const sel = tradeSelected.get(card.id) || 0;
+    return `<div class="t-card ${sel>0?'selected':''} ${omega}" style="--bc:${col}" onclick="toggleTradeCard(${card.id})">
+      <img class="art" src="${img}" alt="${card.name}" loading="lazy"/>
+      <div class="foot"><div class="pips">${ph}</div></div>
+      <div class="t-count">×${cnt}</div>
+      ${sel > 0 ? `<div class="t-sel-badge">×${sel}</div>` : ''}
+    </div>`;
+  }
+}
+
+// ─── RENDER ───────────────────────────────────────────────────
+function renderCollection() {
+  const grid = document.getElementById('cardGrid');
+  let cards = activeFilter === 'owned' ? CARDS.filter(c => (collection[c.id]||0) > 0)
+            : activeFilter !== 'all'   ? CARDS.filter(c => c.rarity === activeFilter)
+            : CARDS;
+  grid.innerHTML = cards.map(c => buildCardEl(c,'grid')).join('');
+  updateStats();
+}
+
+function renderTradeGrid() {
+  const grid = document.getElementById('tradeGrid');
+  const owned = CARDS.filter(c => (collection[c.id]||0) > 0);
+  grid.innerHTML = owned.length
+    ? owned.map(c => buildCardEl(c,'trade')).join('')
+    : `<p style="color:var(--ink-light);font-style:italic;font-size:.85rem;padding:.5rem;grid-column:1/-1">Open some packets first!</p>`;
+}
+
+function updateStats() {
+  const total  = Object.values(collection).reduce((a,b)=>a+b,0);
+  const unique = Object.keys(collection).filter(k=>collection[k]>0).length;
+  document.getElementById('stat-owned').textContent  = total;
+  document.getElementById('stat-unique').textContent = `${unique} / 90`;
+  document.getElementById('stat-packs').textContent  = packsOpened;
+}
+
+// ─── TABS / FILTER ────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) =>
+    t.classList.toggle('active', ['collection','acquire'][i] === name));
+  document.querySelectorAll('.view').forEach(v =>
+    v.classList.toggle('active', v.id === 'view-'+name));
+  if (name === 'acquire') {
+    renderTradeGrid();
+    document.getElementById('tradeResult').innerHTML = '';
+    document.getElementById('packReveal').innerHTML  = '';
+    tradeSelected.clear(); updateSelInfo();
+  }
+}
+
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCollection();
+}
+
+// ─── PACK ─────────────────────────────────────────────────────
+function weightedRarity() {
+  const total = RARITIES.reduce((a,r) => a+r.weight, 0);
+  let rand = Math.random() * total;
+  for (const r of RARITIES) { rand -= r.weight; if (rand <= 0) return r.id; }
+  return 'C';
+}
+function randomCardOfRarity(rid) {
+  const pool = CARDS.filter(c => c.rarity === rid);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function openPack() {
+  const btn = document.getElementById('packBtn');
+  const rev = document.getElementById('packReveal');
+  btn.disabled = true; rev.innerHTML = '';
+
+  const drawn = Array.from({length:5}, () => randomCardOfRarity(weightedRarity()));
+  drawn.forEach(c => { collection[c.id] = (collection[c.id]||0)+1; });
+  packsOpened++; saveState();
+
+  drawn.forEach((card, i) => {
+    setTimeout(() => {
+      const div = document.createElement('div');
+      div.innerHTML = buildCardEl(card,'reveal').trim();
+      const el = div.firstChild;
+      el.style.animationDelay = '0s';
+      rev.appendChild(el);
+      if (i === drawn.length-1) { btn.disabled=false; updateStats(); renderCollection(); }
+    }, i * 320);
+  });
+}
+
+// ─── TRADE ────────────────────────────────────────────────────
+function totalSelected() { let t=0; for (const v of tradeSelected.values()) t+=v; return t; }
+
+function toggleTradeCard(cardId) {
+  const owned = collection[cardId]||0, current = tradeSelected.get(cardId)||0, total = totalSelected();
+  if      (current === 0)                    { if (total >= 5) { showToast('Already have 5 selected'); return; } tradeSelected.set(cardId,1); }
+  else if (current < owned && total < 5)     { tradeSelected.set(cardId, current+1); }
+  else                                       { tradeSelected.delete(cardId); }
+  updateSelInfo(); renderTradeGrid();
+}
+
+function updateSelInfo() {
+  const t = totalSelected();
+  document.getElementById('selInfo').textContent = `${t} / 5 selected`;
+  document.getElementById('tradeBtn').disabled   = t !== 5;
+}
+
+function doTrade() {
+  if (totalSelected() !== 5) return;
+  const sel = [...tradeSelected.entries()].map(([id,count]) => ({ card:CARDS.find(c=>c.id===id), count }));
+  const hi  = Math.max(...sel.map(e => RARITY_ORDER.indexOf(e.card.rarity)));
+  if (hi >= RARITY_ORDER.length-1) { showToast('Cannot exchange above Omega Rare!'); return; }
+
+  const target = randomCardOfRarity(RARITY_ORDER[hi+1]);
+  sel.forEach(({card,count}) => {
+    collection[card.id] = Math.max(0,(collection[card.id]||0)-count);
+    if (collection[card.id] === 0) delete collection[card.id];
+  });
+  collection[target.id] = (collection[target.id]||0)+1;
+  saveState(); tradeSelected.clear(); updateSelInfo(); renderTradeGrid(); renderCollection(); updateStats();
+
+  const wasNew = collection[target.id] === 1, col = target.borderColor;
+  document.getElementById('tradeResult').innerHTML = `
+    <div style="font-style:italic;color:var(--ink-faded);font-size:.88rem;max-width:260px;line-height:1.7">
+      ✦ Exchange complete. You have received a
+      <strong style="color:${col};font-family:'Playfair Display',serif;font-style:normal">${target.rarityLabel}</strong>
+      figure: <strong style="color:var(--ink)">${target.name}</strong>
+      <em style="font-size:.8rem;display:block;margin-top:.2rem">${target.source}</em>
+    </div>
+    <div class="r-card ${target.rarity==='OR'?'omega-shimmer':''}" style="--bc:${col};width:90px;animation:none">
+      <img class="art" src="${svgDataUrl(target)}" alt="${target.name}"/>
+      <div class="foot">
+        <div class="card-name">${target.name}</div>
+        <div class="card-rar" style="color:${col}">${target.rarityLabel}</div>
+        <div class="pips">${pipsHTML(target)}</div>
+      </div>
+      ${wasNew?'<div class="new-badge">New!</div>':''}
+    </div>`;
+}
+
+// ─── MODAL ────────────────────────────────────────────────────
+function showModal(cardId) {
+  const card = CARDS.find(c=>c.id===cardId), col=card.borderColor, cnt=collection[card.id]||0;
+  document.getElementById('modalInner').innerHTML = `
+    <div class="m-card ${card.rarity==='OR'?'omega-shimmer':''}" style="--bc:${col}">
+      <img class="art" src="${svgDataUrl(card)}" alt="${card.name}"/>
+      <div class="foot">
+        <div class="card-name">${card.name}</div>
+        <div class="card-source">${card.source}</div>
+        <div class="card-rar" style="color:${col}">${card.rarityLabel}</div>
+        <div class="pips">${pipsHTML(card)}</div>
+        <div class="card-num">#${String(card.id).padStart(3,'0')} / 090</div>
+      </div>
+    </div>
+    <div class="modal-info">
+      <h3>${card.name}</h3>
+      <div class="mi-row">Rarity <span class="mi-val" style="color:${col};font-family:'Playfair Display',serif;font-weight:700">${card.rarityLabel}</span></div>
+      <div class="mi-row">Source <span class="mi-val" style="font-style:italic;font-size:.78rem">${card.source}</span></div>
+      <div class="mi-row">Card No. <span class="mi-val">#${String(card.id).padStart(3,'0')}</span></div>
+      <div class="mi-row">Pips <span class="mi-val">${card.pips}</span></div>
+      <div class="mi-copies">${cnt}</div>
+      <span class="mi-copies-label">copies in collection</span>
+    </div>`;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (!e || e.target===document.getElementById('modal') || e.currentTarget===document.querySelector('.modal-close'))
+    document.getElementById('modal').classList.remove('open');
+}
+
+// ─── TOAST ────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+loadState(); renderCollection(); updateStats();
+</script>
+</body>
+</html>

@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STARFORGE — Ship Commander</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #04060f;
+  --surface: #0a0f1e;
+  --surface2: #0f1530;
+  --surface3: #141c3a;
+  --primary: #00d4ff;
+  --primary-dim: #0099bb;
+  --secondary: #ff6b35;
+  --accent: #a855f7;
+  --gold: #ffd700;
+  --green: #00ff88;
+  --red: #ff3355;
+  --text: #c8d8f0;
+  --text-muted: #5a7090;
+  --border: #1a2540;
+  --border-bright: #2a3d6a;
+  --glow-blue: 0 0 10px #00d4ff55, 0 0 20px #00d4ff22;
+  --glow-purple: 0 0 10px #a855f755;
+  --glow-orange: 0 0 10px #ff6b3555;
+  --glow-gold: 0 0 10px #ffd70055;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 14px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image:
+    radial-gradient(ellipse at 20% 50%, #0a0525 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, #050d25 0%, transparent 50%);
+}
+
+/* Starfield */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 40%, #aad 0%, transparent 100%),
+    radial-gradient(1px 1px at 40% 8%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 55%, #dde 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 25%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 70%, #aaf 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 75%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 10%, #ddf 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 85%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 60%, #ccf 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 5% 35%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 90%, #aae 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 45%, #fff 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 95% 60%, #ddf 0%, transparent 100%),
+    radial-gradient(1px 1px at 20% 95%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 65% 30%, #ccf 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 50%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 20%, #aaf 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+/* HEADER */
+#header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(180deg, #060b18 0%, #04060f 100%);
+  border-bottom: 1px solid var(--border-bright);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+#logo {
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  font-size: 20px;
+  color: var(--primary);
+  text-shadow: var(--glow-blue);
+  letter-spacing: 3px;
+  white-space: nowrap;
+}
+
+#logo span { color: var(--secondary); }
+
+#resources-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.res-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.res-chip .res-icon { font-size: 14px; }
+.res-chip .res-val { color: var(--primary); font-weight: 600; }
+.res-chip .res-rate { color: var(--text-muted); font-size: 10px; margin-left: 2px; }
+
+#header-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 6px 12px;
+  border: 1px solid var(--border-bright);
+  border-radius: 4px;
+  background: var(--surface2);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn:hover { border-color: var(--primary); color: var(--primary); box-shadow: var(--glow-blue); }
+.btn.btn-primary { background: var(--primary); color: #000; border-color: var(--primary); font-weight: 700; }
+.btn.btn-primary:hover { background: #00ffff; box-shadow: var(--glow-blue); }
+.btn.btn-prestige { background: linear-gradient(135deg, var(--accent), #6b21a8); color: #fff; border-color: var(--accent); }
+.btn.btn-prestige:hover { box-shadow: var(--glow-purple); }
+.btn.btn-danger { border-color: var(--red); color: var(--red); }
+.btn.btn-danger:hover { background: var(--red); color: #fff; }
+
+#status-bar {
+  width: 100%;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  padding: 2px 0 0;
+}
+
+/* MAIN LAYOUT */
+#app {
+  display: grid;
+  grid-template-columns: 260px 1fr 280px;
+  grid-template-rows: auto;
+  gap: 0;
+  min-height: calc(100vh - 80px);
+  position: relative;
+  z-index: 1;
+}
+
+/* TABS */
+#tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 72px;
+  z-index: 90;
+  grid-column: 1 / -1;
+  overflow-x: auto;
+}
+
+.tab {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+/* PANELS */
+.panel {
+  padding: 16px;
+  display: none;
+  grid-column: 1 / -1;
+}
+
+.panel.active { display: block; }
+
+/* SHIP PANEL - special 3-col layout */
+#panel-ship.active {
+  display: grid;
+  grid-template-columns: 260px 1fr 280px;
+  gap: 16px;
+  align-items: start;
+}
+
+/* SECTION TITLES */
+.section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  background: var(--primary);
+  border-radius: 2px;
+  box-shadow: var(--glow-blue);
+}
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+
+.card:hover { border-color: var(--border-bright); }
+
+/* SHIP VISUAL */
+#ship-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+#ship-svg-wrap {
+  position: relative;
+  width: 160px;
+  height: 200px;
+  cursor: pointer;
+  user-select: none;
+}
+
+#ship-svg-wrap:active { transform: scale(0.97); }
+
+.ship-click-ripple {
+  position: absolute;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: ripple 0.6s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 1; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+.float-text {
+  position: absolute;
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold);
+  text-shadow: 0 0 8px var(--gold);
+  pointer-events: none;
+  animation: floatUp 1s ease-out forwards;
+  white-space: nowrap;
+}
+
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-60px); }
+}
+
+#ship-name-display {
+  font-family: 'Orbitron', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  text-shadow: var(--glow-blue);
+  margin-top: 12px;
+  text-align: center;
+}
+
+#ship-level-display {
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+#click-power-display {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  margin-top: 8px;
+}
+
+/* EQUIPMENT SLOTS */
+#equipment-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.eq-slot {
+  background: var(--surface2);
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+
+.eq-slot:hover { border-color: var(--primary); border-style: solid; background: var(--surface3); }
+.eq-slot.equipped { border-style: solid; border-color: var(--primary-dim); background: var(--surface3); }
+.eq-slot.equipped:hover { border-color: var(--primary); }
+
+.eq-slot-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.eq-slot-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.eq-slot-stat {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+}
+
+.eq-slot-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 18px;
+  opacity: 0.6;
+}
+
+.eq-slot.empty .eq-slot-name { color: var(--border-bright); font-style: italic; font-size: 10px; }
+
+/* UPGRADE ITEMS */
+.upgrade-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 6px;
+  user-select: none;
+}
+
+.upgrade-item:hover { border-color: var(--secondary); background: var(--surface3); }
+.upgrade-item.maxed { border-color: var(--gold); cursor: default; }
+.upgrade-item.maxed:hover { border-color: var(--gold); }
+.upgrade-item.locked { opacity: 0.5; cursor: not-allowed; }
+.upgrade-item.locked:hover { border-color: var(--border); background: var(--surface2); }
+
+.upgrade-icon { font-size: 22px; flex-shrink: 0; }
+
+.upgrade-info { flex: 1; min-width: 0; }
+.upgrade-name { font-weight: 600; font-size: 13px; color: var(--text); }
+.upgrade-desc { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.upgrade-level { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--green); }
+
+.upgrade-cost {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  white-space: nowrap;
+  text-align: right;
+}
+
+.upgrade-cost.can-afford { color: var(--gold); }
+.upgrade-cost.cannot-afford { color: var(--text-muted); }
+.upgrade-cost.maxed-label { color: var(--gold); }
+
+/* PROGRESS BAR */
+.progress-bar-wrap {
+  background: var(--surface2);
+  border-radius: 4px;
+  height: 6px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  background: linear-gradient(90deg, var(--primary), #00ffff);
+  box-shadow: 0 0 6px var(--primary);
+}
+
+.progress-bar-fill.orange { background: linear-gradient(90deg, var(--secondary), #ffaa00); box-shadow: 0 0 6px var(--secondary); }
+.progress-bar-fill.purple { background: linear-gradient(90deg, var(--accent), #e879f9); box-shadow: 0 0 6px var(--accent); }
+.progress-bar-fill.gold { background: linear-gradient(90deg, var(--gold), #ffe57a); box-shadow: 0 0 6px var(--gold); }
+
+/* MISSIONS */
+.mission-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 10px;
+  transition: all 0.2s;
+}
+
+.mission-card.active { border-color: var(--secondary); }
+.mission-card.completed { border-color: var(--green); opacity: 0.7; }
+.mission-card.available:hover { border-color: var(--primary); cursor: pointer; }
+
+.mission-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.mission-name { font-weight: 700; font-size: 14px; }
+.mission-type {
+  font-family: 'Orbitron', monospace;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: var(--surface3);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.mission-type.combat { color: var(--red); border-color: var(--red); }
+.mission-type.explore { color: var(--primary); border-color: var(--primary); }
+.mission-type.trade { color: var(--gold); border-color: var(--gold); }
+.mission-type.research { color: var(--accent); border-color: var(--accent); }
+
+.mission-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+.mission-rewards { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+
+.reward-chip {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+}
+
+.reward-chip.credits { color: var(--gold); }
+.reward-chip.xp { color: var(--green); }
+.reward-chip.parts { color: var(--primary); }
+
+.mission-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+/* CHARACTERS */
+.crew-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.crew-card:hover { border-color: var(--primary); background: var(--surface3); }
+.crew-card.assigned { border-color: var(--green); }
+.crew-card.for-hire { border-color: var(--gold); }
+
+.crew-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  background: var(--surface3);
+  border: 1px solid var(--border-bright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.crew-info { flex: 1; min-width: 0; }
+.crew-name { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+.crew-role {
+  font-family: 'Orbitron', monospace;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.crew-stats { display: flex; gap: 8px; flex-wrap: wrap; }
+.crew-stat {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.crew-stat span { color: var(--text); }
+
+.crew-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 9px;
+  font-family: 'Orbitron', monospace;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.crew-badge.assigned { background: var(--green); color: #000; }
+.crew-badge.hire { background: var(--gold); color: #000; }
+.crew-badge.available { background: var(--surface3); color: var(--text-muted); border: 1px solid var(--border); }
+
+.hire-cost {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  margin-top: 4px;
+}
+
+/* PRESTIGE */
+#prestige-panel-content {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.prestige-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+}
+
+.prestige-stat .label { color: var(--text-muted); }
+.prestige-stat .val { color: var(--accent); font-weight: 600; }
+
+.prestige-bonus-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.prestige-bonus-item .name { font-weight: 600; }
+.prestige-bonus-item .desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.prestige-bonus-item .val { font-family: 'Share Tech Mono', monospace; color: var(--accent); font-size: 13px; }
+
+/* MODAL */
+#modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 15, 0.85);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+#modal-overlay.open { display: flex; }
+
+#modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border-bright);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 480px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 40px rgba(0, 212, 255, 0.1);
+}
+
+#modal-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-item:hover { border-color: var(--primary); background: var(--surface3); }
+.modal-item.selected { border-color: var(--primary); background: var(--surface3); box-shadow: var(--glow-blue); }
+.modal-item.equipped-elsewhere { opacity: 0.5; cursor: not-allowed; }
+
+.modal-item-name { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+.modal-item-desc { font-size: 11px; color: var(--text-muted); }
+.modal-item-stats { margin-top: 6px; display: flex; gap: 8px; flex-wrap: wrap; }
+.modal-stat {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: var(--surface3);
+  color: var(--green);
+  border: 1px solid var(--border);
+}
+
+.modal-item.rarity-common { border-left: 3px solid #888; }
+.modal-item.rarity-rare { border-left: 3px solid var(--primary); }
+.modal-item.rarity-epic { border-left: 3px solid var(--accent); }
+.modal-item.rarity-legendary { border-left: 3px solid var(--gold); box-shadow: 0 0 8px var(--gold)33; }
+
+.rarity-badge {
+  font-family: 'Orbitron', monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 6px;
+}
+
+.rarity-badge.common { background: #333; color: #888; }
+.rarity-badge.rare { background: #0a2040; color: var(--primary); }
+.rarity-badge.epic { background: #200a40; color: var(--accent); }
+.rarity-badge.legendary { background: #302000; color: var(--gold); }
+
+#modal-actions { margin-top: 16px; display: flex; gap: 8px; justify-content: flex-end; }
+
+/* NOTIFICATION */
+#notification {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--surface2);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  z-index: 300;
+  transform: translateX(120%);
+  transition: transform 0.3s ease;
+  box-shadow: var(--glow-blue);
+  max-width: 320px;
+}
+
+#notification.show { transform: translateX(0); }
+#notification.warn { border-color: var(--secondary); box-shadow: var(--glow-orange); }
+#notification.success { border-color: var(--green); }
+#notification.prestige { border-color: var(--accent); box-shadow: var(--glow-purple); }
+
+/* TOOLTIP */
+.tooltip-wrap { position: relative; }
+.tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface3);
+  border: 1px solid var(--border-bright);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--text);
+  white-space: nowrap;
+  z-index: 50;
+  pointer-events: none;
+}
+.tooltip-wrap:hover .tooltip { display: block; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary-dim); }
+
+/* GRID HELPERS */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+/* SHIP PANEL COLUMNS */
+#ship-left { }
+#ship-center { }
+#ship-right { }
+
+/* ANIMATE */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.pulse { animation: pulse 2s ease-in-out infinite; }
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: var(--glow-blue); }
+  50% { box-shadow: 0 0 20px #00d4ff99, 0 0 40px #00d4ff44; }
+}
+
+/* PRESTIGE GLOW */
+.prestige-ready { animation: glow-pulse 1.5s ease-in-out infinite; }
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  #panel-ship.active { grid-template-columns: 1fr 1fr; }
+  #ship-right { grid-column: 1 / -1; }
+}
+
+@media (max-width: 700px) {
+  #app { grid-template-columns: 1fr; }
+  #panel-ship.active { grid-template-columns: 1fr; }
+  #header { flex-wrap: wrap; gap: 8px; }
+  #logo { font-size: 16px; }
+  #resources-bar { gap: 6px; }
+  .res-chip { font-size: 10px; padding: 3px 7px; }
+  .tab { padding: 8px 12px; font-size: 9px; }
+  .two-col { grid-template-columns: 1fr; }
+  .three-col { grid-template-columns: 1fr 1fr; }
+  #equipment-grid { grid-template-columns: 1fr 1fr; }
+  #notification { right: 12px; left: 12px; max-width: none; bottom: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div id="logo">STAR<span>FORGE</span></div>
+  <div id="resources-bar">
+    <div class="res-chip tooltip-wrap">
+      <span class="res-icon">⚡</span>
+      <span class="res-val" id="res-credits">0</span>
+      <span class="res-rate" id="res-credits-rate"></span>
+      <span class="tooltip">Credits — main currency. Click ship or earn passively.</span>
+    </div>
+    <div class="res-chip tooltip-wrap">
+      <span class="res-icon">🔩</span>
+      <span class="res-val" id="res-parts">0</span>
+      <span class="res-rate" id="res-parts-rate"></span>
+      <span class="tooltip">Parts — used to craft & upgrade equipment.</span>
+    </div>
+    <div class="res-chip tooltip-wrap">
+      <span class="res-icon">🔬</span>
+      <span class="res-val" id="res-research">0</span>
+      <span class="res-rate" id="res-research-rate"></span>
+      <span class="tooltip">Research — unlocks new tech and upgrades.</span>
+    </div>
+    <div class="res-chip tooltip-wrap">
+      <span class="res-icon">🌟</span>
+      <span class="res-val" id="res-stardust">0</span>
+      <span class="tooltip">Stardust — prestige currency. Persists through resets.</span>
+    </div>
+    <div class="res-chip tooltip-wrap">
+      <span class="res-icon">⭐</span>
+      <span class="res-val" id="res-xp">0</span>/<span class="res-val" id="res-xp-cap">100</span>
+      <span class="tooltip">XP — gain levels to unlock new features.</span>
+    </div>
+  </div>
+  <div id="header-controls">
+    <button class="btn" onclick="saveGame()">💾 Save</button>
+    <button class="btn" onclick="loadGame()">📂 Load</button>
+    <button class="btn btn-danger" onclick="confirmReset()">🔄 New</button>
+    <button class="btn btn-prestige" id="prestige-btn" onclick="showPrestigeModal()" style="display:none">✨ Prestige</button>
+  </div>
+  <div id="status-bar" id="status">Ready · STARFORGE v1.0</div>
+</div>
+
+<div id="app">
+  <div id="tabs">
+    <button class="tab active" onclick="switchTab('ship')">🚀 Ship</button>
+    <button class="tab" onclick="switchTab('upgrades')">⚙️ Upgrades</button>
+    <button class="tab" onclick="switchTab('missions')">🎯 Missions</button>
+    <button class="tab" onclick="switchTab('crew')">👤 Crew</button>
+    <button class="tab" onclick="switchTab('prestige')">✨ Prestige</button>
+  </div>
+
+  <!-- SHIP TAB -->
+  <div id="panel-ship" class="panel active">
+    <div id="ship-left">
+      <div class="section-title">Ship Status</div>
+      <div class="card">
+        <div id="ship-display">
+          <div id="ship-svg-wrap" onclick="clickShip(event)" title="Click to mine credits!">
+            <!-- Ship SVG rendered by JS -->
+          </div>
+          <div id="ship-name-display">U.S.S. PIONEER</div>
+          <div id="ship-level-display">Level 1 · Class: Scout</div>
+          <div id="click-power-display">⚡ 1 credits/click</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title">Ship Stats</div>
+        <div id="ship-stats-list"></div>
+      </div>
+      <div class="card">
+        <div class="section-title">Rename Ship</div>
+        <div style="display:flex; gap:8px;">
+          <input id="ship-name-input" type="text" placeholder="Enter ship name..." style="flex:1; background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:6px 10px; color:var(--text); font-family:'Exo 2',sans-serif; font-size:13px;">
+          <button class="btn btn-primary" onclick="renameShip()">Set</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="ship-center">
+      <div class="section-title">Equipment Slots</div>
+      <div id="equipment-grid"></div>
+      <div class="section-title" style="margin-top:16px;">Ship Inventory</div>
+      <div id="inventory-list"></div>
+    </div>
+
+    <div id="ship-right">
+      <div class="section-title">Active Mission</div>
+      <div id="active-mission-display"></div>
+      <div class="section-title" style="margin-top:8px;">Crew Aboard</div>
+      <div id="crew-aboard-list"></div>
+    </div>
+  </div>
+
+  <!-- UPGRADES TAB -->
+  <div id="panel-upgrades" class="panel">
+    <div class="three-col">
+      <div>
+        <div class="section-title">⚡ Power Systems</div>
+        <div id="upgrades-power"></div>
+      </div>
+      <div>
+        <div class="section-title">🔧 Engineering</div>
+        <div id="upgrades-engineering"></div>
+      </div>
+      <div>
+        <div class="section-title">🧪 Research Lab</div>
+        <div id="upgrades-research"></div>
+      </div>
+    </div>
+    <div class="two-col" style="margin-top:8px;">
+      <div>
+        <div class="section-title">🛡️ Defense</div>
+        <div id="upgrades-defense"></div>
+      </div>
+      <div>
+        <div class="section-title">🌌 Navigation</div>
+        <div id="upgrades-navigation"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MISSIONS TAB -->
+  <div id="panel-missions" class="panel">
+    <div class="two-col">
+      <div>
+        <div class="section-title">Available Missions</div>
+        <div id="missions-available"></div>
+      </div>
+      <div>
+        <div class="section-title">Completed Missions</div>
+        <div id="missions-completed"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREW TAB -->
+  <div id="panel-crew" class="panel">
+    <div class="two-col">
+      <div>
+        <div class="section-title">🚀 Your Crew</div>
+        <div id="crew-roster"></div>
+      </div>
+      <div>
+        <div class="section-title">📋 For Hire</div>
+        <div id="crew-hire"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRESTIGE TAB -->
+  <div id="panel-prestige" class="panel">
+    <div id="prestige-panel-content">
+      <div class="section-title">✨ Prestige System</div>
+      <div class="card" id="prestige-info"></div>
+      <div class="section-title" style="margin-top:16px;">Prestige Bonuses</div>
+      <div id="prestige-bonuses"></div>
+      <div style="margin-top:20px; text-align:center;">
+        <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">
+          Prestige resets your ship, credits, parts, research, and upgrades — but keeps Stardust, crew, and equipment.
+          Each prestige grants permanent multiplier bonuses.
+        </p>
+        <button class="btn btn-prestige" style="font-size:14px; padding:12px 32px;" id="prestige-do-btn" onclick="doPrestige()">✨ PRESTIGE NOW</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal-overlay" onclick="closeModalIfOutside(event)">
+  <div id="modal-box">
+    <div id="modal-title">Select Equipment</div>
+    <div id="modal-body"></div>
+    <div id="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div id="notification"></div>
+
+<script>
+// ======================= DATA DEFINITIONS =======================
+
+const EQUIPMENT_SLOTS = [
+  { id: 'weapon', label: 'Weapon', icon: '🔫', effect: 'clickBonus' },
+  { id: 'engine', label: 'Engine', icon: '🚀', effect: 'missionSpeed' },
+  { id: 'shield', label: 'Shield', icon: '🛡️', effect: 'defense' },
+  { id: 'reactor', label: 'Reactor', icon: '⚡', effect: 'passiveIncome' },
+  { id: 'sensor', label: 'Sensor Array', icon: '📡', effect: 'missionReward' },
+  { id: 'cargo', label: 'Cargo Bay', icon: '📦', effect: 'storageBonus' },
+  { id: 'computer', label: 'Ship Computer', icon: '🖥️', effect: 'researchBonus' },
+  { id: 'hull', label: 'Hull Plating', icon: '🔩', effect: 'partsBonus' },
+];
+
+const ALL_EQUIPMENT = [
+  // Weapons
+  { id: 'laser_mk1', slot: 'weapon', name: 'Pulse Laser Mk1', rarity: 'common', stats: { clickBonus: 2 }, desc: '+2 credits per click' },
+  { id: 'laser_mk2', slot: 'weapon', name: 'Plasma Cannon', rarity: 'rare', stats: { clickBonus: 8 }, desc: '+8 credits per click', reqLevel: 5 },
+  { id: 'rail_gun', slot: 'weapon', name: 'Railgun Array', rarity: 'epic', stats: { clickBonus: 25 }, desc: '+25 credits per click', reqLevel: 12 },
+  { id: 'quantum_strike', slot: 'weapon', name: 'Quantum Disruptor', rarity: 'legendary', stats: { clickBonus: 100 }, desc: '+100 credits per click', reqLevel: 20 },
+  // Engines
+  { id: 'ion_drive', slot: 'engine', name: 'Ion Drive', rarity: 'common', stats: { missionSpeed: 0.15 }, desc: 'Missions 15% faster' },
+  { id: 'warp_core', slot: 'engine', name: 'Warp Core', rarity: 'rare', stats: { missionSpeed: 0.35 }, desc: 'Missions 35% faster', reqLevel: 6 },
+  { id: 'hyperdrive', slot: 'engine', name: 'Hyperdrive', rarity: 'epic', stats: { missionSpeed: 0.65 }, desc: 'Missions 65% faster', reqLevel: 14 },
+  { id: 'void_engine', slot: 'engine', name: 'Void Engine', rarity: 'legendary', stats: { missionSpeed: 1.5 }, desc: 'Missions 150% faster', reqLevel: 22 },
+  // Shields
+  { id: 'energy_shield', slot: 'shield', name: 'Energy Shield', rarity: 'common', stats: { defense: 10 }, desc: '+10% mission success chance' },
+  { id: 'phase_barrier', slot: 'shield', name: 'Phase Barrier', rarity: 'rare', stats: { defense: 25 }, desc: '+25% mission success chance', reqLevel: 7 },
+  { id: 'mk3_aegis', slot: 'shield', name: 'Aegis Mk3', rarity: 'epic', stats: { defense: 50 }, desc: '+50% mission success chance', reqLevel: 15 },
+  // Reactors
+  { id: 'fission_cell', slot: 'reactor', name: 'Fission Cell', rarity: 'common', stats: { passiveIncome: 3 }, desc: '+3 credits/sec passive' },
+  { id: 'fusion_reactor', slot: 'reactor', name: 'Fusion Reactor', rarity: 'rare', stats: { passiveIncome: 12 }, desc: '+12 credits/sec', reqLevel: 5 },
+  { id: 'antimatter_core', slot: 'reactor', name: 'Antimatter Core', rarity: 'epic', stats: { passiveIncome: 45 }, desc: '+45 credits/sec', reqLevel: 13 },
+  { id: 'dark_matter_gen', slot: 'reactor', name: 'Dark Matter Generator', rarity: 'legendary', stats: { passiveIncome: 200 }, desc: '+200 credits/sec', reqLevel: 21 },
+  // Sensors
+  { id: 'radar', slot: 'sensor', name: 'Basic Radar', rarity: 'common', stats: { missionReward: 0.1 }, desc: '+10% mission rewards' },
+  { id: 'deep_scanner', slot: 'sensor', name: 'Deep Space Scanner', rarity: 'rare', stats: { missionReward: 0.3 }, desc: '+30% mission rewards', reqLevel: 8 },
+  { id: 'quantum_sensor', slot: 'sensor', name: 'Quantum Sensor Array', rarity: 'epic', stats: { missionReward: 0.75 }, desc: '+75% mission rewards', reqLevel: 16 },
+  // Cargo
+  { id: 'cargo_bay', slot: 'cargo', name: 'Cargo Bay Alpha', rarity: 'common', stats: { storageBonus: 0.25 }, desc: '+25% storage capacity' },
+  { id: 'expanded_hold', slot: 'cargo', name: 'Expanded Hold', rarity: 'rare', stats: { storageBonus: 0.6 }, desc: '+60% storage', reqLevel: 9 },
+  { id: 'quantum_storage', slot: 'cargo', name: 'Quantum Storage', rarity: 'legendary', stats: { storageBonus: 2.0, passiveIncome: 15 }, desc: '+200% storage, +15 cred/sec', reqLevel: 18 },
+  // Computer
+  { id: 'nav_computer', slot: 'computer', name: 'Nav Computer', rarity: 'common', stats: { researchBonus: 0.15 }, desc: '+15% research rate' },
+  { id: 'ai_core', slot: 'computer', name: 'AI Core', rarity: 'rare', stats: { researchBonus: 0.4 }, desc: '+40% research rate', reqLevel: 10 },
+  { id: 'neural_network', slot: 'computer', name: 'Neural Network', rarity: 'epic', stats: { researchBonus: 1.0 }, desc: '+100% research rate', reqLevel: 18 },
+  // Hull
+  { id: 'titanium_hull', slot: 'hull', name: 'Titanium Hull', rarity: 'common', stats: { partsBonus: 0.2 }, desc: '+20% parts generation' },
+  { id: 'composite_armor', slot: 'hull', name: 'Composite Armor', rarity: 'rare', stats: { partsBonus: 0.5, defense: 10 }, desc: '+50% parts, +10% defense', reqLevel: 7 },
+  { id: 'nanoweave_hull', slot: 'hull', name: 'Nanoweave Hull', rarity: 'legendary', stats: { partsBonus: 1.5, passiveIncome: 20 }, desc: '+150% parts, +20 cred/sec', reqLevel: 20 },
+];
+
+const UPGRADES = [
+  // Power
+  { id: 'power1', cat: 'power', name: 'Energy Capacitor', icon: '🔋', desc: 'Increases passive credit generation', maxLevel: 10, baseCost: 50, costMult: 1.8, effect: 'passiveIncome', effectVal: 2 },
+  { id: 'power2', cat: 'power', name: 'Overcharge System', icon: '⚡', desc: 'Increases click power significantly', maxLevel: 15, baseCost: 80, costMult: 1.7, effect: 'clickPower', effectVal: 3, reqResearch: 20 },
+  { id: 'power3', cat: 'power', name: 'Power Surge', icon: '🌩️', desc: 'Multiplies all credit income', maxLevel: 5, baseCost: 500, costMult: 3.0, effect: 'creditMult', effectVal: 0.25, reqResearch: 100 },
+  // Engineering
+  { id: 'eng1', cat: 'engineering', name: 'Auto-Miner', icon: '⛏️', desc: 'Passive credits per second', maxLevel: 20, baseCost: 30, costMult: 1.6, effect: 'passiveIncome', effectVal: 1 },
+  { id: 'eng2', cat: 'engineering', name: 'Parts Fabricator', icon: '🏭', desc: 'Auto-generates ship parts', maxLevel: 10, baseCost: 200, costMult: 2.0, effect: 'partsRate', effectVal: 0.1, reqLevel: 3 },
+  { id: 'eng3', cat: 'engineering', name: 'Nano Assembler', icon: '🤖', desc: 'Dramatically boosts parts generation', maxLevel: 5, baseCost: 1000, costMult: 2.5, effect: 'partsRate', effectVal: 0.5, reqLevel: 8, reqResearch: 150 },
+  { id: 'eng4', cat: 'engineering', name: 'Ship Hull Upgrade', icon: '🔧', desc: 'Increases ship level cap', maxLevel: 5, baseCost: 300, costMult: 4.0, effect: 'levelCap', effectVal: 5, reqLevel: 5 },
+  // Research
+  { id: 'res1', cat: 'research', name: 'Science Bay', icon: '🧪', desc: 'Passive research per second', maxLevel: 10, baseCost: 150, costMult: 2.0, effect: 'researchRate', effectVal: 0.1, reqLevel: 2 },
+  { id: 'res2', cat: 'research', name: 'Deep Analysis', icon: '🔬', desc: 'Increases all research rates', maxLevel: 8, baseCost: 400, costMult: 2.2, effect: 'researchRate', effectVal: 0.3, reqLevel: 5 },
+  { id: 'res3', cat: 'research', name: 'Breakthrough Protocol', icon: '💡', desc: 'Massive research multiplier', maxLevel: 5, baseCost: 2000, costMult: 3.0, effect: 'researchMult', effectVal: 0.3, reqLevel: 10 },
+  // Defense
+  { id: 'def1', cat: 'defense', name: 'Point Defense', icon: '🛡️', desc: 'Basic mission defense rating', maxLevel: 10, baseCost: 100, costMult: 1.8, effect: 'defense', effectVal: 3 },
+  { id: 'def2', cat: 'defense', name: 'Hardened Systems', icon: '🧱', desc: 'Reduces mission failure penalty', maxLevel: 5, baseCost: 600, costMult: 2.5, effect: 'defense', effectVal: 10, reqLevel: 6 },
+  // Navigation
+  { id: 'nav1', cat: 'navigation', name: 'Star Charts', icon: '🗺️', desc: 'Reduces mission duration', maxLevel: 10, baseCost: 120, costMult: 1.9, effect: 'missionSpeed', effectVal: 0.05, reqLevel: 2 },
+  { id: 'nav2', cat: 'navigation', name: 'Warp Calculator', icon: '🌀', desc: 'Greatly reduces mission time', maxLevel: 5, baseCost: 800, costMult: 2.8, effect: 'missionSpeed', effectVal: 0.15, reqLevel: 8, reqResearch: 200 },
+];
+
+const MISSIONS_DATA = [
+  { id: 'm1', name: 'Asteroid Mining Run', type: 'explore', desc: 'Survey a nearby asteroid belt for valuable minerals.', duration: 30, baseDuration: 30, rewards: { credits: 200, parts: 10 }, xp: 15, difficulty: 1, reqLevel: 1 },
+  { id: 'm2', name: 'Pirate Interception', type: 'combat', desc: 'Intercept a pirate vessel harassing trade routes.', duration: 45, baseDuration: 45, rewards: { credits: 350, research: 5 }, xp: 25, difficulty: 2, reqLevel: 2 },
+  { id: 'm3', name: 'Nebula Scan', type: 'research', desc: 'Conduct a detailed scan of the Azure Nebula.', duration: 60, baseDuration: 60, rewards: { research: 30, credits: 100 }, xp: 30, difficulty: 1, reqLevel: 3 },
+  { id: 'm4', name: 'Trade Convoy Escort', type: 'trade', desc: 'Escort a merchant convoy through dangerous space.', duration: 90, baseDuration: 90, rewards: { credits: 800, parts: 20 }, xp: 50, difficulty: 2, reqLevel: 4 },
+  { id: 'm5', name: 'Deep Space Probe', type: 'explore', desc: 'Launch a long-range probe into uncharted space.', duration: 120, baseDuration: 120, rewards: { research: 80, credits: 300 }, xp: 60, difficulty: 2, reqLevel: 5 },
+  { id: 'm6', name: 'Raider Outpost Assault', type: 'combat', desc: 'Destroy a raider outpost threatening the colony.', duration: 150, baseDuration: 150, rewards: { credits: 1500, parts: 50 }, xp: 90, difficulty: 3, reqLevel: 7 },
+  { id: 'm7', name: 'Alien Artifact Recovery', type: 'explore', desc: 'Retrieve a mysterious alien artifact from deep space.', duration: 200, baseDuration: 200, rewards: { research: 150, credits: 1000, parts: 30 }, xp: 120, difficulty: 3, reqLevel: 9 },
+  { id: 'm8', name: 'Wormhole Survey', type: 'research', desc: 'Map a newly discovered wormhole network.', duration: 180, baseDuration: 180, rewards: { research: 200, credits: 500 }, xp: 100, difficulty: 2, reqLevel: 8 },
+  { id: 'm9', name: 'Black Market Bust', type: 'combat', desc: 'Raid a black market station with contraband tech.', duration: 240, baseDuration: 240, rewards: { credits: 3000, parts: 80 }, xp: 150, difficulty: 4, reqLevel: 12 },
+  { id: 'm10', name: 'Galactic Council Summit', type: 'trade', desc: 'Negotiate trade treaties at the Galactic Council.', duration: 300, baseDuration: 300, rewards: { credits: 5000, research: 100 }, xp: 200, difficulty: 3, reqLevel: 14 },
+  { id: 'm11', name: 'Supernova Research', type: 'research', desc: 'Observe a supernova event for scientific data.', duration: 360, baseDuration: 360, rewards: { research: 400, credits: 1000 }, xp: 250, difficulty: 2, reqLevel: 16 },
+  { id: 'm12', name: 'Dreadnought Battle', type: 'combat', desc: 'Engage the enemy Dreadnought fleet head-on.', duration: 600, baseDuration: 600, rewards: { credits: 15000, parts: 200 }, xp: 500, difficulty: 5, reqLevel: 20 },
+];
+
+const CREW_DATA = [
+  { id: 'c1', name: 'Kira Volkov', role: 'Pilot', avatar: '👩‍🚀', stats: { missionSpeed: 0.2, defense: 5 }, desc: 'Ace pilot from the outer rim colonies.', hireCost: 200, effect: 'missionSpeed', effectVal: 0.2 },
+  { id: 'c2', name: 'AXIOM-7', role: 'AI Navigator', avatar: '🤖', stats: { missionSpeed: 0.3, researchBonus: 0.1 }, desc: 'Military-grade navigation AI. Precise but cold.', hireCost: 500, effect: 'missionSpeed', effectVal: 0.3, reqLevel: 4 },
+  { id: 'c3', name: 'Sgt. Marcus Kane', role: 'Gunner', avatar: '💪', stats: { clickBonus: 10, defense: 15 }, desc: 'Former marine with a taste for the stars.', hireCost: 300, effect: 'clickBonus', effectVal: 10, reqLevel: 3 },
+  { id: 'c4', name: 'Dr. Yuna Sato', role: 'Chief Scientist', avatar: '👩‍🔬', stats: { researchBonus: 0.5, missionReward: 0.15 }, desc: 'Xenobiologist with 20 published papers.', hireCost: 600, effect: 'researchBonus', effectVal: 0.5, reqLevel: 5 },
+  { id: 'c5', name: 'Zax the Mechanic', role: 'Engineer', avatar: '🔧', stats: { partsBonus: 0.4, passiveIncome: 8 }, desc: 'Can fix anything with duct tape and ingenuity.', hireCost: 350, effect: 'partsBonus', effectVal: 0.4, reqLevel: 3 },
+  { id: 'c6', name: 'Commander Reya', role: 'Tactical Officer', avatar: '⚔️', stats: { defense: 20, missionReward: 0.25 }, desc: 'Strategic genius. Rarely loses a battle.', hireCost: 800, effect: 'defense', effectVal: 20, reqLevel: 7 },
+  { id: 'c7', name: 'NOVA', role: 'Ship Mind', avatar: '🌟', stats: { passiveIncome: 20, researchBonus: 0.3 }, desc: 'A sentient AI that runs ship systems optimally.', hireCost: 1500, effect: 'passiveIncome', effectVal: 20, reqLevel: 10 },
+  { id: 'c8', name: 'Captain Thorne', role: 'Space Merchant', avatar: '🤠', stats: { missionReward: 0.5, clickBonus: 5 }, desc: 'Has connections in every port in the galaxy.', hireCost: 2000, effect: 'missionReward', effectVal: 0.5, reqLevel: 12 },
+  { id: 'c9', name: 'Lyra Song', role: 'Medic', avatar: '💉', stats: { defense: 10, missionSpeed: 0.1 }, desc: 'Keeps the crew alive against all odds.', hireCost: 250, effect: 'defense', effectVal: 10, reqLevel: 2 },
+  { id: 'c10', name: 'Vex the Smuggler', role: 'Intelligence', avatar: '🕵️', stats: { missionReward: 0.3, missionSpeed: 0.15 }, desc: 'Knows every shortcut and loophole in the galaxy.', hireCost: 1000, effect: 'missionReward', effectVal: 0.3, reqLevel: 9 },
+];
+
+const SHIP_CLASSES = [
+  { minLevel: 1, name: 'Scout', color: '#00d4ff' },
+  { minLevel: 5, name: 'Frigate', color: '#00d4ff' },
+  { minLevel: 10, name: 'Destroyer', color: '#a855f7' },
+  { minLevel: 15, name: 'Cruiser', color: '#a855f7' },
+  { minLevel: 20, name: 'Battlecruiser', color: '#ff6b35' },
+  { minLevel: 25, name: 'Dreadnought', color: '#ffd700' },
+];
+
+const XP_TABLE = [0,100,250,450,700,1000,1400,1900,2500,3200,4000,5000,6200,7600,9200,11000,13000,15500,18500,22000,26000,30500,36000,42500,50000];
+
+// ======================= GAME STATE =======================
+
+let G = {
+  credits: 0, parts: 0, research: 0, stardust: 0, xp: 0,
+  shipName: 'U.S.S. PIONEER',
+  shipLevel: 1,
+  prestigeCount: 0,
+  prestigeStardust: 0,
+  totalPrestige: 0,
+  upgrades: {},       // upgradeId → level
+  equippedItems: {},  // slotId → itemId
+  inventory: [],      // array of item ids owned
+  crew: [],           // crew ids hired
+  assignedCrew: [],   // crew ids assigned to ship
+  completedMissions: [],
+  activeMission: null,
+  missionTimer: 0,
+  totalClicks: 0,
+  totalCreditsEarned: 0,
+  lastSave: Date.now(),
+};
+
+let derived = {};    // computed each tick
+let missionInterval = null;
+let tickInterval = null;
+let notifTimeout = null;
+
+// ======================= GAME LOGIC =======================
+
+function computeDerived() {
+  const upg = (id) => G.upgrades[id] || 0;
+  const def = UPGRADES.find.bind(UPGRADES);
+
+  // Base values
+  let passiveIncome = 1;
+  let clickPower = 1;
+  let partsRate = 0.05;
+  let researchRate = 0;
+  let missionSpeedMult = 1;
+  let missionRewardMult = 1;
+  let defenseStat = 0;
+  let researchMult = 1;
+  let creditMult = 1;
+
+  // Upgrades
+  for (const upg_def of UPGRADES) {
+    const lvl = G.upgrades[upg_def.id] || 0;
+    if (lvl === 0) continue;
+    const totalEffect = upg_def.effectVal * lvl;
+    switch (upg_def.effect) {
+      case 'passiveIncome': passiveIncome += totalEffect; break;
+      case 'clickPower': clickPower += totalEffect; break;
+      case 'partsRate': partsRate += totalEffect; break;
+      case 'researchRate': researchRate += totalEffect; break;
+      case 'missionSpeed': missionSpeedMult += totalEffect; break;
+      case 'defense': defenseStat += totalEffect; break;
+      case 'creditMult': creditMult += totalEffect; break;
+      case 'researchMult': researchMult += totalEffect; break;
+    }
+  }
+
+  // Equipment
+  for (const slot of EQUIPMENT_SLOTS) {
+    const itemId = G.equippedItems[slot.id];
+    if (!itemId) continue;
+    const item = ALL_EQUIPMENT.find(e => e.id === itemId);
+    if (!item) continue;
+    if (item.stats.passiveIncome) passiveIncome += item.stats.passiveIncome;
+    if (item.stats.clickBonus) clickPower += item.stats.clickBonus;
+    if (item.stats.missionSpeed) missionSpeedMult += item.stats.missionSpeed;
+    if (item.stats.missionReward) missionRewardMult += item.stats.missionReward;
+    if (item.stats.defense) defenseStat += item.stats.defense;
+    if (item.stats.researchBonus) researchRate += item.stats.researchBonus;
+    if (item.stats.partsBonus) partsRate += item.stats.partsBonus;
+  }
+
+  // Crew bonuses
+  for (const crewId of G.assignedCrew) {
+    const crew = CREW_DATA.find(c => c.id === crewId);
+    if (!crew) continue;
+    if (crew.stats.passiveIncome) passiveIncome += crew.stats.passiveIncome;
+    if (crew.stats.clickBonus) clickPower += crew.stats.clickBonus;
+    if (crew.stats.missionSpeed) missionSpeedMult += crew.stats.missionSpeed;
+    if (crew.stats.missionReward) missionRewardMult += crew.stats.missionReward;
+    if (crew.stats.defense) defenseStat += crew.stats.defense;
+    if (crew.stats.researchBonus) researchRate += crew.stats.researchBonus;
+    if (crew.stats.partsBonus) partsRate += crew.stats.partsBonus;
+  }
+
+  // Prestige bonuses
+  const prestigeBonus = 1 + G.prestigeCount * 0.15;
+  passiveIncome *= prestigeBonus * creditMult;
+  clickPower *= prestigeBonus;
+  partsRate *= prestigeBonus;
+  researchRate *= (1 + G.prestigeCount * 0.1) * researchMult;
+
+  derived = { passiveIncome, clickPower, partsRate, researchRate, missionSpeedMult, missionRewardMult, defenseStat, creditMult, prestigeBonus };
+}
+
+function tick() {
+  computeDerived();
+  G.credits += derived.passiveIncome / 20;  // 20 ticks/sec
+  G.parts += derived.partsRate / 20;
+  G.research += derived.researchRate / 20;
+
+  // Mission progress
+  if (G.activeMission) {
+    G.missionTimer -= 1/20;
+    if (G.missionTimer <= 0) completeMission();
+  }
+
+  // Check prestige eligibility
+  updatePrestigeBtn();
+  renderResources();
+  renderActiveMission();
+}
+
+function clickShip(e) {
+  computeDerived();
+  const gain = Math.ceil(derived.clickPower);
+  G.credits += gain;
+  G.xp += 1;
+  G.totalClicks++;
+  G.totalCreditsEarned += gain;
+
+  // Check level up
+  checkLevelUp();
+
+  // Visual feedback
+  const rect = document.getElementById('ship-svg-wrap').getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  const ripple = document.createElement('div');
+  ripple.className = 'ship-click-ripple';
+  ripple.style.left = (x - 10) + 'px';
+  ripple.style.top = (y - 10) + 'px';
+  document.getElementById('ship-svg-wrap').appendChild(ripple);
+  setTimeout(() => ripple.remove(), 700);
+
+  const floater = document.createElement('div');
+  floater.className = 'float-text';
+  floater.textContent = `+${fmt(gain)} ⚡`;
+  floater.style.left = (x - 20) + 'px';
+  floater.style.top = (y - 20) + 'px';
+  document.getElementById('ship-svg-wrap').appendChild(floater);
+  setTimeout(() => floater.remove(), 1100);
+}
+
+function checkLevelUp() {
+  const cap = XP_TABLE[Math.min(G.shipLevel, XP_TABLE.length - 1)];
+  if (G.xp >= cap && G.shipLevel < 25) {
+    G.xp -= cap;
+    G.shipLevel++;
+    notify(`🚀 Ship leveled up! Now Level ${G.shipLevel}`, 'success');
+    renderShipDisplay();
+    addInventoryIfNew();
+  }
+}
+
+function addInventoryIfNew() {
+  // Grant equipment based on level milestones
+  const grants = {
+    2: 'laser_mk1', 3: 'ion_drive', 4: 'energy_shield',
+    5: 'fission_cell', 6: 'radar', 7: 'cargo_bay',
+    8: 'nav_computer', 9: 'titanium_hull', 10: 'fusion_reactor',
+    12: 'laser_mk2', 13: 'warp_core', 14: 'antimatter_core',
+    15: 'phase_barrier', 16: 'deep_scanner', 18: 'ai_core',
+    20: 'quantum_strike', 21: 'void_engine', 22: 'neural_network',
+  };
+  const granted = grants[G.shipLevel];
+  if (granted && !G.inventory.includes(granted)) {
+    G.inventory.push(granted);
+    const item = ALL_EQUIPMENT.find(e => e.id === granted);
+    notify(`📦 New equipment unlocked: ${item.name}!`, 'success');
+  }
+}
+
+function startMission(missionId) {
+  if (G.activeMission) { notify('⚠️ A mission is already in progress!', 'warn'); return; }
+  const m = MISSIONS_DATA.find(m => m.id === missionId);
+  if (!m) return;
+  if (G.shipLevel < m.reqLevel) { notify(`⚠️ Need Ship Level ${m.reqLevel} for this mission!`, 'warn'); return; }
+
+  const duration = m.baseDuration / derived.missionSpeedMult;
+  G.activeMission = { ...m, startedAt: Date.now(), timerDuration: duration };
+  G.missionTimer = duration;
+  notify(`🚀 Mission started: ${m.name}`, 'success');
+  renderMissions();
+  renderActiveMission();
+}
+
+function completeMission() {
+  const m = G.activeMission;
+  if (!m) return;
+
+  // Defense check for combat missions
+  const successChance = m.type === 'combat'
+    ? Math.min(0.99, 0.5 + derived.defenseStat / 200)
+    : 0.99;
+
+  const success = Math.random() < successChance;
+
+  if (success) {
+    const mult = derived.missionRewardMult;
+    if (m.rewards.credits) G.credits += Math.ceil(m.rewards.credits * mult);
+    if (m.rewards.parts) G.parts += Math.ceil(m.rewards.parts * mult);
+    if (m.rewards.research) G.research += Math.ceil(m.rewards.research * mult);
+    G.xp += m.xp;
+    G.totalCreditsEarned += m.rewards.credits || 0;
+
+    if (!G.completedMissions.includes(m.id)) G.completedMissions.push(m.id);
+
+    notify(`✅ Mission complete: ${m.name}! Rewards received.`, 'success');
+    checkLevelUp();
+  } else {
+    notify(`❌ Mission failed: ${m.name}. Your crew fought bravely.`, 'warn');
+  }
+
+  G.activeMission = null;
+  G.missionTimer = 0;
+  renderMissions();
+  renderActiveMission();
+}
+
+function buyUpgrade(upgradeId) {
+  const u = UPGRADES.find(u => u.id === upgradeId);
+  if (!u) return;
+  const lvl = G.upgrades[upgradeId] || 0;
+  if (lvl >= u.maxLevel) return;
+  if (u.reqLevel && G.shipLevel < u.reqLevel) { notify(`⚠️ Need Ship Level ${u.reqLevel}!`, 'warn'); return; }
+  if (u.reqResearch && G.research < u.reqResearch) { notify(`⚠️ Need ${u.reqResearch} Research!`, 'warn'); return; }
+
+  const cost = Math.ceil(u.baseCost * Math.pow(u.costMult, lvl));
+  if (G.credits < cost) { notify('⚠️ Not enough credits!', 'warn'); return; }
+
+  G.credits -= cost;
+  G.upgrades[upgradeId] = lvl + 1;
+  computeDerived();
+  notify(`⚙️ ${u.name} upgraded to Level ${lvl + 1}!`);
+  renderUpgrades();
+}
+
+function hireCrew(crewId) {
+  const crew = CREW_DATA.find(c => c.id === crewId);
+  if (!crew) return;
+  if (G.crew.includes(crewId)) { notify('Already hired!', 'warn'); return; }
+  if (crew.reqLevel && G.shipLevel < crew.reqLevel) { notify(`⚠️ Need Ship Level ${crew.reqLevel}!`, 'warn'); return; }
+  if (G.credits < crew.hireCost) { notify('⚠️ Not enough credits!', 'warn'); return; }
+  G.credits -= crew.hireCost;
+  G.crew.push(crewId);
+  notify(`👤 ${crew.name} has joined the crew!`, 'success');
+  renderCrew();
+}
+
+function toggleCrewAssign(crewId) {
+  if (!G.crew.includes(crewId)) return;
+  if (G.assignedCrew.includes(crewId)) {
+    G.assignedCrew = G.assignedCrew.filter(c => c !== crewId);
+  } else {
+    G.assignedCrew.push(crewId);
+  }
+  computeDerived();
+  renderCrew();
+  renderCrewAboard();
+}
+
+function openSlotModal(slotId) {
+  const slot = EQUIPMENT_SLOTS.find(s => s.id === slotId);
+  if (!slot) return;
+
+  const eligible = ALL_EQUIPMENT.filter(e => e.slot === slotId);
+  const owned = eligible.filter(e => G.inventory.includes(e.id));
+  const notOwned = eligible.filter(e => !G.inventory.includes(e.id));
+
+  let html = '';
+  if (G.equippedItems[slotId]) {
+    html += `<div class="modal-item" onclick="unequipSlot('${slotId}')">
+      <div class="modal-item-name">❌ Unequip Slot</div>
+      <div class="modal-item-desc">Remove current equipment from this slot.</div>
+    </div>`;
+  }
+  if (owned.length > 0) {
+    html += `<div class="section-title" style="margin:12px 0 8px">Owned Equipment</div>`;
+    for (const item of owned) {
+      const isEquippedElsewhere = Object.entries(G.equippedItems).some(([sid, eid]) => eid === item.id && sid !== slotId);
+      const isEquipped = G.equippedItems[slotId] === item.id;
+      html += `<div class="modal-item rarity-${item.rarity} ${isEquippedElsewhere ? 'equipped-elsewhere' : ''} ${isEquipped ? 'selected' : ''}"
+        onclick="${isEquippedElsewhere ? '' : `equipItem('${slotId}','${item.id}')`}">
+        <div class="modal-item-name">${item.name} <span class="rarity-badge ${item.rarity}">${item.rarity.toUpperCase()}</span> ${isEquipped ? '✓ EQUIPPED' : ''}</div>
+        <div class="modal-item-desc">${item.desc}</div>
+        <div class="modal-item-stats">${Object.entries(item.stats).map(([k,v]) => `<span class="modal-stat">${statLabel(k)}: +${v}</span>`).join('')}</div>
+        ${isEquippedElsewhere ? '<div style="color:var(--text-muted);font-size:10px;margin-top:4px;">⚠ Equipped in another slot</div>' : ''}
+      </div>`;
+    }
+  }
+  if (notOwned.length > 0) {
+    html += `<div class="section-title" style="margin:12px 0 8px;opacity:0.6;">Not Yet Owned</div>`;
+    for (const item of notOwned) {
+      const locked = item.reqLevel && G.shipLevel < item.reqLevel;
+      html += `<div class="modal-item rarity-${item.rarity}" style="opacity:0.4;cursor:default;">
+        <div class="modal-item-name">${item.name} <span class="rarity-badge ${item.rarity}">${item.rarity.toUpperCase()}</span>${locked ? ` <span style="color:var(--red);font-size:10px;">Req Lv${item.reqLevel}</span>` : ''}</div>
+        <div class="modal-item-desc">${item.desc}</div>
+      </div>`;
+    }
+  }
+
+  document.getElementById('modal-title').textContent = `${slot.icon} ${slot.label} Slot`;
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function equipItem(slotId, itemId) {
+  G.equippedItems[slotId] = itemId;
+  computeDerived();
+  closeModal();
+  renderEquipment();
+  renderShipStats();
+  notify('🔧 Equipment installed!', 'success');
+}
+
+function unequipSlot(slotId) {
+  delete G.equippedItems[slotId];
+  computeDerived();
+  closeModal();
+  renderEquipment();
+  renderShipStats();
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function closeModalIfOutside(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+function renameShip() {
+  const name = document.getElementById('ship-name-input').value.trim();
+  if (!name) return;
+  G.shipName = name.toUpperCase();
+  document.getElementById('ship-name-input').value = '';
+  renderShipDisplay();
+}
+
+function statLabel(key) {
+  const labels = { passiveIncome: 'Passive', clickBonus: 'Click', missionSpeed: 'Speed', missionReward: 'Reward', defense: 'Defense', researchBonus: 'Research', partsBonus: 'Parts', storageBonus: 'Storage' };
+  return labels[key] || key;
+}
+
+function getShipClass() {
+  const classes = [...SHIP_CLASSES].reverse();
+  return classes.find(c => G.shipLevel >= c.minLevel) || SHIP_CLASSES[0];
+}
+
+// ======================= PRESTIGE =======================
+
+function getPrestigeStardust() {
+  return Math.floor(Math.sqrt(G.totalCreditsEarned / 1000) + G.completedMissions.length * 2);
+}
+
+function showPrestigeModal() {
+  switchTab('prestige');
+  renderPrestige();
+}
+
+function updatePrestigeBtn() {
+  const dust = getPrestigeStardust();
+  const eligible = dust >= 5 || G.shipLevel >= 15;
+  const btn = document.getElementById('prestige-btn');
+  btn.style.display = eligible ? 'block' : 'none';
+  if (eligible) btn.classList.add('prestige-ready');
+}
+
+function doPrestige() {
+  const dust = getPrestigeStardust();
+  if (dust < 1) { notify('Not enough progress to prestige yet!', 'warn'); return; }
+  if (!confirm(`Prestige now and gain ${dust} Stardust? This will reset your ship, credits, parts, research, and upgrades.`)) return;
+
+  G.stardust += dust;
+  G.prestigeCount++;
+  G.totalPrestige += dust;
+
+  // Reset gameplay
+  G.credits = 50;
+  G.parts = 0;
+  G.research = 0;
+  G.xp = 0;
+  G.shipLevel = 1;
+  G.upgrades = {};
+  G.equippedItems = {};
+  G.activeMission = null;
+  G.missionTimer = 0;
+  G.totalCreditsEarned = 0;
+  G.totalClicks = 0;
+  // Keep: stardust, crew, inventory, assignedCrew, completedMissions record, shipName, prestigeCount
+
+  computeDerived();
+  notify(`✨ Prestige ${G.prestigeCount} achieved! +${dust} Stardust earned.`, 'prestige');
+  renderAll();
+  switchTab('ship');
+}
+
+// ======================= SAVE/LOAD =======================
+
+let fileHandle = null;
+
+async function saveGame() {
+  const data = JSON.stringify(G, null, 2);
+  try {
+    if (!fileHandle) {
+      fileHandle = await window.showSaveFilePicker({
+        suggestedName: 'starforge_save.json',
+        types: [{ description: 'JSON Save File', accept: { 'application/json': ['.json'] } }]
+      });
+    }
+    const writable = await fileHandle.createWritable();
+    await writable.write(data);
+    await writable.close();
+    setStatus('Game saved to file ✓');
+  } catch (e) {
+    if (e.name !== 'AbortError') {
+      localStorage.setItem('starforge_save', data);
+      setStatus('Auto-saved to browser storage ✓');
+    }
+  }
+}
+
+async function loadGame() {
+  try {
+    [fileHandle] = await window.showOpenFilePicker({
+      types: [{ description: 'JSON Save File', accept: { 'application/json': ['.json'] } }]
+    });
+    const file = await fileHandle.getFile();
+    const parsed = JSON.parse(await file.text());
+    Object.assign(G, parsed);
+    computeDerived();
+    renderAll();
+    setStatus('Save file loaded ✓');
+    notify('💾 Game loaded from file!', 'success');
+  } catch (e) {
+    if (e.name !== 'AbortError') {
+      const raw = localStorage.getItem('starforge_save');
+      if (raw) {
+        Object.assign(G, JSON.parse(raw));
+        computeDerived();
+        renderAll();
+        setStatus('Loaded from browser storage ✓');
+        notify('💾 Game loaded from auto-save!', 'success');
+      } else {
+        notify('⚠️ No save file found.', 'warn');
+      }
+    }
+  }
+}
+
+function autoSave() {
+  localStorage.setItem('starforge_save', JSON.stringify(G));
+}
+
+function confirmReset() {
+  if (!confirm('Start a new game? ALL progress (including prestige) will be lost!')) return;
+  localStorage.removeItem('starforge_save');
+  fileHandle = null;
+  G = {
+    credits: 50, parts: 0, research: 0, stardust: 0, xp: 0,
+    shipName: 'U.S.S. PIONEER', shipLevel: 1,
+    prestigeCount: 0, prestigeStardust: 0, totalPrestige: 0,
+    upgrades: {}, equippedItems: {}, inventory: [],
+    crew: [], assignedCrew: [], completedMissions: [],
+    activeMission: null, missionTimer: 0,
+    totalClicks: 0, totalCreditsEarned: 0,
+    lastSave: Date.now(),
+  };
+  computeDerived();
+  renderAll();
+  setStatus('New game started.');
+}
+
+// ======================= FORMATTING =======================
+
+function fmt(n) {
+  n = Math.floor(n);
+  if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+  if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return n.toString();
+}
+
+function fmtTime(sec) {
+  sec = Math.ceil(sec);
+  if (sec < 60) return `${sec}s`;
+  if (sec < 3600) return `${Math.floor(sec/60)}m ${sec%60}s`;
+  return `${Math.floor(sec/3600)}h ${Math.floor((sec%3600)/60)}m`;
+}
+
+function setStatus(msg) {
+  document.getElementById('status-bar').textContent = msg + ' · ' + new Date().toLocaleTimeString();
+}
+
+function notify(msg, type = '') {
+  const el = document.getElementById('notification');
+  el.textContent = msg;
+  el.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(notifTimeout);
+  notifTimeout = setTimeout(() => { el.className = ''; }, 3500);
+}
+
+// ======================= RENDER FUNCTIONS =======================
+
+function renderResources() {
+  document.getElementById('res-credits').textContent = fmt(G.credits);
+  document.getElementById('res-parts').textContent = fmt(G.parts);
+  document.getElementById('res-research').textContent = fmt(G.research);
+  document.getElementById('res-stardust').textContent = fmt(G.stardust);
+  document.getElementById('res-xp').textContent = fmt(G.xp);
+  const xpCap = XP_TABLE[Math.min(G.shipLevel, XP_TABLE.length - 1)];
+  document.getElementById('res-xp-cap').textContent = fmt(xpCap);
+  document.getElementById('res-credits-rate').textContent = `+${fmt(derived.passiveIncome)}/s`;
+  document.getElementById('res-parts-rate').textContent = `+${fmt(derived.partsRate)}/s`;
+  document.getElementById('res-research-rate').textContent = `+${fmt(derived.researchRate)}/s`;
+}
+
+function renderShipDisplay() {
+  const cls = getShipClass();
+  document.getElementById('ship-name-display').textContent = G.shipName;
+  document.getElementById('ship-level-display').textContent = `Level ${G.shipLevel} · Class: ${cls.name}`;
+  document.getElementById('click-power-display').textContent = `⚡ ${fmt(derived.clickPower)} credits/click`;
+
+  // Draw SVG ship
+  const wrap = document.getElementById('ship-svg-wrap');
+  const color = cls.color;
+  const engineColor = G.equippedItems.engine ? '#ff6b35' : '#445577';
+  const shieldOn = !!G.equippedItems.shield;
+
+  wrap.innerHTML = `
+    <svg viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg" width="160" height="200" style="filter:drop-shadow(0 0 12px ${color}88)">
+      <defs>
+        <radialGradient id="eng1" cx="50%" cy="50%"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="${engineColor}"/></radialGradient>
+        <radialGradient id="shg" cx="50%" cy="50%"><stop offset="0%" stop-color="${shieldOn ? '#00d4ff' : 'transparent'}" stop-opacity="${shieldOn ? '0.1' : '0'}"/><stop offset="100%" stop-color="${shieldOn ? '#00d4ff' : 'transparent'}" stop-opacity="${shieldOn ? '0.3' : '0'}"/></radialGradient>
+      </defs>
+      ${shieldOn ? `<ellipse cx="80" cy="100" rx="70" ry="90" fill="url(#shg)" stroke="#00d4ff" stroke-width="1" opacity="0.4"/>` : ''}
+      <!-- Engine nozzles -->
+      <rect x="35" y="160" width="18" height="30" rx="4" fill="#223" stroke="#${engineColor.slice(1)}" stroke-width="1" opacity="0.8"/>
+      <rect x="107" y="160" width="18" height="30" rx="4" fill="#223" stroke="#${engineColor.slice(1)}" stroke-width="1" opacity="0.8"/>
+      <!-- Engine flame -->
+      <ellipse cx="44" cy="196" rx="8" ry="${12 + Math.random()*3}" fill="url(#eng1)" opacity="0.85"/>
+      <ellipse cx="116" cy="196" rx="8" ry="${12 + Math.random()*3}" fill="url(#eng1)" opacity="0.85"/>
+      <!-- Wings -->
+      <polygon points="20,100 10,155 50,140 45,90" fill="${color}33" stroke="${color}" stroke-width="1.5"/>
+      <polygon points="140,100 150,155 110,140 115,90" fill="${color}33" stroke="${color}" stroke-width="1.5"/>
+      <!-- Main hull -->
+      <polygon points="80,10 110,60 120,160 80,175 40,160 50,60" fill="#0d1525" stroke="${color}" stroke-width="2"/>
+      <!-- Hull detail lines -->
+      <line x1="80" y1="30" x2="80" y2="160" stroke="${color}" stroke-width="0.5" opacity="0.4"/>
+      <line x1="60" y1="80" x2="100" y2="80" stroke="${color}" stroke-width="0.5" opacity="0.3"/>
+      <line x1="55" y1="110" x2="105" y2="110" stroke="${color}" stroke-width="0.5" opacity="0.3"/>
+      <!-- Cockpit -->
+      <ellipse cx="80" cy="55" rx="18" ry="22" fill="#050f20" stroke="${color}" stroke-width="1.5"/>
+      <ellipse cx="80" cy="55" rx="12" ry="15" fill="#0a1835" stroke="${color}88" stroke-width="1"/>
+      <ellipse cx="80" cy="50" rx="6" ry="8" fill="#00aaff22"/>
+      <!-- Weapon indicator -->
+      ${G.equippedItems.weapon ? `
+        <rect x="73" y="8" width="14" height="6" rx="2" fill="${color}" opacity="0.8"/>
+        <rect x="76" y="4" width="8" height="6" rx="1" fill="${color}"/>
+      ` : ''}
+      <!-- Level indicator dots -->
+      ${Array.from({length: Math.min(G.shipLevel, 10)}, (_,i) =>
+        `<circle cx="${50 + i*7}" cy="145" r="2.5" fill="${i < G.shipLevel ? color : '#222'}" opacity="0.8"/>`
+      ).join('')}
+      <!-- Sensor if equipped -->
+      ${G.equippedItems.sensor ? `<line x1="80" y1="10" x2="80" y2="2" stroke="${color}" stroke-width="2"/><circle cx="80" cy="2" r="3" fill="${color}"/>` : ''}
+    </svg>
+  `;
+}
+
+function renderShipStats() {
+  const stats = [
+    { label: 'Passive Income', val: `${fmt(derived.passiveIncome)} /sec`, color: 'var(--primary)' },
+    { label: 'Click Power', val: `${fmt(derived.clickPower)} /click`, color: 'var(--gold)' },
+    { label: 'Parts Rate', val: `${fmt(derived.partsRate)} /sec`, color: 'var(--secondary)' },
+    { label: 'Research Rate', val: `${fmt(derived.researchRate)} /sec`, color: 'var(--accent)' },
+    { label: 'Mission Speed', val: `${derived.missionSpeedMult.toFixed(2)}x`, color: 'var(--green)' },
+    { label: 'Mission Reward', val: `${derived.missionRewardMult.toFixed(2)}x`, color: 'var(--gold)' },
+    { label: 'Defense Rating', val: `${fmt(derived.defenseStat)}`, color: 'var(--primary)' },
+    { label: 'Prestige Bonus', val: `${((derived.prestigeBonus - 1)*100).toFixed(0)}%`, color: 'var(--accent)' },
+  ];
+  const xpCap = XP_TABLE[Math.min(G.shipLevel, XP_TABLE.length - 1)];
+  const xpPct = Math.min(100, (G.xp / xpCap) * 100);
+
+  document.getElementById('ship-stats-list').innerHTML = `
+    ${stats.map(s => `
+      <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;">
+        <span style="color:var(--text-muted)">${s.label}</span>
+        <span style="font-family:'Share Tech Mono',monospace;color:${s.color}">${s.val}</span>
+      </div>
+    `).join('')}
+    <div style="margin-top:10px;">
+      <div style="display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);margin-bottom:4px;">
+        <span>XP Progress</span><span>${fmt(G.xp)} / ${fmt(xpCap)}</span>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${xpPct}%"></div></div>
+    </div>
+  `;
+}
+
+function renderEquipment() {
+  const grid = document.getElementById('equipment-grid');
+  grid.innerHTML = EQUIPMENT_SLOTS.map(slot => {
+    const equippedId = G.equippedItems[slot.id];
+    const item = equippedId ? ALL_EQUIPMENT.find(e => e.id === equippedId) : null;
+    const equipped = !!item;
+    return `
+      <div class="eq-slot ${equipped ? 'equipped' : 'empty'}" onclick="openSlotModal('${slot.id}')">
+        <div class="eq-slot-icon">${slot.icon}</div>
+        <div class="eq-slot-label">${slot.label}</div>
+        ${equipped
+          ? `<div class="eq-slot-name">${item.name}</div>
+             <div class="eq-slot-stat">${item.desc}</div>`
+          : `<div class="eq-slot-name">Empty — click to install</div>`
+        }
+      </div>
+    `;
+  }).join('');
+}
+
+function renderInventory() {
+  const list = document.getElementById('inventory-list');
+  const owned = ALL_EQUIPMENT.filter(e => G.inventory.includes(e.id));
+  if (owned.length === 0) {
+    list.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:8px;">Level up to earn equipment!</div>';
+    return;
+  }
+  list.innerHTML = owned.map(item => {
+    const equippedIn = Object.entries(G.equippedItems).find(([,eid]) => eid === item.id);
+    return `
+      <div class="card" style="margin-bottom:8px;padding:10px;cursor:pointer;" onclick="openSlotModal('${item.slot}')">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <span style="font-weight:600;font-size:12px;">${item.name}</span>
+            <span class="rarity-badge ${item.rarity}" style="margin-left:6px;">${item.rarity.toUpperCase()}</span>
+          </div>
+          ${equippedIn ? `<span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--green);">✓ ${EQUIPMENT_SLOTS.find(s=>s.id===equippedIn[0])?.label}</span>` : ''}
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">${item.desc}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderUpgrades() {
+  const cats = {
+    power: 'upgrades-power', engineering: 'upgrades-engineering',
+    research: 'upgrades-research', defense: 'upgrades-defense', navigation: 'upgrades-navigation'
+  };
+  for (const [cat, elId] of Object.entries(cats)) {
+    const el = document.getElementById(elId);
+    const upgList = UPGRADES.filter(u => u.cat === cat);
+    el.innerHTML = upgList.map(u => {
+      const lvl = G.upgrades[u.id] || 0;
+      const maxed = lvl >= u.maxLevel;
+      const cost = maxed ? 0 : Math.ceil(u.baseCost * Math.pow(u.costMult, lvl));
+      const locked = (u.reqLevel && G.shipLevel < u.reqLevel) || (u.reqResearch && G.research < u.reqResearch);
+      const canAfford = !maxed && !locked && G.credits >= cost;
+      const pct = (lvl / u.maxLevel) * 100;
+      return `
+        <div class="upgrade-item ${maxed ? 'maxed' : ''} ${locked ? 'locked' : ''}" onclick="${maxed || locked ? '' : `buyUpgrade('${u.id}')`}">
+          <div class="upgrade-icon">${u.icon}</div>
+          <div class="upgrade-info">
+            <div class="upgrade-name">${u.name}</div>
+            <div class="upgrade-desc">${u.desc}</div>
+            <div class="upgrade-level">Lv ${lvl}/${u.maxLevel}</div>
+            <div class="progress-bar-wrap" style="margin-top:4px;"><div class="progress-bar-fill orange" style="width:${pct}%"></div></div>
+            ${locked ? `<div style="font-size:10px;color:var(--red);margin-top:2px;">${u.reqLevel ? `Req Lv${u.reqLevel}` : ''}${u.reqResearch ? ` · ${u.reqResearch} Research` : ''}</div>` : ''}
+          </div>
+          <div class="upgrade-cost ${maxed ? 'maxed-label' : canAfford ? 'can-afford' : 'cannot-afford'}">
+            ${maxed ? '★ MAX' : locked ? '🔒' : `⚡ ${fmt(cost)}`}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+function renderMissions() {
+  const avail = document.getElementById('missions-available');
+  const comp = document.getElementById('missions-completed');
+
+  const available = MISSIONS_DATA.filter(m => m.id !== G.activeMission?.id);
+  avail.innerHTML = available.map(m => {
+    const canStart = G.shipLevel >= m.reqLevel;
+    const isActive = G.activeMission?.id === m.id;
+    const duration = m.baseDuration / derived.missionSpeedMult;
+    return `
+      <div class="mission-card ${canStart ? 'available' : ''}" ${canStart ? `onclick="startMission('${m.id}')"` : ''}>
+        <div class="mission-header">
+          <div class="mission-name">${m.name}</div>
+          <div class="mission-type ${m.type}">${m.type.toUpperCase()}</div>
+        </div>
+        <div class="mission-desc">${m.desc}</div>
+        <div class="mission-rewards">
+          ${m.rewards.credits ? `<span class="reward-chip credits">⚡ ${fmt(m.rewards.credits)}</span>` : ''}
+          ${m.rewards.parts ? `<span class="reward-chip parts">🔩 ${fmt(m.rewards.parts)}</span>` : ''}
+          ${m.rewards.research ? `<span class="reward-chip xp">🔬 ${fmt(m.rewards.research)}</span>` : ''}
+          <span class="reward-chip xp">⭐ ${m.xp} XP</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);">
+          <span>⏱ ${fmtTime(duration)}</span>
+          <span>Req Lv${m.reqLevel}</span>
+          <span>⚠ Diff ${m.difficulty}/5</span>
+        </div>
+        ${!canStart ? `<div style="color:var(--red);font-size:11px;margin-top:6px;">🔒 Requires Ship Level ${m.reqLevel}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  comp.innerHTML = G.completedMissions.length === 0
+    ? '<div style="color:var(--text-muted);font-size:12px;padding:8px;">No completed missions yet.</div>'
+    : G.completedMissions.map(mid => {
+        const m = MISSIONS_DATA.find(m => m.id === mid);
+        return m ? `
+          <div class="mission-card completed">
+            <div class="mission-header">
+              <div class="mission-name">✅ ${m.name}</div>
+              <div class="mission-type ${m.type}">${m.type.toUpperCase()}</div>
+            </div>
+            <div class="mission-desc">${m.desc}</div>
+          </div>
+        ` : '';
+      }).join('');
+}
+
+function renderActiveMission() {
+  const el = document.getElementById('active-mission-display');
+  if (!G.activeMission) {
+    el.innerHTML = `<div class="card" style="text-align:center;color:var(--text-muted);padding:20px;">
+      <div style="font-size:24px;margin-bottom:8px;">🚀</div>
+      <div>No active mission.</div>
+      <div style="font-size:11px;margin-top:4px;">Head to the Missions tab to launch one.</div>
+    </div>`;
+    return;
+  }
+  const m = G.activeMission;
+  const elapsed = m.timerDuration - G.missionTimer;
+  const pct = Math.min(100, (elapsed / m.timerDuration) * 100);
+
+  el.innerHTML = `
+    <div class="card" style="border-color:var(--secondary);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-weight:700;font-size:14px;">${m.name}</div>
+        <div class="mission-type ${m.type}">${m.type.toUpperCase()}</div>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:10px;">${m.desc}</div>
+      <div class="mission-progress-label">
+        <span>⏱ ${fmtTime(G.missionTimer)} remaining</span>
+        <span>${pct.toFixed(0)}%</span>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill orange" style="width:${pct}%"></div></div>
+      <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
+        ${m.rewards.credits ? `<span class="reward-chip credits">⚡ ${fmt(m.rewards.credits)}</span>` : ''}
+        ${m.rewards.parts ? `<span class="reward-chip parts">🔩 ${fmt(m.rewards.parts)}</span>` : ''}
+        ${m.rewards.research ? `<span class="reward-chip xp">🔬 ${fmt(m.rewards.research)}</span>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderCrew() {
+  const roster = document.getElementById('crew-roster');
+  const hire = document.getElementById('crew-hire');
+
+  roster.innerHTML = G.crew.length === 0
+    ? '<div style="color:var(--text-muted);font-size:12px;padding:8px;">No crew hired yet. Visit the hire panel!</div>'
+    : G.crew.map(cid => {
+        const crew = CREW_DATA.find(c => c.id === cid);
+        const assigned = G.assignedCrew.includes(cid);
+        return `
+          <div class="crew-card ${assigned ? 'assigned' : ''}" onclick="toggleCrewAssign('${cid}')">
+            <div class="crew-avatar">${crew.avatar}</div>
+            <div class="crew-info">
+              <div class="crew-name">${crew.name}</div>
+              <div class="crew-role">${crew.role}</div>
+              <div class="crew-stats">
+                ${Object.entries(crew.stats).map(([k,v]) => `<div class="crew-stat">${statLabel(k)}: <span>+${v}</span></div>`).join('')}
+              </div>
+            </div>
+            <span class="crew-badge ${assigned ? 'assigned' : 'available'}">${assigned ? 'ON DUTY' : 'STANDBY'}</span>
+          </div>
+        `;
+      }).join('');
+
+  const forHire = CREW_DATA.filter(c => !G.crew.includes(c.id));
+  hire.innerHTML = forHire.length === 0
+    ? '<div style="color:var(--text-muted);font-size:12px;padding:8px;">Full crew roster hired!</div>'
+    : forHire.map(crew => {
+        const locked = crew.reqLevel && G.shipLevel < crew.reqLevel;
+        return `
+          <div class="crew-card for-hire ${locked ? '' : ''}" style="${locked ? 'opacity:0.5' : ''}">
+            <div class="crew-avatar">${crew.avatar}</div>
+            <div class="crew-info">
+              <div class="crew-name">${crew.name}</div>
+              <div class="crew-role">${crew.role}</div>
+              <div style="font-size:11px;color:var(--text-muted);">${crew.desc}</div>
+              <div class="hire-cost">⚡ ${fmt(crew.hireCost)} credits</div>
+              ${locked ? `<div style="color:var(--red);font-size:10px;">Requires Level ${crew.reqLevel}</div>` : ''}
+            </div>
+            <span class="crew-badge hire">FOR HIRE</span>
+            ${!locked ? `<button class="btn btn-primary" style="position:absolute;bottom:10px;right:10px;font-size:9px;padding:4px 10px;" onclick="event.stopPropagation();hireCrew('${crew.id}')">Hire</button>` : ''}
+          </div>
+        `;
+      }).join('');
+}
+
+function renderCrewAboard() {
+  const el = document.getElementById('crew-aboard-list');
+  const aboard = G.assignedCrew.map(cid => CREW_DATA.find(c => c.id === cid)).filter(Boolean);
+  el.innerHTML = aboard.length === 0
+    ? '<div style="color:var(--text-muted);font-size:12px;padding:8px;">No crew assigned. Assign from the Crew tab.</div>'
+    : aboard.map(crew => `
+        <div style="display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;background:var(--surface2);">
+          <div style="font-size:22px;">${crew.avatar}</div>
+          <div>
+            <div style="font-weight:600;font-size:12px;">${crew.name}</div>
+            <div style="font-family:'Orbitron',monospace;font-size:8px;color:var(--accent);letter-spacing:1px;">${crew.role}</div>
+          </div>
+        </div>
+      `).join('');
+}
+
+function renderPrestige() {
+  const dust = getPrestigeStardust();
+  const el = document.getElementById('prestige-info');
+  el.innerHTML = `
+    <div class="prestige-stat"><span class="label">Current Prestige</span><span class="val">${G.prestigeCount}✨</span></div>
+    <div class="prestige-stat"><span class="label">Total Stardust Earned</span><span class="val">${G.totalPrestige} 🌟</span></div>
+    <div class="prestige-stat"><span class="label">Current Stardust</span><span class="val">${G.stardust} 🌟</span></div>
+    <div class="prestige-stat"><span class="label">Stardust on Next Prestige</span><span class="val">+${dust} 🌟</span></div>
+    <div class="prestige-stat"><span class="label">Missions Completed</span><span class="val">${G.completedMissions.length}</span></div>
+    <div class="prestige-stat"><span class="label">Total Credits Earned</span><span class="val">${fmt(G.totalCreditsEarned)}</span></div>
+    <div style="margin-top:12px;">
+      <div class="mission-progress-label"><span>Prestige Progress</span><span>${Math.min(dust, 100)}%</span></div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill purple" style="width:${Math.min(100, dust)}%"></div></div>
+    </div>
+  `;
+
+  const bonuses = [
+    { name: 'Credit Multiplier', desc: 'All credit income increased', val: `+${(G.prestigeCount * 15)}%` },
+    { name: 'Research Bonus', desc: 'Research generation increased', val: `+${(G.prestigeCount * 10)}%` },
+    { name: 'Starting Credits', desc: 'Begin each run with more', val: `${50 + G.prestigeCount * 25}` },
+    { name: 'Equipment Retention', desc: 'Keep all owned equipment', val: G.inventory.length > 0 ? `${G.inventory.length} items kept` : 'None yet' },
+    { name: 'Crew Retention', desc: 'Crew carries over', val: G.crew.length > 0 ? `${G.crew.length} crew kept` : 'None yet' },
+  ];
+
+  document.getElementById('prestige-bonuses').innerHTML = bonuses.map(b => `
+    <div class="prestige-bonus-item">
+      <div><div class="name">${b.name}</div><div class="desc">${b.desc}</div></div>
+      <div class="val">${b.val}</div>
+    </div>
+  `).join('');
+
+  const doBtn = document.getElementById('prestige-do-btn');
+  doBtn.disabled = dust < 1;
+  doBtn.textContent = dust < 1 ? '✨ Earn more to Prestige' : `✨ PRESTIGE (gain +${dust} Stardust)`;
+}
+
+function renderAll() {
+  computeDerived();
+  renderResources();
+  renderShipDisplay();
+  renderShipStats();
+  renderEquipment();
+  renderInventory();
+  renderUpgrades();
+  renderMissions();
+  renderActiveMission();
+  renderCrew();
+  renderCrewAboard();
+  renderPrestige();
+}
+
+// ======================= TABS =======================
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    const names = ['ship','upgrades','missions','crew','prestige'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`panel-${name}`).classList.add('active');
+
+  if (name === 'prestige') renderPrestige();
+  if (name === 'missions') renderMissions();
+  if (name === 'upgrades') renderUpgrades();
+  if (name === 'crew') renderCrew();
+}
+
+// ======================= INIT =======================
+
+function init() {
+  // Try loading from localStorage
+  const saved = localStorage.getItem('starforge_save');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      Object.assign(G, parsed);
+    } catch (e) { /* fresh start */ }
+  }
+
+  G.credits = Math.max(G.credits, 50);
+  computeDerived();
+  renderAll();
+
+  // Main tick: 20 fps
+  tickInterval = setInterval(tick, 50);
+
+  // Auto-save every 15s
+  setInterval(autoSave, 15000);
+  setInterval(() => {
+    renderShipStats();
+    renderEquipment();
+  }, 500);
+
+  // Ship sprite flicker (engine glow)
+  setInterval(() => {
+    if (document.getElementById('panel-ship').classList.contains('active')) {
+      renderShipDisplay();
+    }
+  }, 800);
+
+  setStatus('STARFORGE loaded. Click your ship to begin!');
+}
+
+init();
+</script>
+</body>
+</html>
