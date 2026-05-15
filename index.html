@@ -4,127 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Portfolio</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 40px 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 60px;
-        }
-        
-        header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
-        
-        header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-        
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 60px;
-        }
-        
-        .game-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .game-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-        }
-        
-        .game-card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            color: white;
-        }
-        
-        .game-card-header h2 {
-            font-size: 1.5em;
-            margin-bottom: 5px;
-        }
-        
-        .game-card-header p {
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-        
-        .game-card-body {
-            padding: 20px;
-        }
-        
-        .game-card-body p {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-        
-        .game-card-footer {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #667eea;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            transition: background 0.3s ease;
-            border: none;
-            cursor: pointer;
-            font-size: 0.95em;
-        }
-        
-        .btn:hover {
-            background: #764ba2;
-        }
-        
-        .btn-secondary {
-            background: #e0e0e0;
-            color: #333;
-        }
-        
-        .btn-secondary:hover {
-            background: #d0d0d0;
-        }
-        
-        footer {
-            text-align: center;
-            color: white;
-            margin-top: 60px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
-    </style>
+    <meta name="description" content="A portfolio of interactive games and educational tools exploring media literacy, game design, and systems thinking.">
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
     <div class="container">
@@ -134,68 +15,136 @@
         </header>
         
         <div class="games-grid">
-            <!-- Game Card Template -->
-            <div class="game-card">
+            <div class="game-card" id="card-clickin-ship">
                 <div class="game-card-header">
-                    <h2>The Arena</h2>
-                    <p>Media Literacy Trainer</p>
+                    <h2>Clickin' Ship</h2>
+                    <p>Ship Commander</p>
                 </div>
                 <div class="game-card-body">
-                    <p>Learn to identify and defend against bad-faith rhetoric arguments. Interactive scenarios teach you to recognize manipulation tactics in real time.</p>
+                    <p>Command your own starship in this space exploration game. Feature-rich clicking mechanics and cosmic adventure await.</p>
                 </div>
                 <div class="game-card-footer">
-                    <a href="./games/the-arena/the-arena.html" class="btn">Play</a>
-                    <a href="#" class="btn btn-secondary">Docs</a>
+                    <a href="./games/clickin_ship/clickin_ship.html" class="btn" id="play-clickin-ship">Play</a>
+                    <a href="./docs/clickin_ship/README.md" class="btn btn-secondary" id="docs-clickin-ship">Docs</a>
                 </div>
             </div>
-            
-            <div class="game-card">
+
+            <div class="game-card" id="card-cryptozone">
                 <div class="game-card-header">
-                    <h2>The Stacks</h2>
-                    <p>Research Literacy Game</p>
+                    <h2>CryptoZone</h2>
+                    <p>Educational Dark Pattern Demo</p>
                 </div>
                 <div class="game-card-body">
-                    <p>Navigate misinformation by learning to evaluate sources, check claims, and build solid arguments with evidence.</p>
+                    <p>An educational experience exposing the deceptive "dark patterns" used by crypto platforms to manipulate users.</p>
                 </div>
                 <div class="game-card-footer">
-                    <a href="./games/the-stacks/the-stacks.html" class="btn">Play</a>
-                    <a href="#" class="btn btn-secondary">Docs</a>
+                    <a href="./games/cryptozone/cryptozone-dark-patterns-game.html" class="btn" id="play-cryptozone">Play</a>
+                    <a href="./docs/cryptozone/README.md" class="btn btn-secondary" id="docs-cryptozone">Docs</a>
                 </div>
             </div>
-            
-            <div class="game-card">
+
+            <div class="game-card" id="card-html5-scuffle">
                 <div class="game-card-header">
-                    <h2>Fighting Game</h2>
-                    <p>Nintendo Parody</p>
+                    <h2>HTML5 Scuffle</h2>
+                    <p>Arcade Edition</p>
                 </div>
                 <div class="game-card-body">
-                    <p>A fully functional browser-based fighting game with eight parody characters and multiple stages.</p>
+                    <p>A high-octane tribute to the classic platform fighter, featuring parody characters and intense arcade combat.</p>
                 </div>
                 <div class="game-card-footer">
-                    <a href="./games/fighting-game/smash_flash.html" class="btn">Play</a>
-                    <a href="#" class="btn btn-secondary">Docs</a>
+                    <a href="./games/fighting-game/html5_scuffle.html" class="btn" id="play-html5-scuffle">Play</a>
+                    <a href="./docs/fighting-game/README.md" class="btn btn-secondary" id="docs-html5-scuffle">Docs</a>
                 </div>
             </div>
-            
-            <div class="game-card">
+
+            <div class="game-card" id="card-floralis">
+                <div class="game-card-header">
+                    <h2>Floralis</h2>
+                    <p>Mendelian Flower Garden</p>
+                </div>
+                <div class="game-card-body">
+                    <p>Explore the beauty of genetics in this relaxing garden simulator. Breed flowers to unlock rare traits and colors.</p>
+                </div>
+                <div class="game-card-footer">
+                    <a href="./games/floralis/floralis.html" class="btn" id="play-floralis">Play</a>
+                    <a href="./docs/floralis/README.md" class="btn btn-secondary" id="docs-floralis">Docs</a>
+                </div>
+            </div>
+
+            <div class="game-card" id="card-grand-works">
+                <div class="game-card-header">
+                    <h2>Grand Works</h2>
+                    <p>A Collector's Edition</p>
+                </div>
+                <div class="game-card-body">
+                    <p>A premium card-collecting experience where you curate and manage a gallery of exceptional artistic works.</p>
+                </div>
+                <div class="game-card-footer">
+                    <a href="./games/grand-works/card-collector.html" class="btn" id="play-grand-works">Play</a>
+                    <a href="./docs/grand-works/README.md" class="btn btn-secondary" id="docs-grand-works">Docs</a>
+                </div>
+            </div>
+
+            <div class="game-card" id="card-nautilio">
                 <div class="game-card-header">
                     <h2>Nautil.io</h2>
-                    <p>Multiplayer .io Game</p>
+                    <p>Multiplayer Ship Combat</p>
                 </div>
                 <div class="game-card-body">
-                    <p>A browser-based game where players pilot ships and try to capture objectives from other players.</p>
+                    <p>A multiplayer action game where you pilot ships, capture objectives, and outmaneuver other players in real-time.</p>
                 </div>
                 <div class="game-card-footer">
-                    <a href="./games/nautil.io/nautil_io.html" class="btn">Play</a>
-                    <a href="./docs/nautil.io/README.md" class="btn btn-secondary">Docs</a>
+                    <a href="./games/nautil.io/nautil_io.html" class="btn" id="play-nautilio">Play</a>
+                    <a href="./docs/nautil.io/README.md" class="btn btn-secondary" id="docs-nautilio">Docs</a>
                 </div>
             </div>
-            <!-- Add more game cards as needed -->
+
+            <div class="game-card" id="card-vice-city">
+                <div class="game-card-header">
+                    <h2>Vice City Pocket</h2>
+                    <p>GTA VI Inspired Action</p>
+                </div>
+                <div class="game-card-body">
+                    <p>Race and explore through a neon-drenched pocket version of Vice City in this retro-styled action game.</p>
+                </div>
+                <div class="game-card-footer">
+                    <a href="./games/racearound/race-around.html" class="btn" id="play-vice-city">Play</a>
+                    <a href="./docs/racearound/README.md" class="btn btn-secondary" id="docs-vice-city">Docs</a>
+                </div>
+            </div>
+
+            <div class="game-card" id="card-the-flood">
+                <div class="game-card-header">
+                    <h2>THE FLOOD</h2>
+                    <p>Gish Gallop Trainer</p>
+                </div>
+                <div class="game-card-body">
+                    <p>Master the art of identifying and neutralizing bad-faith rhetorical tactics like the Gish Gallop in real-time.</p>
+                </div>
+                <div class="game-card-footer">
+                    <a href="./games/the-flood/the-flood.html" class="btn" id="play-the-flood">Play</a>
+                    <a href="./docs/the-flood/README.md" class="btn btn-secondary" id="docs-the-flood">Docs</a>
+                </div>
+            </div>
+
+            <div class="game-card" id="card-the-stacks">
+                <div class="game-card-header">
+                    <h2>The Stacks</h2>
+                    <p>Research Skills Academy</p>
+                </div>
+                <div class="game-card-body">
+                    <p>Develop essential research skills in this interactive library simulation. Learn to verify sources and fight misinformation.</p>
+                </div>
+                <div class="game-card-footer">
+                    <a href="./games/the-stacks/the-stacks.html" class="btn" id="play-the-stacks">Play</a>
+                    <a href="./docs/the-stacks/README.md" class="btn btn-secondary" id="docs-the-stacks">Docs</a>
+                </div>
+            </div>
         </div>
         
         <footer>
             <p>Built with HTML, CSS, JavaScript | Hosted on GitHub Pages</p>
-            <p><a href="https://github.com/YOUR_USERNAME/game-portfolio" style="color: white;">View on GitHub</a></p>
+            <p><a href="https://github.com/YOUR_USERNAME/game-portfolio">View on GitHub</a></p>
         </footer>
     </div>
 </body>
