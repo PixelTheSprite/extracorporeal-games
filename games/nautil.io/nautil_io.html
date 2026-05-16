@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NAUTIL.IO — Naval Supremacy</title>
+<script src="../../achievement-system.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -14,8 +15,8 @@
     --ui-bg:rgba(10,22,40,.88);--border:rgba(240,192,64,.4);
   }
   body{background:var(--ocean-deep);color:var(--gold);font-family:'Space Mono',monospace;overflow:hidden;user-select:none;cursor:none}
-  #game-canvas{display:block;position:fixed;top:0;left:0}
-  #hud{position:fixed;inset:0;pointer-events:none;z-index:10}
+  #game-canvas{display:block;position:fixed;top:56px;left:0}
+  #hud{position:fixed;top:56px;left:0;right:0;bottom:0;pointer-events:none;z-index:10}
   #top-bar{position:absolute;top:16px;left:50%;transform:translateX(-50%);display:flex;gap:20px;align-items:center;background:var(--ui-bg);border:1px solid var(--border);padding:8px 24px;border-radius:4px;backdrop-filter:blur(8px);white-space:nowrap}
   #game-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px}
   .stat-block{display:flex;flex-direction:column;align-items:center;gap:2px}
@@ -78,9 +79,48 @@
   #victory-screen .screen-title{color:var(--safe);text-shadow:0 0 40px rgba(48,208,128,.5)}
   .float-text{position:fixed;font-family:'Bebas Neue',sans-serif;font-size:18px;pointer-events:none;z-index:50;animation:floatUp 1s forwards}
   @keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-50px)}}
+    #portfolio-toolbar {
+        background-color: #f8fafc !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding: 0 24px !important;
+        display: flex !important;
+        align-items: center !important;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+        z-index: 1000000 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 56px !important;
+        box-sizing: border-box !important;
+    }
+    .portfolio-back-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        padding: 8px 16px !important;
+        background-color: #6366f1 !important;
+        color: #ffffff !important;
+        text-decoration: none !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        transition: all 0.2s ease !important;
+        line-height: 1 !important;
+        border: none !important;
+        cursor: pointer !important;
+    }
+    .portfolio-back-btn:hover {
+        background-color: #4f46e5 !important;
+        transform: translateY(-1px) !important;
+    }
 </style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
 </head>
-<body>
+<body style="padding-top: 56px !important;">
+    <div id="portfolio-toolbar">
+        <a href="../../index.html" class="portfolio-back-btn">← Back to Portfolio</a>
+    </div>
+
 <canvas id="game-canvas"></canvas>
 <div id="crosshair"></div>
 
@@ -181,6 +221,24 @@
 </div>
 
 <script>
+// ══ ACHIEVEMENT SETUP ════════════════════════════════════════
+AchievementSystem.init('nautil-io');
+
+AchievementSystem.register('nautil-io', [
+    { id: 'first-blood', name: 'First Blood', description: 'Sink your first enemy ship', icon: '⚔️', points: 5, rarity: 'common' },
+    { id: 'kill-10', name: 'Raider', description: 'Sink 10 enemy ships in a single run', icon: '💥', points: 15, rarity: 'common' },
+    { id: 'kill-25', name: 'Scourge of the Sea', description: 'Sink 25 enemy ships in a single run', icon: '🏴‍☠️', points: 30, rarity: 'uncommon' },
+    { id: 'kill-50', name: 'Kraken Slayer', description: 'Sink 50 enemy ships in a single run', icon: '🐙', points: 50, rarity: 'rare' },
+    { id: 'level-3', name: 'Frigate Captain', description: 'Reach Level 3 in a single run', icon: '⚓', points: 10, rarity: 'common' },
+    { id: 'level-5', name: 'Man-O-War', description: 'Reach Level 5 in a single run', icon: '🚢', points: 25, rarity: 'uncommon' },
+    { id: 'level-7', name: 'Leviathan', description: 'Reach Level 7 in a single run', icon: '👑', points: 50, rarity: 'legendary' },
+    { id: 'survive-5', name: 'Sea Legs', description: 'Survive for 5 minutes', icon: '⏱️', points: 15, rarity: 'common' },
+    { id: 'survive-10', name: 'Iron Will', description: 'Survive for 10 minutes', icon: '🛡️', points: 35, rarity: 'rare' },
+    { id: 'capture-port', name: 'Port Authority', description: 'Capture your first port in Territory mode', icon: '🏰', points: 10, rarity: 'common' },
+    { id: 'capture-half', name: 'Naval Dominion', description: 'Control over half of all ports', icon: '🏳️', points: 30, rarity: 'uncommon' },
+    { id: 'territory-victory', name: 'Admiral Supreme', description: 'Win a Territory mode game by capturing all ports', icon: '🏆', points: 60, rarity: 'legendary' },
+]);
+
 // ══ CONSTANTS ════════════════════════════════════════════════
 const WORLD_W=4000,WORLD_H=4000,TILE=100;
 const MAX_ENEMIES=25;
@@ -454,6 +512,12 @@ function update(dt){
       addKillFeed(e.name+' was sunk','');
       if(Math.random()<0.5) pickups.push(createPickup(e.x,e.y));
       enemies.splice(i,1);
+
+      // Achievement checks for kills
+      if(player.kills===1) AchievementSystem.unlock('first-blood');
+      if(player.kills>=10) AchievementSystem.unlock('kill-10');
+      if(player.kills>=25) AchievementSystem.unlock('kill-25');
+      if(player.kills>=50) AchievementSystem.unlock('kill-50');
     }
   }
 
@@ -495,12 +559,25 @@ function update(dt){
       }
     }
     if(ports.every(p=>p.state==='allied')){victory();return;}
+
+    // Achievement check: territory control
+    const alliedCount=ports.filter(p=>p.state==='allied').length;
+    if(alliedCount>0) AchievementSystem.unlock('capture-port');
+    if(alliedCount>ports.length/2) AchievementSystem.unlock('capture-half');
+
     updateTerritoryHUD();
   }
 
   // ── XP / Level up
   while(player.score>=player.xpNeeded*player.level){
-    player.level++;showUpgradeScreen();return;
+    player.level++;
+
+    // Achievement checks for level milestones
+    if(player.level>=3) AchievementSystem.unlock('level-3');
+    if(player.level>=5) AchievementSystem.unlock('level-5');
+    if(player.level>=7) AchievementSystem.unlock('level-7');
+
+    showUpgradeScreen();return;
   }
 
   // ── Bullets — projectiles FLY OVER islands (no island blocking)
@@ -988,6 +1065,11 @@ function gameOver(){
     pw.style.display='block';
     document.getElementById('go-ports').textContent=ports.filter(p=>p.state==='allied').length+'/'+ports.length;
   }else{pw.style.display='none';}
+
+  // Achievement checks for survival time
+  if(el>=300000) AchievementSystem.unlock('survive-5');
+  if(el>=600000) AchievementSystem.unlock('survive-10');
+
   showScreen('gameover');
 }
 
@@ -996,6 +1078,15 @@ function victory(){
   document.getElementById('hud').classList.add('hidden');
   document.getElementById('vic-ports').textContent=ports.length;
   document.getElementById('vic-time').textContent=formatTime(performance.now()-startTime);
+
+  // Achievement: territory victory
+  AchievementSystem.unlock('territory-victory');
+
+  // Also check survival time achievements on victory
+  const el=performance.now()-startTime;
+  if(el>=300000) AchievementSystem.unlock('survive-5');
+  if(el>=600000) AchievementSystem.unlock('survive-10');
+
   showScreen('victory');
 }
 

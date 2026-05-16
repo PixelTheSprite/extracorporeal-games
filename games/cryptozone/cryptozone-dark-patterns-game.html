@@ -100,7 +100,7 @@
     align-items: center;
     justify-content: space-between;
     position: sticky;
-    top: 0;
+    top: 56px;
     z-index: 500;
     box-shadow: 0 1px 0 rgba(0,255,65,0.1), 0 4px 20px rgba(0,0,0,0.6);
   }
@@ -829,11 +829,49 @@
     .daily-days { gap: 3px; }
     .day-tile { min-height: 44px; font-size: 8px; }
   }
+    #portfolio-toolbar {
+        background-color: #f8fafc !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding: 0 24px !important;
+        display: flex !important;
+        align-items: center !important;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+        z-index: 1000000 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 56px !important;
+        box-sizing: border-box !important;
+    }
+    .portfolio-back-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        padding: 8px 16px !important;
+        background-color: #6366f1 !important;
+        color: #ffffff !important;
+        text-decoration: none !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        transition: all 0.2s ease !important;
+        line-height: 1 !important;
+        border: none !important;
+        cursor: pointer !important;
+    }
+    .portfolio-back-btn:hover {
+        background-color: #4f46e5 !important;
+        transform: translateY(-1px) !important;
+    }
 </style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
 </head>
-<body>
+<body style="padding-top: 56px !important;">
+    <div id="portfolio-toolbar">
+        <a href="../../index.html" class="portfolio-back-btn">← Back to Portfolio</a>
+    </div>
 
-<button id="edu-toggle" onclick="toggleEdu()">
+<button id="edu-toggle" style="top: 68px !important;" onclick="toggleEdu()">
   <span class="dot"></span>Highlight Dark Patterns
 </button>
 

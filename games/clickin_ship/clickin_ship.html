@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>STARFORGE — Ship Commander</title>
+<script src="../../achievement-system.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -797,11 +798,49 @@ body::before {
   #equipment-grid { grid-template-columns: 1fr 1fr; }
   #notification { right: 12px; left: 12px; max-width: none; bottom: 12px; }
 }
+    #portfolio-toolbar {
+        background-color: #f8fafc !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding: 0 24px !important;
+        display: flex !important;
+        align-items: center !important;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+        z-index: 1000000 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 56px !important;
+        box-sizing: border-box !important;
+    }
+    .portfolio-back-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        padding: 8px 16px !important;
+        background-color: #6366f1 !important;
+        color: #ffffff !important;
+        text-decoration: none !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        transition: all 0.2s ease !important;
+        line-height: 1 !important;
+        border: none !important;
+        cursor: pointer !important;
+    }
+    .portfolio-back-btn:hover {
+        background-color: #4f46e5 !important;
+        transform: translateY(-1px) !important;
+    }
 </style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
 </head>
-<body>
+<body style="padding-top: 56px !important;">
+    <div id="portfolio-toolbar">
+        <a href="../../index.html" class="portfolio-back-btn">← Back to Portfolio</a>
+    </div>
 
-<div id="header">
+<div id="header" style="top: 56px !important;">
   <div id="logo">STAR<span>FORGE</span></div>
   <div id="resources-bar">
     <div class="res-chip tooltip-wrap">
@@ -982,6 +1021,25 @@ body::before {
 <div id="notification"></div>
 
 <script>
+// ======================= ACHIEVEMENT SETUP =======================
+
+AchievementSystem.init('clickin-ship');
+
+AchievementSystem.register('clickin-ship', [
+    { id: 'first-click', name: 'Ignition', description: 'Click the ship for the first time', icon: '🚀', points: 5, rarity: 'common' },
+    { id: 'click-100', name: 'Trigger Happy', description: 'Click the ship 100 times', icon: '👆', points: 15, rarity: 'common' },
+    { id: 'click-1000', name: 'Carpal Cosmos', description: 'Click the ship 1,000 times', icon: '🖱️', points: 30, rarity: 'uncommon' },
+    { id: 'level-5', name: 'Frigate Class', description: 'Upgrade your ship to Level 5', icon: '⭐', points: 15, rarity: 'common' },
+    { id: 'level-15', name: 'Cruiser Class', description: 'Upgrade your ship to Level 15', icon: '🌟', points: 35, rarity: 'rare' },
+    { id: 'level-25', name: 'Dreadnought', description: 'Reach the maximum ship level', icon: '👑', points: 60, rarity: 'legendary' },
+    { id: 'first-mission', name: 'Maiden Voyage', description: 'Complete your first mission', icon: '🎯', points: 10, rarity: 'common' },
+    { id: 'all-missions', name: 'Admiral of the Fleet', description: 'Complete every unique mission', icon: '🏅', points: 50, rarity: 'legendary' },
+    { id: 'first-crew', name: 'Welcome Aboard', description: 'Hire your first crew member', icon: '👤', points: 10, rarity: 'common' },
+    { id: 'full-crew', name: 'Full Complement', description: 'Hire all available crew members', icon: '👥', points: 40, rarity: 'rare' },
+    { id: 'first-equip', name: 'Armed & Ready', description: 'Equip your first piece of gear', icon: '🔧', points: 10, rarity: 'common' },
+    { id: 'first-prestige', name: 'Stardust Rising', description: 'Prestige for the first time', icon: '✨', points: 50, rarity: 'rare' },
+]);
+
 // ======================= DATA DEFINITIONS =======================
 
 const EQUIPMENT_SLOTS = [
@@ -1219,6 +1277,11 @@ function clickShip(e) {
   G.totalClicks++;
   G.totalCreditsEarned += gain;
 
+  // Achievement checks
+  if (G.totalClicks === 1) AchievementSystem.unlock('first-click');
+  if (G.totalClicks >= 100) AchievementSystem.unlock('click-100');
+  if (G.totalClicks >= 1000) AchievementSystem.unlock('click-1000');
+
   // Check level up
   checkLevelUp();
 
@@ -1251,6 +1314,11 @@ function checkLevelUp() {
     notify(`🚀 Ship leveled up! Now Level ${G.shipLevel}`, 'success');
     renderShipDisplay();
     addInventoryIfNew();
+
+    // Achievement checks for level milestones
+    if (G.shipLevel >= 5) AchievementSystem.unlock('level-5');
+    if (G.shipLevel >= 15) AchievementSystem.unlock('level-15');
+    if (G.shipLevel >= 25) AchievementSystem.unlock('level-25');
   }
 }
 
@@ -1307,6 +1375,10 @@ function completeMission() {
 
     if (!G.completedMissions.includes(m.id)) G.completedMissions.push(m.id);
 
+    // Achievement checks
+    AchievementSystem.unlock('first-mission');
+    if (G.completedMissions.length >= MISSIONS_DATA.length) AchievementSystem.unlock('all-missions');
+
     notify(`✅ Mission complete: ${m.name}! Rewards received.`, 'success');
     checkLevelUp();
   } else {
@@ -1347,6 +1419,10 @@ function hireCrew(crewId) {
   G.crew.push(crewId);
   notify(`👤 ${crew.name} has joined the crew!`, 'success');
   renderCrew();
+
+  // Achievement checks
+  AchievementSystem.unlock('first-crew');
+  if (G.crew.length >= CREW_DATA.length) AchievementSystem.unlock('full-crew');
 }
 
 function toggleCrewAssign(crewId) {
@@ -1413,6 +1489,9 @@ function equipItem(slotId, itemId) {
   renderEquipment();
   renderShipStats();
   notify('🔧 Equipment installed!', 'success');
+
+  // Achievement check
+  AchievementSystem.unlock('first-equip');
 }
 
 function unequipSlot(slotId) {
@@ -1492,6 +1571,9 @@ function doPrestige() {
   // Keep: stardust, crew, inventory, assignedCrew, completedMissions record, shipName, prestigeCount
 
   computeDerived();
+  // Achievement check
+  AchievementSystem.unlock('first-prestige');
+
   notify(`✨ Prestige ${G.prestigeCount} achieved! +${dust} Stardust earned.`, 'prestige');
   renderAll();
   switchTab('ship');

@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Portfolio</title>
+    <title>Extracorporeal Games</title>
     <meta name="description" content="A portfolio of interactive games and educational tools exploring media literacy, game design, and systems thinking.">
+    <script src="achievement-system.js"></script>
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -15,6 +16,38 @@
             <p><i>Note: This portfolio is AI assisted. This is an experiment in learning how to use AI more effectively.</i></p>
         </header>
         
+        <!-- Statistics Bar -->
+        <div class="stats-bar" id="stats-bar">
+            <div class="stat-card">
+                <div class="stat-number" id="total-games">0</div>
+                <div class="stat-label">Available Achievements</div>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" id="total-games-fill"></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-achievements">0</div>
+                <div class="stat-label">Unlocked Achievements</div>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" id="total-achievements-fill"></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completion-rate">0%</div>
+                <div class="stat-label">Completion Rate</div>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" id="completion-rate-fill"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="games">Games</button>
+            <button class="nav-tab" data-tab="achievements">Achievements</button>
+            <button class="nav-tab" data-tab="leaderboard">Progress</button>
+        </div>
+        <!-- Games Section -->
+        <div id="games" class="content-section active">
         <div class="games-grid">
             <div class="game-card" id="card-clickin-ship">
                 <div class="game-card-header">
@@ -142,11 +175,323 @@
                 </div>
             </div>
         </div>
+        </div>
         
+        <!-- Achievements Section -->
+        <div id="achievements" class="content-section">
+            <div class="achievements-container">
+                <div class="controls">
+                    <div class="search-box">
+                        <input type="text" id="achievementSearch" placeholder="Search achievements...">
+                    </div>
+                    <select class="filter-select" id="rarityFilter">
+                        <option value="">All Rarities</option>
+                        <option value="common">Common</option>
+                        <option value="uncommon">Uncommon</option>
+                        <option value="rare">Rare</option>
+                        <option value="legendary">Legendary</option>
+                    </select>
+                    <select class="filter-select" id="statusFilter">
+                        <option value="">All Achievements</option>
+                        <option value="unlocked">Unlocked</option>
+                        <option value="locked">Locked</option>
+                    </select>
+                    <button class="btn btn-danger" id="resetBtn">Reset All</button>
+                </div>
+                
+                <div id="achievementsList"></div>
+            </div>
+        </div>
+
+        <!-- Leaderboard Section -->
+        <div id="leaderboard" class="content-section">
+            <div class="achievements-container">
+                <h2>Your Progress by Game</h2>
+                <div id="leaderboardList"></div>
+            </div>
+        </div>
+
         <footer>
             <p>Built with HTML, CSS, JavaScript | Hosted on GitHub Pages</p>
             <p><a href="https://pixelthesprite.github.io/extracorporeal-games/">View on GitHub</a></p>
         </footer>
     </div>
+
+        <script>
+        // Initialize achievement system on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializePortfolio();
+            setupEventListeners();
+            updateStatsDisplay();
+            renderAchievements();
+            renderLeaderboard();
+        });
+
+        function initializePortfolio() {
+            // Register achievements for each game
+            // These mirror the registrations inside each game's HTML file
+            
+            AchievementSystem.register('the-arena', [
+                { id: 'first-win', name: 'First Victory', description: 'Win your first debate', icon: '🏆', points: 10, rarity: 'common' },
+                { id: 'speedrunner', name: 'Speed Runner', description: 'Complete in under 2 minutes', icon: '⚡', points: 25, rarity: 'rare' },
+                { id: 'perfect-score', name: 'Perfect Rhetoric', description: 'Achieve 100% accuracy', icon: '💯', points: 50, rarity: 'legendary' },
+                { id: 'ten-wins', name: 'Debater Supreme', description: 'Win 10 debates', icon: '🥇', points: 30, rarity: 'uncommon' }
+            ]);
+
+            AchievementSystem.register('the-stacks', [
+                { id: 'fact-finder', name: 'Fact Finder', description: 'Correctly verify your first claim', icon: '🔍', points: 10, rarity: 'common' },
+                { id: 'source-master', name: 'Source Master', description: 'Rate 50 sources', icon: '📚', points: 40, rarity: 'rare' },
+                { id: 'myth-buster', name: 'Myth Buster', description: 'Debunk 20 false claims', icon: '🚫', points: 50, rarity: 'legendary' },
+                { id: 'scholar', name: 'Scholar', description: 'Complete all research levels', icon: '🎓', points: 35, rarity: 'uncommon' }
+            ]);
+
+            AchievementSystem.register('fighting-game', [
+                { id: 'first-fight', name: 'First Punch', description: 'Win your first fight', icon: '👊', points: 10, rarity: 'common' },
+                { id: 'combo-master', name: 'Combo Master', description: 'Land a 10-hit combo', icon: '⚔️', points: 30, rarity: 'uncommon' },
+                { id: 'all-characters', name: 'Master All', description: 'Win with every character', icon: '👥', points: 50, rarity: 'legendary' },
+                { id: 'stage-dominator', name: 'Stage Dominator', description: 'Win on all stages', icon: '🌍', points: 45, rarity: 'rare' }
+            ]);
+
+            AchievementSystem.register('clickin-ship', [
+                { id: 'first-click', name: 'Ignition', description: 'Click the ship for the first time', icon: '🚀', points: 5, rarity: 'common' },
+                { id: 'click-100', name: 'Trigger Happy', description: 'Click the ship 100 times', icon: '👆', points: 15, rarity: 'common' },
+                { id: 'click-1000', name: 'Carpal Cosmos', description: 'Click the ship 1,000 times', icon: '🖱️', points: 30, rarity: 'uncommon' },
+                { id: 'level-5', name: 'Frigate Class', description: 'Upgrade your ship to Level 5', icon: '⭐', points: 15, rarity: 'common' },
+                { id: 'level-15', name: 'Cruiser Class', description: 'Upgrade your ship to Level 15', icon: '🌟', points: 35, rarity: 'rare' },
+                { id: 'level-25', name: 'Dreadnought', description: 'Reach the maximum ship level', icon: '👑', points: 60, rarity: 'legendary' },
+                { id: 'first-mission', name: 'Maiden Voyage', description: 'Complete your first mission', icon: '🎯', points: 10, rarity: 'common' },
+                { id: 'all-missions', name: 'Admiral of the Fleet', description: 'Complete every unique mission', icon: '🏅', points: 50, rarity: 'legendary' },
+                { id: 'first-crew', name: 'Welcome Aboard', description: 'Hire your first crew member', icon: '👤', points: 10, rarity: 'common' },
+                { id: 'full-crew', name: 'Full Complement', description: 'Hire all available crew members', icon: '👥', points: 40, rarity: 'rare' },
+                { id: 'first-equip', name: 'Armed & Ready', description: 'Equip your first piece of gear', icon: '🔧', points: 10, rarity: 'common' },
+                { id: 'first-prestige', name: 'Stardust Rising', description: 'Prestige for the first time', icon: '✨', points: 50, rarity: 'rare' }
+            ]);
+
+            AchievementSystem.register('nautil-io', [
+                { id: 'first-blood', name: 'First Blood', description: 'Sink your first enemy ship', icon: '⚔️', points: 5, rarity: 'common' },
+                { id: 'kill-10', name: 'Raider', description: 'Sink 10 enemy ships in a single run', icon: '💥', points: 15, rarity: 'common' },
+                { id: 'kill-25', name: 'Scourge of the Sea', description: 'Sink 25 enemy ships in a single run', icon: '🏴‍☠️', points: 30, rarity: 'uncommon' },
+                { id: 'kill-50', name: 'Kraken Slayer', description: 'Sink 50 enemy ships in a single run', icon: '🐙', points: 50, rarity: 'rare' },
+                { id: 'level-3', name: 'Frigate Captain', description: 'Reach Level 3 in a single run', icon: '⚓', points: 10, rarity: 'common' },
+                { id: 'level-5', name: 'Man-O-War', description: 'Reach Level 5 in a single run', icon: '🚢', points: 25, rarity: 'uncommon' },
+                { id: 'level-7', name: 'Leviathan', description: 'Reach Level 7 in a single run', icon: '👑', points: 50, rarity: 'legendary' },
+                { id: 'survive-5', name: 'Sea Legs', description: 'Survive for 5 minutes', icon: '⏱️', points: 15, rarity: 'common' },
+                { id: 'survive-10', name: 'Iron Will', description: 'Survive for 10 minutes', icon: '🛡️', points: 35, rarity: 'rare' },
+                { id: 'capture-port', name: 'Port Authority', description: 'Capture your first port in Territory mode', icon: '🏰', points: 10, rarity: 'common' },
+                { id: 'capture-half', name: 'Naval Dominion', description: 'Control over half of all ports', icon: '🏳️', points: 30, rarity: 'uncommon' },
+                { id: 'territory-victory', name: 'Admiral Supreme', description: 'Win a Territory mode game by capturing all ports', icon: '🏆', points: 60, rarity: 'legendary' }
+            ]);
+        }
+
+        function setupEventListeners() {
+            // Tab navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const tabName = e.target.dataset.tab;
+                    switchTab(tabName);
+                });
+            });
+
+            // Achievement search and filters
+            document.getElementById('achievementSearch').addEventListener('input', filterAchievements);
+            document.getElementById('rarityFilter').addEventListener('change', filterAchievements);
+            document.getElementById('statusFilter').addEventListener('change', filterAchievements);
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                AchievementSystem.reset();
+                updateStatsDisplay();
+                renderAchievements();
+            });
+
+            // Listen for real-time achievement unlocks
+            AchievementSystem.onUnlock((event) => {
+                updateStatsDisplay();
+                renderAchievements();
+                renderLeaderboard();
+            });
+        }
+
+        function switchTab(tabName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Deactivate all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(tabName).classList.add('active');
+
+            // Activate selected tab
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+        }
+
+        function updateStatsDisplay() {
+            const stats = AchievementSystem.getStats();
+
+            // Match IDs in index.html (total-games, total-achievements, completion-rate)
+            const totalGamesEl = document.getElementById('total-games');
+            const totalAchievementsEl = document.getElementById('total-achievements');
+            const completionRateEl = document.getElementById('completion-rate');
+            
+            const totalGamesFill = document.getElementById('total-games-fill');
+            const totalAchievementsFill = document.getElementById('total-achievements-fill');
+            const completionRateFill = document.getElementById('completion-rate-fill');
+
+            if (totalGamesEl) totalGamesEl.textContent = stats.totalAchievements || 0;
+            if (totalAchievementsEl) totalAchievementsEl.textContent = stats.totalUnlocked || 0;
+            if (completionRateEl) completionRateEl.textContent = (stats.unlockedPercentage || 0) + '%';
+            
+            // Update bar fills
+            if (totalGamesFill) totalGamesFill.style.width = '100%'; // Always 100% since it's just a count
+            if (totalAchievementsFill) totalAchievementsFill.style.width = (stats.unlockedPercentage || 0) + '%';
+            if (completionRateFill) completionRateFill.style.width = (stats.unlockedPercentage || 0) + '%';
+        }
+
+        function renderAchievements() {
+            const byGame = AchievementSystem.getAchievementsByGame();
+            const container = document.getElementById('achievementsList');
+
+            if (Object.keys(byGame).length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎮</div><p>No achievements yet. Play some games to unlock achievements!</p></div>';
+                return;
+            }
+
+            let html = '';
+            Object.entries(byGame).forEach(([game, achievements]) => {
+                const unlockedCount = achievements.filter(a => a.unlocked).length;
+                html += `
+                    <div class="achievements-by-game">
+                        <h3>
+                            ${game.replace(/-/g, ' ').toUpperCase()}
+                            <span class="game-achievement-count">${unlockedCount}/${achievements.length}</span>
+                        </h3>
+                        <div class="achievements-grid" data-game="${game}">
+                            ${achievements.map(achievement => renderAchievementBadge(achievement)).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function renderAchievementBadge(achievement) {
+            const unlockedClass = achievement.unlocked ? 'unlocked' : 'locked';
+            const unlockedDate = achievement.unlockedAt ? `<div class="achievement-unlock-date">Unlocked: ${AchievementSystem.formatDate(achievement.unlockedAt)}</div>` : '';
+
+            return `
+                <div class="achievement-badge ${unlockedClass}" title="${achievement.description}">
+                    <span class="achievement-icon">${achievement.icon}</span>
+                    <div class="achievement-name">${achievement.name}</div>
+                    <div class="achievement-description">${achievement.description}</div>
+                    <div class="achievement-meta">
+                        <span class="achievement-points">${achievement.points} pts</span>
+                        <span class="achievement-rarity ${achievement.rarity}">${achievement.rarity}</span>
+                    </div>
+                    ${unlockedDate}
+                </div>
+            `;
+        }
+
+        function filterAchievements() {
+            const searchTerm = document.getElementById('achievementSearch').value.toLowerCase();
+            const rarity = document.getElementById('rarityFilter').value;
+            const status = document.getElementById('statusFilter').value;
+
+            const achievements = AchievementSystem.getAchievements();
+            let filtered = achievements.filter(a => {
+                const matchesSearch = a.name.toLowerCase().includes(searchTerm) || a.description.toLowerCase().includes(searchTerm);
+                const matchesRarity = !rarity || a.rarity === rarity;
+                const matchesStatus = !status || (status === 'unlocked' ? a.unlocked : !a.unlocked);
+
+                return matchesSearch && matchesRarity && matchesStatus;
+            });
+
+            // Regroup by game
+            const byGame = {};
+            filtered.forEach(achievement => {
+                if (!byGame[achievement.game]) {
+                    byGame[achievement.game] = [];
+                }
+                byGame[achievement.game].push(achievement);
+            });
+
+            const container = document.getElementById('achievementsList');
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>No achievements match your search.</p></div>';
+                return;
+            }
+
+            let html = '';
+            Object.entries(byGame).forEach(([game, achievements]) => {
+                const unlockedCount = achievements.filter(a => a.unlocked).length;
+                html += `
+                    <div class="achievements-by-game">
+                        <h3>
+                            ${game.replace(/-/g, ' ').toUpperCase()}
+                            <span class="game-achievement-count">${unlockedCount}/${achievements.length}</span>
+                        </h3>
+                        <div class="achievements-grid" data-game="${game}">
+                            ${achievements.map(achievement => renderAchievementBadge(achievement)).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function renderLeaderboard() {
+            const byGame = AchievementSystem.getAchievementsByGame();
+            const container = document.getElementById('leaderboardList');
+
+            let html = '';
+            Object.entries(byGame).forEach(([game, achievements]) => {
+                const unlockedCount = achievements.filter(a => a.unlocked).length;
+                const totalCount = achievements.length;
+                const percentage = Math.round((unlockedCount / totalCount) * 100);
+                const totalPoints = achievements.reduce((sum, a) => sum + (a.unlocked ? a.points : 0), 0);
+
+                html += `
+                    <div class="leaderboard-item">
+                        <h3>
+                            ${game.replace(/-/g, ' ').toUpperCase()}
+                            <span class="game-achievement-count">${percentage}%</span>
+                        </h3>
+                        <div class="game-stats-summary">
+                            <div class="stat-item-small">
+                                <span class="label">Progress</span>
+                                <span class="value">${unlockedCount} / ${totalCount}</span>
+                            </div>
+                            <div class="stat-item-small">
+                                <span class="label">Points</span>
+                                <span class="value">${totalPoints}</span>
+                            </div>
+                            <div class="stat-item-small">
+                                <span class="label">Completion</span>
+                                <span class="value">${percentage}%</span>
+                            </div>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html || '<div class="empty-state"><p>No games played yet.</p></div>';
+        }
+
+        // Simulate unlocking achievements for demo purposes
+        // Remove this in production
+        window.testUnlock = (achievementId) => {
+            // For demo, let's unlock the first achievement of the first game
+            console.log('Testing achievement unlock:', achievementId);
+            // Users won't call this manually; games will
+        };
+    </script>
 </body>
 </html>

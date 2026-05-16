@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GTA VI — Vice City Pocket</title>
+<title>Race Around: Vice City</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -35,7 +35,7 @@
   /* ─── HUD ─── */
   #hud {
     position: fixed;
-    top: 0; left: 0; right: 0;
+    top: 56px; left: 0; right: 0;
     z-index: 100;
     pointer-events: none;
     padding: 10px 16px;
@@ -443,7 +443,7 @@
   /* ─── START SCREEN ─── */
   #startScreen {
     position: fixed;
-    inset: 0;
+    top: 56px !important; inset: 0;
     z-index: 400;
     display: flex;
     flex-direction: column;
@@ -546,15 +546,54 @@
     pointer-events: none;
     z-index: 999;
   }
+    #portfolio-toolbar {
+        background-color: #f8fafc !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding: 0 24px !important;
+        display: flex !important;
+        align-items: center !important;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+        z-index: 1000000 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 56px !important;
+        box-sizing: border-box !important;
+    }
+    .portfolio-back-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        padding: 8px 16px !important;
+        background-color: #6366f1 !important;
+        color: #ffffff !important;
+        text-decoration: none !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        transition: all 0.2s ease !important;
+        line-height: 1 !important;
+        border: none !important;
+        cursor: pointer !important;
+    }
+    .portfolio-back-btn:hover {
+        background-color: #4f46e5 !important;
+        transform: translateY(-1px) !important;
+    }
 </style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
 </head>
-<body>
+<body style="padding-top: 56px !important;">
+    <div id="portfolio-toolbar">
+        <a href="../../index.html" class="portfolio-back-btn">← Back to Portfolio</a>
+    </div>
+
 
 <!-- START SCREEN -->
 <div id="startScreen">
   <div class="start-logo">
-    <span class="line1">GTA VI</span>
-    <span class="line2">Vice City Pocket</span>
+    <span class="line1">Race Around</span>
+    <span class="line2">Vice City</span>
   </div>
   <p class="start-tagline">A tiny city. Questionable physics. Zero regrets.</p>
   <div class="start-controls">
@@ -571,8 +610,8 @@
 <!-- HUD -->
 <div id="hud">
   <div class="hud-left">
-    <div class="hud-title">GTA VI</div>
-    <div class="hud-sub">Vice City Pocket</div>
+    <div class="hud-title">Race Around</div>
+    <div class="hud-sub">Vice City</div>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
     <div class="stat-block">
@@ -666,7 +705,7 @@
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  GTA VI — Vice City Pocket
+//  Race Around Vice City
 //  Top-down driving with intentionally questionable physics
 // ═══════════════════════════════════════════════════════════
 
