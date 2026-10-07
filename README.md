@@ -33,7 +33,7 @@ Then visit `http://localhost:8000`
 
 ## Deployment
 
-This site is deployed on GitHub Pages at: `https://YOUR_USERNAME.github.io/game-portfolio`
+This site is deployed on GitHub Pages at: `[https://YOUR_USERNAME.github.io/game-portfolio](https://pixelthesprite.github.io/extracorporeal-games/)`
 
 ### How It Works
 
