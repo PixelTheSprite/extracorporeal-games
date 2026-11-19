@@ -53,6 +53,40 @@ game-portfolio/
 ├── assets/ # Shared images, fonts, audio
 └── docs/ # Additional documentation
 
+## Styling
+
+The hub matches the main site (pixelthesprite.github.io): a Windows 95/98 desktop look.
+
+| File | What it is |
+|---|---|
+| `index.css` | Hub styles. The top half mirrors the main site's `assets/css/style.css` (colors, fonts, windows, buttons, header, taskbar); keep them in sync |
+| `desktop.js` | Spinning globe logo and taskbar clock, copied from the main site's `assets/js/desktop.js` |
+| `portfolio-toolbar.css` | Layout for the "Back to Portfolio" bar at the top of every game (fixed 56px bar, 44px button). Each game links it, then sets `--pt-*` colour and font variables in a `<style id="portfolio-toolbar-theme">` block so the bar matches that game. New games: copy the link, theme block, two script tags and toolbar markup from any existing game. |
+| `portfolio-toolbar.js` | Adds the "Version" menu to that bar when a game has more than one version |
+| `game-versions.js` | The list of versions for each game (see below) |
+| `achievement-system.js` | Also draws the "Achievement Unlocked!" popup, styled as a small Win95 window |
+
+The games themselves keep their own look.
+
+## Adding a version
+
+Each game can keep older iterations so visitors can compare them. When a game has two or more versions, a **Version** menu appears on the right of its "Back to Portfolio" bar. Floralis has two.
+
+1. Save the older HTML file **in the same folder** as the current one, e.g. `games/the-flood/the-flood-v1.html`. Keeping it in the same folder means its `../../` links (hub, toolbar, achievements) keep working.
+2. Make sure the file has the toolbar link, a `portfolio-toolbar-theme` block, the two script tags (`game-versions.js`, `portfolio-toolbar.js`) and the toolbar markup. Copy them from the current version, and adjust the theme colours if that version looked different.
+3. Add a line for it in `game-versions.js`, newest first:
+
+   ```js
+   'the-flood': [
+     { file: 'the-flood.html',    label: 'v2', note: 'What changed in v2', current: true },
+     { file: 'the-flood-v1.html', label: 'v1', note: 'First prototype' },
+   ],
+   ```
+
+   The key is the game's folder name. `current: true` goes on the version the hub's Play button opens.
+
+Cryptozone's "Highlight Dark Patterns" button sits where the Version menu would go. If Cryptozone gets versions, move that button below the bar first.
+
 ## Technology
 
 - HTML5

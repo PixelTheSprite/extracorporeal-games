@@ -1,0 +1,2209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✦ STICKERSTAR ✦ — Ultimate Collectibles Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0d0221;--bg2:#1a0a3e;--paper:rgba(26,8,56,0.88);--paper2:rgba(36,12,72,0.75);
+  --red:#ff2d78;--blue:#05d9e8;--yellow:#e4ff00;--green:#01ffc3;--purple:#bf5af2;--pink:#ff006e;--orange:#ff6b35;
+  --dark:#f0e6ff;--mid:#9b8ec4;--border:rgba(255,45,120,0.35);--border-cyan:rgba(5,217,232,0.35);
+  --glow-pink:0 0 8px rgba(255,45,120,0.8),0 0 20px rgba(255,45,120,0.3);
+  --glow-cyan:0 0 8px rgba(5,217,232,0.8),0 0 20px rgba(5,217,232,0.3);
+  --glow-yellow:0 0 8px rgba(228,255,0,0.8),0 0 20px rgba(228,255,0,0.3);
+  --glow-purple:0 0 8px rgba(191,90,242,0.8),0 0 20px rgba(191,90,242,0.3);
+  --glow-mint:0 0 8px rgba(1,255,195,0.8),0 0 20px rgba(1,255,195,0.3);
+  --shadow:0 4px 24px rgba(255,45,120,0.18),0 2px 8px rgba(0,0,0,0.5);
+  --shadow-lg:0 8px 32px rgba(255,45,120,0.28),0 4px 16px rgba(0,0,0,0.6);
+  --font-head:'Orbitron','Fredoka One',cursive;--font-body:'Nunito',sans-serif;--font-mono:'Space Mono','Courier New',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font-body);background-color:var(--bg);background-image:radial-gradient(ellipse 100% 40% at 50% 105%,rgba(255,45,120,0.22) 0%,transparent 100%),radial-gradient(ellipse 80% 30% at 50% -5%,rgba(5,217,232,0.12) 0%,transparent 100%),repeating-linear-gradient(90deg,transparent 0,transparent 59px,rgba(5,217,232,0.07) 59px,rgba(5,217,232,0.07) 60px),repeating-linear-gradient(0deg,transparent 0,transparent 59px,rgba(5,217,232,0.05) 59px,rgba(5,217,232,0.05) 60px);min-height:100vh;color:var(--dark);}
+.hidden{display:none!important;}
+
+/* === HEADER === */
+header{background:linear-gradient(90deg,rgba(13,2,33,0.98),rgba(26,8,56,0.98) 50%,rgba(13,2,33,0.98));border-bottom:1px solid rgba(5,217,232,0.25);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(5,217,232,0.1);backdrop-filter:blur(12px);}
+.logo{font-family:var(--font-head);font-size:1.5rem;font-weight:900;letter-spacing:3px;text-transform:uppercase;color:var(--yellow);text-shadow:-2px 0 var(--pink),2px 0 var(--blue),0 0 20px rgba(228,255,0,0.5);}
+.header-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.token-badge{background:rgba(228,255,0,0.08);border:1px solid rgba(228,255,0,0.5);border-radius:20px;padding:5px 14px;font-weight:800;font-size:0.9rem;color:var(--yellow);box-shadow:var(--glow-yellow);display:flex;align-items:center;gap:6px;}
+.player-badge{background:rgba(255,45,120,0.08);border:1px solid rgba(255,45,120,0.4);border-radius:20px;padding:5px 14px;font-weight:700;font-size:0.85rem;color:var(--red);cursor:pointer;transition:all 0.15s;box-shadow:var(--glow-pink);}
+.player-badge:hover{background:rgba(255,45,120,0.18);}
+.paper-count{background:rgba(5,217,232,0.08);border:1px solid rgba(5,217,232,0.4);border-radius:20px;padding:5px 14px;font-weight:700;font-size:0.85rem;color:var(--blue);box-shadow:var(--glow-cyan);}
+
+/* EDU MODE TOGGLE */
+#edu-toggle{background:rgba(0,0,0,0.5);border:1px solid rgba(5,217,232,0.4);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--font-mono);font-size:0.7rem;color:var(--blue);font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+#edu-toggle:hover{background:rgba(5,217,232,0.1);}
+#edu-toggle .dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;}
+body.edu-mode #edu-toggle .dot{background:var(--green);}
+body.edu-mode #edu-toggle{border-color:var(--green);color:var(--green);}
+
+/* EDU MODE LABELS */
+.dp-label{display:none;position:absolute;top:-32px;left:50%;transform:translateX(-50%);background:rgba(1,255,195,0.9);color:#000;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;padding:4px 8px;border-radius:4px;white-space:nowrap;z-index:100;pointer-events:none;}
+.dp-label::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(1,255,195,0.9);}
+.dp-zone{position:relative;}
+body.edu-mode .dp-zone{outline:2px dashed rgba(1,255,195,0.6);}
+body.edu-mode .dp-label{display:block;}
+
+/* === NAV === */
+nav{background:rgba(13,2,33,0.95);border-bottom:1px solid rgba(5,217,232,0.18);display:flex;gap:0;overflow-x:auto;backdrop-filter:blur(8px);}
+.nav-tab{padding:13px 16px;font-family:var(--font-head);font-size:0.72rem;font-weight:700;letter-spacing:0.5px;cursor:pointer;border-right:1px solid rgba(5,217,232,0.1);color:var(--mid);transition:all 0.15s;white-space:nowrap;position:relative;text-transform:uppercase;}
+.nav-tab:hover{background:rgba(5,217,232,0.06);color:var(--blue);}
+.nav-tab.active{background:rgba(255,45,120,0.12);color:var(--red);}
+.nav-tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--red);box-shadow:var(--glow-pink);}
+
+/* === LAYOUT === */
+main{max-width:1100px;margin:0 auto;padding:24px 16px;}
+.section{display:none;}.section.active{display:block;}
+.section-title{font-family:var(--font-head);font-size:1.5rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--red);text-shadow:var(--glow-pink);margin-bottom:22px;display:flex;align-items:center;gap:12px;}
+.card{background:var(--paper);border:1px solid var(--border);border-radius:14px;padding:22px;backdrop-filter:blur(14px);box-shadow:var(--shadow-lg),inset 0 1px 0 rgba(255,255,255,0.05);}
+
+/* === BUTTONS === */
+.btn{font-family:var(--font-head);font-size:0.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px 22px;border:1px solid;border-radius:6px;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:7px;position:relative;overflow:hidden;}
+.btn:active{transform:scale(0.97)!important;}
+.btn-red{background:rgba(255,45,120,0.12);border-color:var(--red);color:var(--red);box-shadow:var(--glow-pink);}
+.btn-blue{background:rgba(5,217,232,0.10);border-color:var(--blue);color:var(--blue);box-shadow:var(--glow-cyan);}
+.btn-green{background:rgba(1,255,195,0.10);border-color:var(--green);color:var(--green);box-shadow:var(--glow-mint);}
+.btn-yellow{background:rgba(228,255,0,0.10);border-color:var(--yellow);color:var(--yellow);box-shadow:var(--glow-yellow);}
+.btn-purple{background:rgba(191,90,242,0.12);border-color:var(--purple);color:var(--purple);box-shadow:var(--glow-purple);}
+.btn-pink{background:rgba(255,0,110,0.12);border-color:var(--pink);color:var(--pink);box-shadow:var(--glow-pink);}
+.btn-red:hover{background:rgba(255,45,120,0.25);box-shadow:0 0 20px rgba(255,45,120,0.9),0 0 40px rgba(255,45,120,0.4);}
+.btn-blue:hover{background:rgba(5,217,232,0.22);box-shadow:0 0 20px rgba(5,217,232,0.9),0 0 40px rgba(5,217,232,0.4);}
+.btn-green:hover{background:rgba(1,255,195,0.22);box-shadow:0 0 20px rgba(1,255,195,0.9),0 0 40px rgba(1,255,195,0.4);}
+.btn-yellow:hover{background:rgba(228,255,0,0.22);box-shadow:0 0 20px rgba(228,255,0,0.9),0 0 40px rgba(228,255,0,0.4);}
+.btn-purple:hover{background:rgba(191,90,242,0.25);box-shadow:0 0 20px rgba(191,90,242,0.9),0 0 40px rgba(191,90,242,0.4);}
+.btn:disabled{opacity:0.35;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
+
+/* === FORMS === */
+.form-label{font-family:var(--font-head);font-weight:700;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--mid);margin-bottom:6px;display:block;}
+.form-input{width:100%;padding:10px 14px;border:1px solid rgba(5,217,232,0.3);border-radius:6px;font-family:var(--font-body);font-size:0.95rem;background:rgba(5,217,232,0.05);color:var(--dark);transition:border-color 0.15s;}
+.form-input:focus{outline:none;border-color:var(--blue);box-shadow:var(--glow-cyan);}
+select,.book-owner-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2305d9e8'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px!important;cursor:pointer;}
+
+/* === STICKER === */
+.sticker{display:inline-flex;flex-direction:column;align-items:center;gap:0;cursor:pointer;transition:transform 0.15s;position:relative;}
+.sticker:hover{transform:scale(1.08) rotate(-1.5deg);}
+.sticker-img-wrap{position:relative;display:inline-block;}
+.sticker-img{width:100px;height:100px;object-fit:cover;display:block;}
+.sticker-border{position:absolute;inset:-3px;border-radius:4px;pointer-events:none;}
+.sticker-label{font-family:var(--font-head);font-size:0.65rem;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;color:var(--dark);margin-top:5px;text-align:center;max-width:100px;word-break:break-word;}
+.sticker-value{font-family:var(--font-mono);font-size:0.62rem;color:var(--yellow);font-weight:700;}
+.rarity-legendary .sticker-img-wrap::after{content:'';position:absolute;inset:-3px;border-radius:4px;background:linear-gradient(125deg,transparent 35%,rgba(255,45,120,0.5) 45%,rgba(228,255,0,0.4) 50%,rgba(5,217,232,0.5) 55%,transparent 65%);background-size:200% 200%;animation:holo 1.8s linear infinite;pointer-events:none;mix-blend-mode:screen;}
+.rarity-legendary .sticker-img{filter:drop-shadow(0 0 6px var(--pink)) drop-shadow(0 0 14px rgba(255,45,120,0.5));}
+.rarity-rare .sticker-img{filter:drop-shadow(0 0 6px var(--blue)) drop-shadow(0 0 12px rgba(5,217,232,0.4));}
+@keyframes holo{0%{background-position:200% 200%;}100%{background-position:-200% -200%;}}
+.rarity-badge{font-family:var(--font-head);font-size:0.55rem;font-weight:700;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:1px;margin-top:3px;}
+.badge-common{background:rgba(155,142,196,0.2);border:1px solid rgba(155,142,196,0.5);color:var(--mid);}
+.badge-rare{background:rgba(5,217,232,0.12);border:1px solid rgba(5,217,232,0.6);color:var(--blue);text-shadow:var(--glow-cyan);}
+.badge-legendary{background:rgba(228,255,0,0.1);border:1px solid rgba(228,255,0,0.6);color:var(--yellow);text-shadow:var(--glow-yellow);animation:legendaryPulse 2s ease-in-out infinite;}
+@keyframes legendaryPulse{0%,100%{text-shadow:var(--glow-yellow);}50%{text-shadow:0 0 16px rgba(228,255,0,1),0 0 32px rgba(228,255,0,0.5);}}
+
+/* HEX sticker for AI/vend */
+.hex-sticker-wrap{display:inline-flex;flex-direction:column;align-items:center;gap:0;cursor:pointer;}
+.hex-sticker-wrap:hover .hex-sticker{transform:scale(1.08);}
+.hex-sticker{clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);transition:transform 0.15s;}
+
+/* === STICKER GRID === */
+.sticker-grid{display:flex;flex-wrap:wrap;gap:22px;padding:12px;}
+
+/* === DAILY BANNER === */
+.daily-banner{background:linear-gradient(90deg,rgba(255,107,53,0.15),rgba(255,45,120,0.15));border:1px solid rgba(255,107,53,0.4);border-radius:12px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;box-shadow:0 0 20px rgba(255,107,53,0.15);}
+.daily-text{font-family:var(--font-head);font-size:1rem;font-weight:700;color:var(--orange);}
+.daily-sub{font-size:0.82rem;color:var(--mid);}
+
+/* === STREAK === */
+.streak-bar{display:flex;gap:8px;align-items:center;margin-top:8px;}
+.streak-pip{width:20px;height:20px;border-radius:50%;background:rgba(255,107,53,0.2);border:1px solid rgba(255,107,53,0.4);display:flex;align-items:center;justify-content:center;font-size:10px;}
+.streak-pip.earned{background:var(--orange);border-color:var(--orange);box-shadow:0 0 8px var(--orange);}
+
+/* === DESKTOP (HOME TAB) === */
+.desktop{background:linear-gradient(160deg,rgba(13,2,33,0.9),rgba(26,8,56,0.9));border:1px solid rgba(5,217,232,0.2);border-radius:14px;min-height:400px;position:relative;overflow:hidden;padding:20px 20px 60px;}
+.desktop::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(5,217,232,0.04) 59px,rgba(5,217,232,0.04) 60px),repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(5,217,232,0.03) 59px,rgba(5,217,232,0.03) 60px);pointer-events:none;}
+.desktop-icons{display:flex;flex-wrap:wrap;gap:8px;position:relative;z-index:1;}
+.desktop-icon{width:90px;text-align:center;padding:12px 8px;cursor:pointer;border-radius:8px;transition:background 0.1s;user-select:none;}
+.desktop-icon:hover{background:rgba(5,217,232,0.08);}
+.desktop-icon.selected{background:rgba(5,217,232,0.16);border:1px solid rgba(5,217,232,0.4);}
+.di-icon{font-size:2.2rem;display:block;filter:drop-shadow(0 0 8px rgba(5,217,232,0.3));}
+.di-label{font-family:var(--font-head);font-size:0.58rem;letter-spacing:0.5px;color:var(--dark);margin-top:5px;text-shadow:1px 1px 2px rgba(0,0,0,0.8);}
+.taskbar{position:absolute;bottom:0;left:0;right:0;background:rgba(13,2,33,0.98);border-top:1px solid rgba(5,217,232,0.25);height:44px;display:flex;align-items:center;gap:6px;padding:0 10px;z-index:2;}
+.taskbar-start{background:linear-gradient(135deg,var(--red),var(--purple));border:none;border-radius:4px;padding:5px 12px;font-family:var(--font-head);font-size:0.7rem;color:#fff;cursor:pointer;display:flex;align-items:center;gap:5px;font-weight:700;}
+.taskbar-start-logo{font-size:1rem;}
+.taskbar-sep{width:1px;height:24px;background:rgba(5,217,232,0.2);margin:0 4px;}
+.taskbar-btn{background:rgba(5,217,232,0.08);border:1px solid rgba(5,217,232,0.2);border-radius:4px;padding:4px 10px;font-family:var(--font-head);font-size:0.6rem;color:var(--blue);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.taskbar-btn:hover{background:rgba(5,217,232,0.2);}
+.taskbar-tray{margin-left:auto;font-family:var(--font-mono);font-size:0.75rem;color:var(--mid);background:rgba(0,0,0,0.3);padding:4px 10px;border-radius:4px;border:1px solid rgba(5,217,232,0.1);}
+
+/* === SOCIAL TICKER === */
+.ticker-wrap{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:7px 14px;font-size:0.72rem;color:rgba(255,255,255,0.5);overflow:hidden;height:30px;display:flex;align-items:center;margin-bottom:16px;position:relative;}
+.ticker-inner{white-space:nowrap;animation:tickerScroll 20s linear infinite;}
+@keyframes tickerScroll{0%{transform:translateX(100%);}100%{transform:translateX(-100%);}}.ticker-name{color:var(--yellow);font-weight:700;}
+
+/* === LEADERBOARD === */
+.leaderboard{background:var(--paper);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.lb-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid rgba(5,217,232,0.08);}
+.lb-row:last-child{border-bottom:none;}
+.lb-row.me{background:rgba(228,255,0,0.04);}
+.lb-rank{width:28px;font-family:var(--font-head);font-size:0.9rem;font-weight:700;text-align:center;flex-shrink:0;}
+.lb-rank.gold{color:var(--yellow);}
+.lb-rank.silver{color:#b0b0cc;}
+.lb-rank.bronze{color:#c88040;}
+.lb-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--purple));display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.lb-name{flex:1;font-weight:700;font-size:0.85rem;}
+.lb-stat{font-family:var(--font-mono);font-size:0.72rem;color:var(--yellow);text-align:right;}
+
+/* === PRINTER === */
+.printer-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
+.printer-emoji{font-size:5rem;display:block;margin-bottom:12px;filter:drop-shadow(0 0 20px rgba(255,45,120,0.5));animation:wobble 3s ease-in-out infinite;}
+@keyframes wobble{0%,100%{transform:rotate(-2deg);}50%{transform:rotate(2deg);}}
+.click-counter{font-family:var(--font-head);font-size:2.8rem;font-weight:900;letter-spacing:2px;color:var(--red);text-shadow:var(--glow-pink);}
+.click-sub{font-size:0.82rem;color:var(--mid);margin-bottom:22px;font-family:var(--font-mono);letter-spacing:1px;}
+.progress-bar-wrap{background:rgba(5,217,232,0.05);border:1px solid rgba(5,217,232,0.2);border-radius:20px;height:26px;margin:14px 0;overflow:hidden;}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--purple) 50%,var(--blue));border-radius:20px;transition:width 0.3s ease;box-shadow:0 0 10px rgba(255,45,120,0.6);}
+.create-form{display:flex;flex-direction:column;gap:14px;}
+.file-upload-area{border:1px dashed rgba(5,217,232,0.4);border-radius:10px;padding:22px;text-align:center;background:rgba(5,217,232,0.04);cursor:pointer;transition:all 0.2s;position:relative;color:var(--mid);}
+.file-upload-area:hover{border-color:var(--blue);background:rgba(5,217,232,0.08);}
+.file-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.preview-img{max-width:100px;max-height:100px;border-radius:4px;margin:8px auto;display:block;border:1px solid var(--border);box-shadow:var(--glow-pink);}
+.border-picker{display:flex;gap:10px;flex-wrap:wrap;}
+.border-swatch{width:36px;height:36px;border-radius:6px;cursor:pointer;transition:transform 0.1s;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;border:2px solid rgba(255,255,255,0.15);}
+.border-swatch:hover{transform:scale(1.18);}
+.border-swatch.selected{transform:scale(1.18);box-shadow:0 0 0 2px var(--yellow),0 0 12px rgba(228,255,0,0.5);}
+
+/* === BOOK === */
+.book-wrap{background:linear-gradient(135deg,rgba(20,4,48,0.95),rgba(10,2,25,0.98))!important;border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--shadow-lg);position:relative;}
+.book-wrap::before{content:'';position:absolute;left:44px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,transparent,var(--red) 10%,var(--purple) 50%,var(--blue) 90%,transparent);opacity:0.45;box-shadow:var(--glow-pink);}
+.book-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.book-owner-select{padding:8px 14px;border:1px solid rgba(5,217,232,0.3);border-radius:8px;font-family:var(--font-body);font-size:0.9rem;background:rgba(5,217,232,0.06);color:var(--dark);font-weight:700;}
+
+/* === AUCTION === */
+.auction-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;}
+.auction-card{background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;transition:transform 0.15s;backdrop-filter:blur(10px);}
+.auction-card:hover{transform:translateY(-4px);border-color:rgba(255,45,120,0.55);}
+.auction-seller{font-family:var(--font-mono);font-size:0.68rem;color:var(--mid);margin-bottom:8px;}
+.current-bid{font-family:var(--font-head);font-size:1rem;font-weight:700;color:var(--red);margin:6px 0;}
+.bid-history{font-family:var(--font-mono);font-size:0.65rem;color:var(--mid);margin-top:4px;}
+.auction-bid-row{display:flex;align-items:center;gap:6px;margin-top:10px;}
+.auction-bid-input{flex:1;padding:6px 10px;border:1px solid rgba(5,217,232,0.3);border-radius:6px;font-size:0.85rem;font-family:var(--font-mono);font-weight:700;width:70px;background:rgba(5,217,232,0.05);color:var(--dark);}
+
+/* === TRADE === */
+.trade-layout{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:start;}
+.trade-arrow{font-size:2rem;color:var(--mid);display:flex;align-items:center;justify-content:center;padding-top:40px;}
+.trade-select-grid{display:flex;flex-wrap:wrap;gap:8px;padding:10px;max-height:260px;overflow-y:auto;}
+
+/* === BLACKJACK === */
+.bj-table{background:radial-gradient(ellipse at 50% 40%,#1a063a 0%,#0d0221 100%);border:1px solid rgba(191,90,242,0.4);border-radius:180px;padding:40px 30px;min-height:320px;text-align:center;box-shadow:inset 0 0 60px rgba(191,90,242,0.08),var(--glow-purple);}
+.bj-label{font-family:var(--font-head);color:rgba(191,90,242,0.6);font-size:0.72rem;letter-spacing:3px;margin-bottom:10px;text-transform:uppercase;}
+.bj-hand{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;min-height:80px;align-items:center;}
+.card-tile{width:54px;height:78px;background:#fff;border:1px solid #ddd;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;box-shadow:0 4px 12px rgba(0,0,0,0.5);animation:deal 0.3s ease-out;}
+@keyframes deal{from{transform:translateY(-30px) rotate(-5deg);opacity:0;}to{transform:translateY(0) rotate(0);opacity:1;}}
+.card-tile.red{color:#d40000;}.card-tile.black{color:#111;}
+.card-tile.face-down{background:repeating-linear-gradient(45deg,#1a0a3e,#1a0a3e 7px,#2a1060 7px,#2a1060 14px);border-color:rgba(191,90,242,0.4);box-shadow:0 4px 12px rgba(0,0,0,0.5),var(--glow-purple);}
+.bj-score{font-family:var(--font-head);font-size:1.4rem;font-weight:700;color:var(--yellow);margin:8px 0;}
+.bj-msg{font-family:var(--font-head);font-size:1.1rem;font-weight:700;min-height:30px;margin:10px 0;}
+.bj-bet-area{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:12px;}
+.bj-bet-input{width:80px;padding:8px 12px;border:1px solid rgba(228,255,0,0.4);border-radius:6px;background:rgba(228,255,0,0.05);color:var(--yellow);font-family:var(--font-mono);font-size:1rem;font-weight:700;text-align:center;}
+.bj-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.casino-tabs{display:flex;gap:0;border-bottom:1px solid rgba(5,217,232,0.2);margin-bottom:24px;}
+.casino-tab{padding:10px 20px;font-family:var(--font-head);font-size:0.75rem;font-weight:700;letter-spacing:1px;cursor:pointer;color:var(--mid);border-bottom:2px solid transparent;transition:all 0.15s;text-transform:uppercase;}
+.casino-tab.active{color:var(--purple);border-bottom-color:var(--purple);}
+.casino-panel{display:none;}.casino-panel.active{display:block;}
+
+/* === SLOT MACHINE === */
+.slot-machine-wrap{background:linear-gradient(160deg,#1a0530,#0e0220,#1a0530);border:2px solid var(--purple);border-radius:16px;padding:24px;box-shadow:0 0 40px rgba(123,47,190,0.3);display:flex;flex-direction:column;align-items:center;gap:20px;max-width:500px;margin:0 auto;}
+.slot-reels{display:flex;gap:16px;align-items:center;}
+.slot-reel{width:80px;height:100px;background:rgba(0,0,0,0.6);border:2px solid rgba(191,90,242,0.5);border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:2.5rem;position:relative;}
+.slot-reel.spinning{animation:reelSpin 0.1s infinite;}
+@keyframes reelSpin{0%{transform:translateY(0);}50%{transform:translateY(-4px);}100%{transform:translateY(0);}}
+.slot-reel.win{box-shadow:0 0 20px var(--yellow),0 0 40px rgba(228,255,0,0.4);border-color:var(--yellow);}
+.slot-bet-row{display:flex;align-items:center;gap:12px;}
+.slot-bet-input{width:80px;padding:8px 10px;background:rgba(191,90,242,0.08);border:1px solid rgba(191,90,242,0.4);border-radius:6px;color:var(--purple);font-family:var(--font-mono);font-weight:700;font-size:0.9rem;text-align:center;}
+.slot-result-msg{font-family:var(--font-head);font-size:1rem;font-weight:700;min-height:28px;text-align:center;}
+.slot-result-msg.win{color:var(--yellow);text-shadow:var(--glow-yellow);}
+.slot-result-msg.nearmiss{color:var(--orange);}
+.slot-result-msg.lose{color:var(--mid);}
+.near-miss-flash{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(13,2,33,0.95);border:2px solid var(--orange);border-radius:14px;padding:24px 40px;z-index:9999;text-align:center;font-family:var(--font-head);font-size:1.2rem;color:var(--orange);pointer-events:none;animation:nmFlash 1.6s ease forwards;}
+@keyframes nmFlash{0%{opacity:0;transform:translate(-50%,-50%) scale(0.8);}20%{opacity:1;transform:translate(-50%,-50%) scale(1.05);}80%{opacity:1;}100%{opacity:0;transform:translate(-50%,-50%) scale(1);}}
+.slot-paytable{background:rgba(0,0,0,0.3);border:1px solid rgba(191,90,242,0.2);border-radius:8px;padding:12px 16px;font-family:var(--font-mono);font-size:0.7rem;color:var(--mid);line-height:2;}
+.slot-paytable span{color:var(--yellow);}
+
+/* === SHOP === */
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px;margin-top:20px;}
+.shop-item{text-align:center;padding:24px 16px;}
+.shop-item-icon{font-size:2.8rem;display:block;margin-bottom:10px;}
+.shop-item-name{font-family:var(--font-head);font-size:0.85rem;font-weight:700;color:var(--dark);letter-spacing:1px;margin-bottom:8px;}
+.shop-item-desc{font-size:0.8rem;color:var(--mid);margin-bottom:14px;line-height:1.5;}
+.daily-shop-section{margin-bottom:24px;}
+.daily-shop-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.daily-shop-title{font-family:var(--font-head);font-size:1rem;font-weight:700;color:var(--yellow);text-shadow:var(--glow-yellow);}
+.daily-shop-timer{font-family:var(--font-mono);font-size:0.75rem;color:var(--mid);}
+.daily-sticker-shop-grid{display:flex;gap:24px;flex-wrap:wrap;padding:8px;}
+.daily-sticker-card{background:rgba(26,8,56,0.9);border:1px solid rgba(5,217,232,0.25);border-radius:12px;padding:16px;text-align:center;min-width:140px;}
+.daily-sticker-card.sold-out{opacity:0.5;}
+.daily-sticker-price{font-family:var(--font-mono);font-size:0.8rem;color:var(--yellow);margin:8px 0;}
+.daily-sticker-loading{color:var(--mid);font-family:var(--font-mono);font-size:0.78rem;display:flex;align-items:center;gap:8px;}
+.daily-shop-refresh{font-family:var(--font-mono);font-size:0.65rem;color:rgba(155,142,196,0.5);margin-top:12px;letter-spacing:1px;text-align:center;}
+
+/* === VENDING === */
+.vending-layout{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:start;}
+.vending-machine{width:280px;background:rgba(26,26,46,0.95);border:2px solid #333;border-radius:18px 18px 24px 24px;box-shadow:0 0 40px rgba(5,217,232,0.15);overflow:hidden;position:relative;}
+.vm-header{background:linear-gradient(135deg,#0d0d2b,#1a1a3e);padding:14px 24px 10px;text-align:center;border-bottom:2px solid #333;}
+.vm-title{font-family:var(--font-head);font-size:0.85rem;color:var(--blue);text-shadow:0 0 8px var(--blue);letter-spacing:3px;}
+.vm-subtitle{font-size:8px;color:#555;letter-spacing:2px;margin-top:2px;}
+.vm-window{margin:12px 20px;background:#000;border:2px solid #333;border-radius:8px;padding:10px;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 20px rgba(0,0,0,0.8);position:relative;overflow:hidden;}
+.vm-window::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent,transparent 2px,rgba(0,0,0,0.15) 2px,rgba(0,0,0,0.15) 4px);pointer-events:none;z-index:2;}
+.vm-idle-text{font-family:var(--font-head);font-size:0.7rem;color:var(--blue);text-shadow:0 0 8px var(--blue);text-align:center;letter-spacing:2px;animation:vmPulse 2s ease-in-out infinite;z-index:1;}
+@keyframes vmPulse{0%,100%{opacity:0.7;}50%{opacity:1;}}
+.vm-controls{margin:8px 20px 16px;display:flex;flex-direction:column;gap:10px;}
+.vm-lcd{background:#111;border:1px solid #333;border-radius:4px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:0.7rem;}
+.vm-lcd-label{color:#555;letter-spacing:1px;font-size:0.6rem;}
+#vm-lcd-uses{color:var(--green);text-shadow:0 0 6px var(--green);}
+#vm-cooldown-timer{color:var(--orange);}
+.vm-dispense-btn{background:linear-gradient(135deg,rgba(255,45,120,0.2),rgba(191,90,242,0.2));border:2px solid var(--red);border-radius:8px;padding:12px;font-family:var(--font-head);font-size:0.72rem;color:var(--red);cursor:pointer;transition:all 0.15s;width:100%;letter-spacing:2px;text-shadow:var(--glow-pink);box-shadow:var(--glow-pink);}
+.vm-dispense-btn:hover{background:linear-gradient(135deg,rgba(255,45,120,0.35),rgba(191,90,242,0.35));}
+.vm-dispense-btn:disabled{opacity:0.35;cursor:not-allowed;box-shadow:none;}
+.vm-history{min-height:200px;}
+.vm-history-header{font-family:var(--font-head);font-size:0.8rem;color:var(--blue);letter-spacing:2px;margin-bottom:14px;}
+.vm-sticker-grid{display:flex;flex-wrap:wrap;gap:14px;}
+
+/* === CANVAS TAB === */
+.canvas-layout{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;}
+.canvas-sidebar{width:220px;flex-shrink:0;display:flex;flex-direction:column;gap:14px;}
+.canvas-board-wrap{flex:1;min-width:300px;}
+.sticker-canvas{width:100%;height:500px;background:linear-gradient(160deg,rgba(13,2,33,0.95),rgba(26,8,56,0.9));border:1px solid rgba(5,217,232,0.25);border-radius:14px;position:relative;overflow:hidden;}
+.sticker-canvas::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(5,217,232,0.04) 39px,rgba(5,217,232,0.04) 40px),repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(5,217,232,0.03) 39px,rgba(5,217,232,0.03) 40px);pointer-events:none;}
+.canvas-sticker{position:absolute;cursor:move;user-select:none;z-index:1;}
+.canvas-sticker.active{z-index:100;}
+.canvas-sticker-inner{position:relative;display:inline-block;}
+.canvas-sticker-img{width:90px;height:90px;object-fit:cover;border-radius:6px;border:3px solid white;box-shadow:3px 3px 12px rgba(0,0,0,0.5);display:block;pointer-events:none;}
+.canvas-rotate-handle{position:absolute;top:-18px;left:50%;transform:translateX(-50%);background:var(--blue);color:#000;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:grab;border:1px solid rgba(255,255,255,0.5);}
+.canvas-rotate-line{position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:2px;height:14px;background:var(--blue);pointer-events:none;}
+.canvas-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.canvas-msg{font-family:var(--font-mono);font-size:0.75rem;color:var(--green);letter-spacing:1px;margin-top:8px;min-height:20px;text-shadow:var(--glow-mint);}
+
+/* Canvas sidebar sticker picker */
+.canvas-sticker-pick{display:flex;flex-wrap:wrap;gap:6px;max-height:380px;overflow-y:auto;}
+.canvas-pick-item{width:60px;height:60px;border-radius:6px;border:2px solid rgba(5,217,232,0.2);overflow:hidden;cursor:pointer;transition:all 0.15s;position:relative;}
+.canvas-pick-item img{width:100%;height:100%;object-fit:cover;}
+.canvas-pick-item:hover{border-color:var(--blue);transform:scale(1.05);}
+.canvas-pick-item.selected{border-color:var(--yellow);box-shadow:0 0 10px rgba(228,255,0,0.5);}
+
+/* === PACKS TAB === */
+.packs-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+.pack-shop{display:flex;flex-direction:column;gap:14px;}
+.pack-item{display:flex;align-items:center;gap:14px;padding:14px;background:var(--paper2);border:1px solid rgba(5,217,232,0.2);border-radius:10px;transition:border-color 0.15s;}
+.pack-item:hover{border-color:var(--blue);}
+.pack-icon{font-size:2.5rem;flex-shrink:0;}
+.pack-info{flex:1;}
+.pack-name{font-family:var(--font-head);font-size:0.85rem;font-weight:700;color:var(--dark);margin-bottom:4px;}
+.pack-desc{font-size:0.75rem;color:var(--mid);}
+.pack-price{font-family:var(--font-mono);font-size:0.8rem;color:var(--yellow);margin-top:4px;}
+.pack-reveal-area{background:rgba(26,8,56,0.9);border:1px solid var(--border);border-radius:12px;padding:20px;min-height:240px;}
+.pack-reveal-title{font-family:var(--font-head);font-size:0.85rem;color:var(--mid);letter-spacing:2px;margin-bottom:14px;text-transform:uppercase;}
+.pack-reveal-cards{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+.pack-card{background:linear-gradient(160deg,#10103a,#060620);border-radius:10px;border:2px solid rgba(0,200,255,0.25);width:90px;padding:8px;text-align:center;animation:cardReveal 0.4s ease backwards;}
+@keyframes cardReveal{from{opacity:0;transform:translateY(-20px) rotateY(90deg);}to{opacity:1;transform:translateY(0) rotateY(0);}}
+.pack-card.rarity-rare{border-color:rgba(191,90,242,0.5);}
+.pack-card.rarity-legendary{border-color:rgba(228,255,0,0.5);box-shadow:0 0 12px rgba(228,255,0,0.2);}
+.pack-card-emoji{font-size:2rem;display:block;margin-bottom:4px;}
+.pack-card-name{font-family:var(--font-head);font-size:0.55rem;color:var(--dark);letter-spacing:0.5px;}
+.pack-card-rarity{font-size:0.5rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.pack-card-rarity.common{color:var(--mid);}
+.pack-card-rarity.rare{color:var(--purple);}
+.pack-card-rarity.legendary{color:var(--yellow);}
+.collection-counter{font-family:var(--font-mono);font-size:0.7rem;color:var(--mid);margin-bottom:10px;}
+
+/* === MODALS === */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px);}
+.modal-box{background:rgba(20,4,48,0.97);border:1px solid rgba(5,217,232,0.3);border-radius:16px;padding:28px;max-width:460px;width:90%;position:relative;box-shadow:var(--shadow-lg);}
+.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--mid);font-size:1.2rem;cursor:pointer;}
+.modal-title{font-family:var(--font-head);font-size:1rem;font-weight:700;color:var(--red);margin-bottom:18px;letter-spacing:1px;}
+.list-form{display:flex;flex-direction:column;gap:14px;}
+
+/* === CONFETTI === */
+.confetti-piece{position:fixed;width:8px;height:8px;pointer-events:none;z-index:9999;animation:confettiFall 2.5s ease forwards;}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+
+/* === TOAST === */
+#toast-container{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:flex-end;}
+.toast-msg{background:rgba(13,2,33,0.95);border:1px solid rgba(255,255,255,0.1);border-left:3px solid var(--yellow);border-radius:8px;padding:12px 16px;font-size:0.85rem;max-width:320px;box-shadow:var(--shadow-lg);animation:toastIn 0.3s ease-out;font-family:var(--font-body);}
+@keyframes toastIn{from{transform:translateX(20px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+/* === PLAYER SELECT === */
+.player-select-screen{text-align:center;}
+.player-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;max-height:250px;overflow-y:auto;}
+.player-item{background:rgba(255,45,120,0.08);border:1px solid rgba(255,45,120,0.3);border-radius:8px;padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:700;transition:background 0.15s;}
+.player-item:hover{background:rgba(255,45,120,0.18);}
+.new-player-form{display:flex;gap:10px;}
+.loading-spinner{width:20px;height:20px;border:2px solid rgba(5,217,232,0.2);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;display:inline-block;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.full-loading{display:flex;align-items:center;justify-content:center;gap:12px;font-family:var(--font-mono);letter-spacing:2px;text-transform:uppercase;}
+
+/* === PUTTY MODAL === */
+#putty-sticker-grid{max-height:300px;overflow-y:auto;}
+
+/* Responsive */
+@media(max-width:700px){
+  .printer-layout,.packs-layout,.trade-layout{grid-template-columns:1fr;}
+  .vending-layout,.canvas-layout{flex-direction:column;}
+  .vending-machine{width:100%;}
+  .trade-arrow{padding-top:0;}
+}
+</style>
+<link rel="stylesheet" href="../../portfolio-toolbar.css">
+<style id="portfolio-toolbar-theme">
+/* Back-to-portfolio bar, themed to match this game (synthwave) */
+#portfolio-toolbar {
+    --pt-bar-bg: linear-gradient(90deg, #0d0221, #1a0838 50%, #0d0221);
+    --pt-bar-border: 1px solid rgba(5, 217, 232, 0.25);
+    --pt-bar-shadow: 0 4px 24px rgba(5, 217, 232, 0.1);
+    --pt-font: 'Orbitron', 'Fredoka One', sans-serif;
+    --pt-size: 11px;
+    --pt-weight: 700;
+    --pt-spacing: 1px;
+    --pt-transform: uppercase;
+    --pt-btn-bg: rgba(5, 217, 232, 0.1);
+    --pt-btn-border: 1px solid #05d9e8;
+    --pt-btn-radius: 6px;
+    --pt-btn-shadow: 0 0 8px rgba(5, 217, 232, 0.8), 0 0 20px rgba(5, 217, 232, 0.3);
+    --pt-btn-color: #05d9e8;
+    --pt-hover-bg: rgba(5, 217, 232, 0.22);
+    --pt-hover-color: #f0e6ff;
+    --pt-hover-border-color: #05d9e8;
+}
+/* the game's own sticky header sits below the bar */
+#main-game > header { top: 56px !important; }
+</style>
+<script src="../../game-versions.js" defer></script>
+<script src="../../portfolio-toolbar.js" defer></script>
+</head>
+<body style="padding-top: 56px !important;">
+    <div id="portfolio-toolbar">
+        <a href="../../index.html" class="portfolio-back-btn"><span class="portfolio-back-arrow" aria-hidden="true">←</span>Back<span class="portfolio-back-extra"> to Portfolio</span></a>
+    </div>
+
+<!-- ==================== PLAYER SELECT ==================== -->
+<div id="player-select-screen" style="background:var(--bg);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div class="player-select-screen card" style="max-width:480px;width:100%;text-align:center;">
+    <div style="font-family:var(--font-head);font-size:3rem;font-weight:900;letter-spacing:4px;color:var(--yellow);text-shadow:-2px 0 var(--pink),2px 0 var(--blue),0 0 30px rgba(228,255,0,0.5);margin-bottom:4px;">★ STICKERSTAR ★</div>
+    <div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:4px;color:var(--mid);margin-bottom:24px;text-transform:uppercase;">▸ Ultimate Collectibles Hub ◂</div>
+    <p style="color:var(--mid);font-family:var(--font-mono);font-size:0.78rem;margin-bottom:20px;letter-spacing:1px;">SELECT PLAYER PROFILE</p>
+    <div id="player-list" class="player-list"><div class="full-loading"><span class="loading-spinner"></span></div></div>
+    <div class="new-player-form">
+      <input type="text" id="new-player-name" class="form-input" placeholder="New player name..." maxlength="20" style="flex:1">
+      <button class="btn btn-red" onclick="createPlayer()">+ Join</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MAIN GAME ==================== -->
+<div id="main-game" class="hidden">
+
+<header>
+  <div class="logo">★ STICKERSTAR ★</div>
+  <div class="header-right">
+    <div class="paper-count">📄 <span id="paper-count">0</span></div>
+    <div class="token-badge">🪙 <span id="token-count">0</span></div>
+    <div class="player-badge" onclick="switchPlayer()">👤 <span id="player-name-display">Player</span> ▾</div>
+    <button id="edu-toggle" onclick="toggleEduMode()" title="Educational Mode: highlights dark patterns">
+      <span class="dot"></span>EDU
+    </button>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-tab active" onclick="showTab('home')">🏠 HOME</div>
+  <div class="nav-tab" onclick="showTab('printer')">🖨️ PRINT</div>
+  <div class="nav-tab" onclick="showTab('book')">📖 BINDER</div>
+  <div class="nav-tab" onclick="showTab('packs')">🎴 PACKS</div>
+  <div class="nav-tab" onclick="showTab('market')">🏷️ MARKET</div>
+  <div class="nav-tab" onclick="showTab('trade')">🤝 TRADE</div>
+  <div class="nav-tab" onclick="showTab('canvas')">🎨 CANVAS</div>
+  <div class="nav-tab" onclick="showTab('casino')">🃏 CASINO</div>
+  <div class="nav-tab" onclick="showTab('shop')">🛒 SHOP</div>
+  <div class="nav-tab" onclick="showTab('vending')">🎰 VEND</div>
+  <div class="nav-tab" onclick="showTab('ranks')">🏆 RANKS</div>
+</nav>
+
+<main>
+
+<!-- Daily Banner -->
+<div id="daily-banner" class="daily-banner hidden dp-zone">
+  <span class="dp-label">DARK PATTERN: Daily login pressure / streak anxiety</span>
+  <div>
+    <div class="daily-text">🎉 Daily Login Bonus!</div>
+    <div class="daily-sub" id="daily-sub-text">Claim your daily reward</div>
+    <div class="streak-bar" id="streak-bar"></div>
+  </div>
+  <button class="btn btn-yellow" onclick="claimDaily()">Claim 🪙<span id="daily-amount">50</span></button>
+</div>
+
+<!-- Social Ticker -->
+<div class="ticker-wrap dp-zone" id="social-ticker-wrap" style="display:none;">
+  <span class="dp-label">DARK PATTERN: Fake social proof / manufactured FOMO</span>
+  <div class="ticker-inner" id="ticker-inner">Loading…</div>
+</div>
+
+<!-- ==================== HOME TAB ==================== -->
+<div id="tab-home" class="section active">
+  <div class="section-title">🖥️ SHACK DESKTOP</div>
+  <div class="desktop" id="desktop">
+    <div class="desktop-icons" id="desktop-icons">
+      <div class="desktop-icon" ondblclick="showTabFromDesktop('printer')" onclick="selectIcon(this)"><div class="di-icon">🖨️</div><div class="di-label">PRINT.EXE</div></div>
+      <div class="desktop-icon" ondblclick="showTabFromDesktop('book')" onclick="selectIcon(this)"><div class="di-icon">📖</div><div class="di-label">BINDER.EXE</div></div>
+      <div class="desktop-icon" ondblclick="showTabFromDesktop('packs')" onclick="selectIcon(this)"><div class="di-icon">🎴</div><div class="di-label">PACKS.EXE</div></div>
+      <div class="desktop-icon" ondblclick="showTabFromDesktop('market')" onclick="selectIcon(this)"><div class="di-icon">🏷️</div><div class="di-label">MARKET.EXE</div></div>
+      <div class="desktop-icon" ondblclick="showTabFromDesktop('trade')" onclick="selectIcon(this)"><div class="di-icon">🤝</div><div class="di-label">TRADE.EXE</div></div>
+      <div class="desktop-icon" ondblclick="showTabFromDesktop('canvas')" onclick="selectIcon(this)"><div class="di-icon">🎨</div><div class="di-label">CANVAS.EXE</div></div>
+      <div class="desktop-icon" ondblclick="showTabFromDesktop('casino')" onclick="selectIcon(this)"><div class="di-icon">🃏</div><div class="di-label">CASINO.EXE</div></div>
+      <div class="desktop-icon" ondblclick="showTabFromDesktop('shop')" onclick="selectIcon(this)"><div class="di-icon">🛒</div><div class="di-label">SHOP.EXE</div></div>
+      <div class="desktop-icon" ondblclick="showTabFromDesktop('vending')" onclick="selectIcon(this)"><div class="di-icon">🎰</div><div class="di-label">VEND.EXE</div></div>
+      <div class="desktop-icon" ondblclick="showTabFromDesktop('ranks')" onclick="selectIcon(this)"><div class="di-icon">🏆</div><div class="di-label">RANKS.EXE</div></div>
+      <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="showDesktopAlert()"><div class="di-icon">💾</div><div class="di-label">MY STICKERS</div></div>
+      <div class="desktop-icon" onclick="selectIcon(this)" ondblclick="showDesktopAlert()"><div class="di-icon">🗑️</div><div class="di-label">RECYCLE.BIN</div></div>
+    </div>
+    <div class="taskbar">
+      <button class="taskbar-start" onclick="showTabFromDesktop('home')"><span class="taskbar-start-logo">★</span><span>Start</span></button>
+      <div class="taskbar-sep"></div>
+      <button class="taskbar-btn" onclick="showTabFromDesktop('printer')">🖨️ PRINT</button>
+      <button class="taskbar-btn" onclick="showTabFromDesktop('packs')">🎴 PACKS</button>
+      <button class="taskbar-btn" onclick="showTabFromDesktop('canvas')">🎨 CANVAS</button>
+      <button class="taskbar-btn" onclick="showTabFromDesktop('casino')">🃏 CASINO</button>
+      <button class="taskbar-btn" onclick="showTabFromDesktop('shop')">🛒 SHOP</button>
+      <button class="taskbar-btn" onclick="showTabFromDesktop('vending')">🎰 VEND</button>
+      <div class="taskbar-tray" id="taskbar-clock">00:00</div>
+    </div>
+  </div>
+  <p style="font-family:var(--font-mono);font-size:0.65rem;color:var(--mid);margin-top:10px;letter-spacing:2px;text-align:center;text-transform:uppercase;">Single-click to select · Double-click to open</p>
+</div>
+
+<!-- ==================== PRINT TAB ==================== -->
+<div id="tab-printer" class="section">
+  <div class="section-title">🖨️ STICKER PRINTER</div>
+  <div class="printer-layout">
+    <div class="card printer-machine" style="text-align:center;padding:32px 20px;">
+      <span class="printer-emoji">🖨️</span>
+      <div class="click-counter"><span id="click-count">0</span></div>
+      <div class="click-sub">clicks this session</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-bar" style="width:0%"></div></div>
+      <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--mid);margin-bottom:16px;"><span id="clicks-remaining">100</span> more clicks for a paper sheet</div>
+      <button class="btn btn-red" style="font-size:1rem;padding:14px 28px;width:100%;" onclick="doClick()">🖨️ CLICK TO PRINT!</button>
+    </div>
+    <div class="card create-form">
+      <div class="section-title" style="font-size:1.2rem;margin-bottom:16px;">✦ CREATE STICKER</div>
+      <div>
+        <label class="form-label">Sticker Name</label>
+        <input type="text" id="sticker-name" class="form-input" placeholder="e.g. Cool Dragon" maxlength="30">
+      </div>
+      <div>
+        <label class="form-label">Upload Image</label>
+        <div class="file-upload-area">
+          <div id="upload-placeholder">📁 Click or drag an image here</div>
+          <img id="upload-preview" class="preview-img hidden" alt="preview">
+          <input type="file" id="sticker-file" accept="image/*" onchange="previewImage(event)">
+        </div>
+      </div>
+      <div>
+        <label class="form-label">Border Color</label>
+        <div class="border-picker" id="border-picker">
+          <div class="border-swatch selected" data-color="#e4ff00" style="background:#e4ff00;" title="Neon Yellow">◆</div>
+          <div class="border-swatch" data-color="#ff2d78" style="background:#ff2d78;"></div>
+          <div class="border-swatch" data-color="#05d9e8" style="background:#05d9e8;"></div>
+          <div class="border-swatch" data-color="#bf5af2" style="background:#bf5af2;"></div>
+          <div class="border-swatch" data-color="#01ffc3" style="background:#01ffc3;"></div>
+          <div class="border-swatch" data-color="#ff6b35" style="background:#ff6b35;"></div>
+          <div class="border-swatch" data-color="#ffffff" style="background:#ffffff;">W</div>
+          <div class="border-swatch" data-color="rainbow" style="background:linear-gradient(135deg,#ff2d78,#bf5af2,#05d9e8,#e4ff00);">✦</div>
+        </div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--mid);">
+        📄 Paper: <strong id="paper-count-2">0</strong>
+      </div>
+      <button class="btn btn-green" onclick="createSticker()">✨ Create Sticker!</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== BINDER TAB ==================== -->
+<div id="tab-book" class="section">
+  <div class="book-header">
+    <div class="section-title">📖 BINDER</div>
+    <select id="book-player-select" class="book-owner-select" onchange="renderBook()">
+      <option value="">My Book</option>
+    </select>
+  </div>
+  <div class="book-wrap">
+    <div id="sticker-book-grid" class="sticker-grid">
+      <div style="color:var(--mid);font-family:var(--font-mono);font-size:0.78rem;padding:24px;">NO STICKERS YET — PRINT TAB TO CREATE YOUR FIRST</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PACKS TAB ==================== -->
+<div id="tab-packs" class="section">
+  <div class="section-title">🎴 PACK OPENING</div>
+  <div class="packs-layout">
+    <div class="pack-shop card">
+      <div style="font-family:var(--font-head);font-size:0.85rem;color:var(--mid);letter-spacing:2px;margin-bottom:14px;text-transform:uppercase;">Choose a Pack</div>
+      <div class="collection-counter">📦 Packs opened: <span id="packs-opened-count">0</span> · 🃏 Cards collected: <span id="cards-collected-count">0</span></div>
+
+      <div class="pack-item dp-zone">
+        <span class="dp-label">DARK PATTERN: Variable reward / loot box mechanic</span>
+        <div class="pack-icon">🎴</div>
+        <div class="pack-info">
+          <div class="pack-name">STANDARD PACK</div>
+          <div class="pack-desc">5 cards · Common & Rare pool</div>
+          <div class="pack-price">🪙 100 tokens</div>
+        </div>
+        <button class="btn btn-blue" onclick="openPack('standard',100)">Open</button>
+      </div>
+
+      <div class="pack-item dp-zone">
+        <span class="dp-label">DARK PATTERN: Premium FOMO pack</span>
+        <div class="pack-icon">💎</div>
+        <div class="pack-info">
+          <div class="pack-name">PREMIUM PACK</div>
+          <div class="pack-desc">5 cards · Rare guaranteed!</div>
+          <div class="pack-price">🪙 350 tokens</div>
+        </div>
+        <button class="btn btn-purple" onclick="openPack('premium',350)">Open</button>
+      </div>
+
+      <div class="pack-item dp-zone">
+        <span class="dp-label">DARK PATTERN: Legendary scarcity / artificial urgency</span>
+        <div class="pack-icon">🌟</div>
+        <div class="pack-info">
+          <div class="pack-name">LEGENDARY PACK</div>
+          <div class="pack-desc">5 cards · Legendary guaranteed!</div>
+          <div class="pack-price">🪙 1000 tokens</div>
+        </div>
+        <button class="btn btn-yellow" onclick="openPack('legendary',1000)">Open</button>
+      </div>
+
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(5,217,232,0.15);">
+        <div style="font-family:var(--font-head);font-size:0.75rem;color:var(--mid);letter-spacing:1px;margin-bottom:10px;">🔄 TRADE-UP: Exchange 5 commons for 1 rare</div>
+        <button class="btn btn-green" style="width:100%;" onclick="doTradeUp()">Trade Up 5 Commons → 1 Rare</button>
+        <div id="trade-up-status" style="font-family:var(--font-mono);font-size:0.7rem;color:var(--mid);margin-top:6px;"></div>
+      </div>
+    </div>
+
+    <div class="pack-reveal-area">
+      <div class="pack-reveal-title">📬 Pack Reveal</div>
+      <div id="pack-reveal-cards" class="pack-reveal-cards">
+        <div style="color:var(--mid);font-family:var(--font-mono);font-size:0.75rem;padding:20px;text-align:center;">Open a pack to see your cards here!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MARKET TAB ==================== -->
+<div id="tab-market" class="section">
+  <div class="section-title">🏷️ MARKET</div>
+  <div id="auction-loading" class="full-loading hidden"><span class="loading-spinner"></span> SCANNING…</div>
+  <div id="auction-grid" class="auction-grid"></div>
+</div>
+
+<!-- ==================== TRADE TAB ==================== -->
+<div id="tab-trade" class="section">
+  <div class="section-title">🤝 TRADE POST</div>
+  <div class="card" style="margin-bottom:20px;">
+    <p style="color:var(--mid);font-family:var(--font-mono);font-size:0.78rem;">SELECT A STICKER from your collection to offer, pick a player, then choose which of their stickers you want in return.</p>
+  </div>
+  <div class="trade-layout">
+    <div class="card" style="min-width:0;">
+      <div class="section-title" style="font-size:0.85rem;">YOUR OFFER</div>
+      <div id="trade-my-stickers" class="trade-select-grid"><div style="color:var(--mid);font-size:0.8rem;padding:10px;">No stickers yet</div></div>
+    </div>
+    <div class="trade-arrow">⇌</div>
+    <div class="card" style="min-width:0;">
+      <div class="section-title" style="font-size:0.85rem;">
+        THEIR PICK
+        <select id="trade-partner-select" class="book-owner-select" style="font-size:0.8rem;margin-left:10px;" onchange="loadTradePartner()">
+          <option value="">Pick a player...</option>
+        </select>
+      </div>
+      <div id="trade-their-stickers" class="trade-select-grid"><div style="color:var(--mid);font-family:var(--font-mono);font-size:0.72rem;padding:10px;">SELECT A PLAYER FIRST</div></div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:20px;">
+    <button class="btn btn-green" onclick="executeTrade()" id="trade-btn">🤝 Propose Trade</button>
+  </div>
+</div>
+
+<!-- ==================== CANVAS TAB ==================== -->
+<div id="tab-canvas" class="section">
+  <div class="section-title">🎨 STICKER CANVAS</div>
+  <div class="canvas-layout">
+    <div class="canvas-sidebar">
+      <div class="card" style="padding:14px;">
+        <div style="font-family:var(--font-head);font-size:0.7rem;color:var(--mid);letter-spacing:1px;margin-bottom:10px;">MY STICKERS — click to pick</div>
+        <div id="canvas-sticker-picker" class="canvas-sticker-pick">
+          <div style="color:var(--mid);font-size:0.7rem;font-family:var(--font-mono);">No stickers yet</div>
+        </div>
+      </div>
+      <div class="card" style="padding:14px;">
+        <div style="font-family:var(--font-head);font-size:0.7rem;color:var(--mid);letter-spacing:1px;margin-bottom:8px;">CONTROLS</div>
+        <div style="font-size:0.75rem;color:var(--mid);line-height:1.8;">
+          🖱️ Click sticker → select<br>
+          📌 Drag to place on canvas<br>
+          ↻ Drag handle to rotate<br>
+          🖱️ Drag sticker to move
+        </div>
+      </div>
+    </div>
+    <div class="canvas-board-wrap">
+      <div id="sticker-canvas" class="sticker-canvas"></div>
+      <div class="canvas-controls">
+        <button class="btn btn-red" onclick="clearCanvas()">🗑️ Clear</button>
+        <button class="btn btn-blue" onclick="loadCanvasStickers()">🔄 Refresh Stickers</button>
+      </div>
+      <div class="canvas-msg" id="canvas-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== CASINO TAB ==================== -->
+<div id="tab-casino" class="section">
+  <div class="section-title">🃏 CASINO</div>
+  <div class="casino-tabs">
+    <div class="casino-tab active" onclick="switchCasinoTab('blackjack',this)">🃏 BLACKJACK</div>
+    <div class="casino-tab dp-zone" onclick="switchCasinoTab('slots',this)">
+      <span class="dp-label">DARK PATTERN: Near-miss slot manipulation</span>
+      🎰 SLOTS
+    </div>
+  </div>
+
+  <!-- BLACKJACK PANEL -->
+  <div id="casino-blackjack" class="casino-panel active">
+    <div class="card bj-table">
+      <div class="bj-label">Dealer</div>
+      <div class="bj-hand" id="dealer-hand"></div>
+      <div class="bj-score" id="dealer-score">?</div>
+      <div class="bj-msg" id="bj-msg"></div>
+      <div class="bj-label">Your Hand</div>
+      <div class="bj-hand" id="player-hand"></div>
+      <div class="bj-score" id="player-score"></div>
+    </div>
+    <div style="text-align:center;margin-top:20px;">
+      <div class="bj-bet-area">
+        <label style="font-family:var(--font-head);font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);">🪙 BET:</label>
+        <input type="number" id="bj-bet" class="bj-bet-input" value="10" min="1">
+      </div>
+      <div class="bj-controls">
+        <button class="btn btn-green" id="bj-deal-btn" onclick="bjDeal()">🃏 Deal</button>
+        <button class="btn btn-blue" id="bj-hit-btn" onclick="bjHit()" disabled>Hit</button>
+        <button class="btn btn-yellow" id="bj-stand-btn" onclick="bjStand()" disabled>Stand</button>
+        <button class="btn btn-purple" id="bj-double-btn" onclick="bjDouble()" disabled>Double Down</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLOTS PANEL -->
+  <div id="casino-slots" class="casino-panel">
+    <div class="slot-machine-wrap dp-zone">
+      <span class="dp-label">DARK PATTERN: Variable ratio reward schedule (most addictive)</span>
+      <div style="font-family:var(--font-head);font-size:1rem;color:var(--yellow);text-shadow:var(--glow-yellow);letter-spacing:3px;">⬡ SLOT-O-MATIC ⬡</div>
+      <div class="slot-reels">
+        <div class="slot-reel" id="reel0">🍒</div>
+        <div class="slot-reel" id="reel1">⭐</div>
+        <div class="slot-reel" id="reel2">🍒</div>
+      </div>
+      <div class="slot-bet-row">
+        <label style="font-family:var(--font-head);font-size:0.75rem;color:var(--mid);">BET:</label>
+        <input type="number" id="slot-bet" class="slot-bet-input" value="5" min="1">
+        <button class="btn btn-purple" id="slot-spin-btn" onclick="spinSlots()">🎰 SPIN</button>
+      </div>
+      <div class="slot-result-msg" id="slot-result-msg"></div>
+      <div class="slot-paytable">
+        🍒🍒🍒 = <span>2× bet</span> &nbsp;|&nbsp;
+        ⭐⭐⭐ = <span>5× bet</span> &nbsp;|&nbsp;
+        💎💎💎 = <span>10× bet</span> &nbsp;|&nbsp;
+        7️⃣7️⃣7️⃣ = <span>JACKPOT 25×!</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SHOP TAB ==================== -->
+<div id="tab-shop" class="section">
+  <div class="section-title">🛒 THE STAR SHOP</div>
+  <div class="daily-shop-section card">
+    <div class="daily-shop-header">
+      <div class="daily-shop-title">✦ TODAY'S DAILY STICKERS</div>
+      <div class="daily-shop-timer">RESETS IN <span id="daily-shop-countdown">--:--:--</span></div>
+    </div>
+    <div class="daily-sticker-shop-grid" id="daily-sticker-shop-grid">
+      <div class="daily-sticker-loading"><span class="loading-spinner"></span> Generating today's stickers…</div>
+    </div>
+    <div class="daily-shop-refresh">✦ Three fresh stickers materialize every midnight · Each can only be acquired once</div>
+  </div>
+  <div class="shop-grid">
+    <div class="shop-item card">
+      <span class="shop-item-icon">🧻</span>
+      <div class="shop-item-name">STICKER PAPER PACK</div>
+      <div class="shop-item-desc">5 sheets of sticker paper. Skip the clicking and get straight to creating.</div>
+      <div style="font-family:var(--font-head);font-size:0.9rem;color:var(--yellow);margin-bottom:12px;">🪙 200 tokens</div>
+      <button class="btn btn-blue" onclick="buyPaper()">Buy Pack</button>
+    </div>
+    <div class="shop-item card">
+      <span class="shop-item-icon">🤍</span>
+      <div class="shop-item-name">SILLY PUTTY</div>
+      <div class="shop-item-desc">Duplicate any sticker. Copy gets the same image with a re-rolled rarity.</div>
+      <div style="font-family:var(--font-head);font-size:0.9rem;color:var(--yellow);margin-bottom:12px;">🪙 1,500 tokens</div>
+      <button class="btn btn-pink" onclick="buySillyPutty()">Buy Putty 🤍</button>
+    </div>
+    <div class="shop-item card">
+      <span class="shop-item-icon">✨</span>
+      <div class="shop-item-name">RARITY BOOSTER</div>
+      <div class="shop-item-desc">Guarantees next sticker is Rare or Legendary. Single-use.</div>
+      <div style="font-family:var(--font-head);font-size:0.9rem;color:var(--yellow);margin-bottom:12px;">🪙 500 tokens</div>
+      <button class="btn btn-purple" onclick="buyRarityBoost()">Buy Booster</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== VENDING TAB ==================== -->
+<div id="tab-vending" class="section">
+  <div class="section-title">🎰 VEND-O-MATIC 3000</div>
+  <div class="vending-layout">
+    <div class="vending-machine">
+      <div class="vm-header">
+        <div class="vm-title">STIK-O-MATIC 3000</div>
+        <div class="vm-subtitle">PREMIUM GRADE COLLECTIBLES</div>
+      </div>
+      <div class="vm-window" id="vm-window">
+        <div class="vm-idle-text" id="vm-idle">INSERT TOKEN<br>⬡ ⬡ ⬡</div>
+      </div>
+      <div class="vm-controls">
+        <div class="vm-lcd"><span class="vm-lcd-label">USES TODAY</span><span id="vm-lcd-uses">-- / 2</span></div>
+        <div id="vm-cooldown-row" class="vm-lcd hidden"><span class="vm-lcd-label">NEXT USE IN</span><span id="vm-cooldown-timer">--:--:--</span></div>
+        <button class="vm-dispense-btn" id="vm-btn" onclick="vendSticker()">🎰 DISPENSE STICKER</button>
+      </div>
+    </div>
+    <div class="card" style="min-height:200px;">
+      <div class="vm-history-header">⬡ MACHINE STICKERS</div>
+      <div class="vm-sticker-grid" id="vm-sticker-grid">
+        <div style="color:var(--mid);font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;">No machine stickers yet — hit the button!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== RANKS TAB ==================== -->
+<div id="tab-ranks" class="section">
+  <div class="section-title">🏆 LEADERBOARD</div>
+  <div id="leaderboard-loading" class="full-loading"><span class="loading-spinner"></span> LOADING RANKS…</div>
+  <div id="leaderboard-wrap" class="leaderboard" style="display:none;"></div>
+</div>
+
+</main>
+</div><!-- end main-game -->
+
+<!-- ==================== MODALS ==================== -->
+<div class="modal-bg hidden" id="sticker-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('sticker-modal')">✕</button>
+    <div class="modal-title" id="modal-sticker-title">Sticker</div>
+    <div style="text-align:center;margin-bottom:16px;" id="modal-sticker-display"></div>
+    <div id="modal-sticker-info" style="font-family:var(--font-mono);font-size:0.78rem;line-height:1.8;padding:12px;background:rgba(5,217,232,0.04);border:1px solid rgba(5,217,232,0.15);border-radius:6px;color:var(--mid);margin-bottom:16px;"></div>
+    <div id="modal-sticker-actions" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
+  </div>
+</div>
+
+<div class="modal-bg hidden" id="list-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('list-modal')">✕</button>
+    <div class="modal-title">🏷️ List for Auction</div>
+    <div id="list-sticker-preview" style="text-align:center;margin-bottom:16px;"></div>
+    <div class="list-form">
+      <div><label class="form-label">Starting Bid (tokens)</label><input type="number" id="list-start-bid" class="form-input" value="50" min="1"></div>
+      <button class="btn btn-red" onclick="confirmList()">🏷️ List It!</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg hidden" id="putty-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('putty-modal')">✕</button>
+    <div class="modal-title">🤍 SILLY PUTTY — Pick a Sticker</div>
+    <p style="color:var(--mid);font-family:var(--font-mono);font-size:0.75rem;margin-bottom:14px;letter-spacing:0.5px;">CHOOSE A STICKER TO DUPLICATE · YOU KEEP THE ORIGINAL</p>
+    <div id="putty-sticker-grid" class="sticker-grid"></div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+// =====================================================
+// STORAGE HELPERS
+// =====================================================
+async function storageGet(key, shared=false) {
+  try { const r=await window.storage.get(key,shared); if(!r||r.value==null)return null; return JSON.parse(r.value); } catch { return null; }
+}
+async function storageSet(key, val, shared=false) {
+  try { await window.storage.set(key,JSON.stringify(val),shared); return true; } catch { return false; }
+}
+async function storageDel(key, shared=false) {
+  try { await window.storage.delete(key,shared); } catch {}
+}
+async function storageList(prefix, shared=false) {
+  try { const r=await window.storage.list(prefix,shared); return r?r.keys:[]; } catch { return []; }
+}
+
+// =====================================================
+// GAME STATE
+// =====================================================
+let currentPlayer = null;
+let selectedBorderColor = '#e4ff00';
+let uploadedImageData = null;
+let clockInterval = null;
+let vendTimerInterval = null;
+let dailyShopTimerInterval = null;
+let packsOpened = 0;
+let cardCollection = {}; // id → count for pack cards
+let tradeMySelected = null;
+let tradeTheirSelected = null;
+let selectedCanvasSticker = null;
+
+// =====================================================
+// UTILITIES
+// =====================================================
+function toast(msg, type='info') {
+  const c=document.getElementById('toast-container');
+  const d=document.createElement('div');
+  d.className='toast-msg';
+  d.style.borderLeftColor=type==='success'?'var(--green)':type==='error'?'var(--red)':'var(--yellow)';
+  d.textContent=msg;
+  c.appendChild(d);
+  setTimeout(()=>d.remove(),3500);
+}
+
+function genId() { return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+function rollRarity(forceBoost=false) {
+  const r=Math.random()*100;
+  if(forceBoost) return r<30?'legendary':'rare';
+  return r<5?'legendary':r<20?'rare':'common';
+}
+
+function rarityValue(rarity) {
+  if(rarity==='legendary') return 50+Math.floor(Math.random()*100);
+  if(rarity==='rare') return 15+Math.floor(Math.random()*35);
+  return 3+Math.floor(Math.random()*12);
+}
+
+function fmtTime(ms) {
+  const s=Math.max(0,Math.floor(ms/1000));
+  const h=Math.floor(s/3600);
+  const m=Math.floor((s%3600)/60);
+  const sc=s%60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`;
+}
+
+function pad(n){return String(n).padStart(2,'0');}
+
+function spawnConfetti() {
+  const colors=['#e4ff00','#ff2d78','#05d9e8','#bf5af2','#01ffc3'];
+  for(let i=0;i<35;i++) {
+    setTimeout(()=>{
+      const c=document.createElement('div');
+      c.className='confetti-piece';
+      c.style.left=Math.random()*100+'vw';
+      c.style.top='-20px';
+      c.style.background=colors[Math.floor(Math.random()*colors.length)];
+      c.style.borderRadius=Math.random()>0.5?'50%':'0';
+      c.style.width=c.style.height=(6+Math.random()*8)+'px';
+      c.style.animationDuration=(1.5+Math.random()*2)+'s';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),4000);
+    },i*40);
+  }
+}
+
+function updateHUD() {
+  if(!currentPlayer) return;
+  document.getElementById('token-count').textContent=currentPlayer.tokens;
+  document.getElementById('paper-count').textContent=currentPlayer.paper;
+  const p2=document.getElementById('paper-count-2');
+  if(p2) p2.textContent=currentPlayer.paper;
+}
+
+function todayKey() {
+  const d=new Date(); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+
+// =====================================================
+// STICKER RENDERING
+// =====================================================
+function renderStickerEl(sticker, size=100) {
+  const wrap=document.createElement('div');
+  wrap.className=`sticker rarity-${sticker.rarity}`;
+
+  const imgWrap=document.createElement('div');
+  imgWrap.className='sticker-img-wrap';
+
+  const img=document.createElement('img');
+  img.className='sticker-img';
+  img.style.width=img.style.height=size+'px';
+  img.src=sticker.imageData||'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+  img.alt=sticker.name;
+
+  const border=document.createElement('div');
+  border.className='sticker-border';
+  if(sticker.borderColor==='rainbow') {
+    border.style.background='linear-gradient(135deg,#ff2d78,#bf5af2,#05d9e8,#01ffc3,#e4ff00)';
+    border.style.padding='3px';
+  } else {
+    border.style.border=`3px solid ${sticker.borderColor||'#fff'}`;
+    border.style.boxShadow=`0 0 8px ${sticker.borderColor||'#fff'}40`;
+  }
+
+  imgWrap.appendChild(img);
+  imgWrap.appendChild(border);
+  wrap.appendChild(imgWrap);
+
+  const label=document.createElement('div');
+  label.className='sticker-label';
+  label.textContent=sticker.name;
+  wrap.appendChild(label);
+
+  const badge=document.createElement('div');
+  badge.className=`rarity-badge badge-${sticker.rarity}`;
+  badge.textContent=sticker.rarity;
+  wrap.appendChild(badge);
+
+  const val=document.createElement('div');
+  val.className='sticker-value';
+  val.textContent='🪙 '+sticker.value;
+  wrap.appendChild(val);
+
+  return wrap;
+}
+
+function renderHexStickerEl(sticker, size=100) {
+  const wrap=document.createElement('div');
+  wrap.className='hex-sticker-wrap';
+
+  const hex=document.createElement('div');
+  hex.className='hex-sticker';
+  hex.style.width=hex.style.height=size+'px';
+  hex.style.background='linear-gradient(135deg,rgba(26,8,56,0.9),rgba(13,2,33,0.9))';
+
+  const img=document.createElement('img');
+  img.style.width='100%';
+  img.style.height='100%';
+  img.style.objectFit='cover';
+  img.src=sticker.imageData||'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+  img.alt=sticker.name;
+
+  hex.appendChild(img);
+  wrap.appendChild(hex);
+
+  const label=document.createElement('div');
+  label.className='sticker-label';
+  label.textContent=sticker.name;
+  wrap.appendChild(label);
+
+  const badge=document.createElement('div');
+  badge.className=`rarity-badge badge-${sticker.rarity}`;
+  badge.textContent='⬡ '+sticker.rarity;
+  wrap.appendChild(badge);
+
+  return wrap;
+}
+
+// =====================================================
+// PLAYER MANAGEMENT
+// =====================================================
+async function loadPlayerList() {
+  const keys=await storageList('player-');
+  const players=[];
+  for(const k of keys) { const p=await storageGet(k); if(p) players.push(p); }
+  return players;
+}
+
+async function loadPlayerSelect() {
+  document.getElementById('player-select-screen').classList.remove('hidden');
+  document.getElementById('main-game').classList.add('hidden');
+  const list=document.getElementById('player-list');
+  list.innerHTML='<div class="full-loading"><span class="loading-spinner"></span></div>';
+  const players=await loadPlayerList();
+  list.innerHTML='';
+  if(!players.length) {
+    list.innerHTML='<div style="color:var(--mid);font-family:var(--font-mono);font-size:0.8rem;padding:10px;">No players yet — create one below!</div>';
+    return;
+  }
+  players.forEach(p=>{
+    const div=document.createElement('div');
+    div.className='player-item';
+    div.innerHTML=`<span>👤 ${p.name}</span><span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--mid);">🪙${p.tokens}</span>`;
+    div.onclick=()=>loginAs(p);
+    list.appendChild(div);
+  });
+}
+
+async function createPlayer() {
+  const name=document.getElementById('new-player-name').value.trim();
+  if(!name) return toast('Enter a name!','error');
+  const id='player-'+genId();
+  const player={id,name,tokens:500,paper:5,clicks:0,sessionClicks:0,lastDaily:0,rarityBoost:false,sillyPutty:1,vendSlot1:0,vendSlot2:0,streak:0,createdAt:Date.now()};
+  const saved=await storageSet(id,player);
+  if(!saved) return toast('Could not save — try again.','error');
+  loginAs(player);
+}
+
+function loginAs(player) {
+  currentPlayer=player;
+  document.getElementById('player-select-screen').classList.add('hidden');
+  document.getElementById('main-game').classList.remove('hidden');
+  document.getElementById('player-name-display').textContent=player.name;
+  updateHUD();
+  renderStreakPips();
+  checkDaily();
+  initTicker();
+  loadCanvasStickers();
+  startDesktopClock();
+  toast(`Welcome back, ${player.name}! 🌟`,'success');
+}
+
+async function savePlayer() {
+  if(currentPlayer) await storageSet(currentPlayer.id,currentPlayer);
+}
+
+function switchPlayer() { loadPlayerSelect(); }
+
+// =====================================================
+// STREAK + DAILY BONUS
+// =====================================================
+function renderStreakPips() {
+  const bar=document.getElementById('streak-bar');
+  const streak=currentPlayer.streak||0;
+  bar.innerHTML='';
+  for(let i=0;i<7;i++){
+    const pip=document.createElement('div');
+    pip.className='streak-pip'+(i<streak?' earned':'');
+    pip.textContent=i<streak?'🔥':'';
+    bar.appendChild(pip);
+  }
+}
+
+function checkDaily() {
+  if(!currentPlayer) return;
+  const now=Date.now();
+  const lastDay=currentPlayer.lastDaily||0;
+  const diff=now-lastDay;
+  if(diff<86400000) return;
+  const streak=currentPlayer.streak||0;
+  const amount=50+streak*20;
+  document.getElementById('daily-amount').textContent=amount;
+  document.getElementById('daily-sub-text').textContent=`Day ${streak+1} streak! +${amount} tokens`;
+  document.getElementById('daily-banner').classList.remove('hidden');
+}
+
+async function claimDaily() {
+  if(!currentPlayer) return;
+  const amount=parseInt(document.getElementById('daily-amount').textContent);
+  const now=Date.now();
+  const lastDay=currentPlayer.lastDaily||0;
+  const gap=now-lastDay;
+  const newStreak=gap<172800000?(currentPlayer.streak||0)+1:1; // reset if >2 days
+  currentPlayer.tokens+=amount;
+  currentPlayer.lastDaily=now;
+  currentPlayer.streak=newStreak;
+  await savePlayer();
+  updateHUD();
+  renderStreakPips();
+  document.getElementById('daily-banner').classList.add('hidden');
+  spawnConfetti();
+  toast(`🎉 +${amount} tokens! ${newStreak} day streak! 🔥`,'success');
+}
+
+// =====================================================
+// DESKTOP (HOME)
+// =====================================================
+function selectIcon(el) {
+  document.querySelectorAll('.desktop-icon').forEach(i=>i.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function showTabFromDesktop(name) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  const tabs=[...document.querySelectorAll('.nav-tab')];
+  const nameMap={home:'🏠 HOME',printer:'🖨️ PRINT',book:'📖 BINDER',packs:'🎴 PACKS',market:'🏷️ MARKET',trade:'🤝 TRADE',canvas:'🎨 CANVAS',casino:'🃏 CASINO',shop:'🛒 SHOP',vending:'🎰 VEND',ranks:'🏆 RANKS'};
+  tabs.forEach(t=>{if(t.textContent.trim()===nameMap[name]) t.classList.add('active');});
+  if(name==='ranks') loadLeaderboard();
+  if(name==='market') loadAuctions();
+  if(name==='trade') loadTradeUI();
+  if(name==='canvas') loadCanvasStickers();
+  if(name==='vending') { renderVendingHistory(); updateVendingUI(); clearInterval(vendTimerInterval); vendTimerInterval=setInterval(updateVendingUI,1000); }
+  if(name==='shop') { loadDailyShop(); clearInterval(dailyShopTimerInterval); updateDailyShopTimer(); dailyShopTimerInterval=setInterval(updateDailyShopTimer,1000); }
+}
+
+function showDesktopAlert() { toast('📁 Browse your stickers in the BINDER tab!','info'); }
+
+function startDesktopClock() {
+  clearInterval(clockInterval);
+  const update=()=>{
+    const d=new Date();
+    const el=document.getElementById('taskbar-clock');
+    if(el) el.textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+  update();
+  clockInterval=setInterval(update,30000);
+}
+
+// =====================================================
+// SOCIAL TICKER
+// =====================================================
+const tickerNames=['StarFan','NeonKid','VaporUser','CoolDude','PinkCat','TechNerd','PixelPro','GlowBot'];
+const tickerAmounts=['🪙 150','🪙 250','🪙 1,200','🪙 75','🪙 500'];
+function initTicker() {
+  const wrap=document.getElementById('social-ticker-wrap');
+  wrap.style.display='flex';
+  buildTicker();
+  setInterval(buildTicker,15000);
+}
+function buildTicker() {
+  const msgs=[];
+  for(let i=0;i<6;i++){
+    const name=tickerNames[Math.floor(Math.random()*tickerNames.length)];
+    const amt=tickerAmounts[Math.floor(Math.random()*tickerAmounts.length)];
+    msgs.push(`<span class="ticker-name">${name}</span> just earned ${amt}!`);
+  }
+  const el=document.getElementById('ticker-inner');
+  if(el) el.innerHTML=msgs.join('  &nbsp;&nbsp;•&nbsp;&nbsp;  ');
+}
+
+// =====================================================
+// EDUCATIONAL MODE
+// =====================================================
+function toggleEduMode() {
+  document.body.classList.toggle('edu-mode');
+  const on=document.body.classList.contains('edu-mode');
+  toast(on?'📚 Educational mode ON — dark patterns highlighted':'📚 Educational mode OFF','info');
+}
+
+// =====================================================
+// PRINTER / CLICKING
+// =====================================================
+async function doClick() {
+  if(!currentPlayer) return;
+  currentPlayer.clicks++;
+  currentPlayer.sessionClicks++;
+  await savePlayer();
+  const cc=document.getElementById('click-count');
+  const pr=document.getElementById('progress-bar');
+  const cr=document.getElementById('clicks-remaining');
+  if(cc) cc.textContent=currentPlayer.sessionClicks;
+  const pct=(currentPlayer.sessionClicks%100)/100*100;
+  if(pr) pr.style.width=pct+'%';
+  if(cr) cr.textContent=100-(currentPlayer.sessionClicks%100);
+  if(currentPlayer.sessionClicks%100===0) {
+    currentPlayer.paper++;
+    updateHUD();
+    await savePlayer();
+    toast('📄 Earned a sheet of sticker paper!','success');
+  }
+}
+
+// =====================================================
+// IMAGE UPLOAD
+// =====================================================
+function previewImage(event) {
+  const file=event.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    uploadedImageData=e.target.result;
+    const prev=document.getElementById('upload-preview');
+    prev.src=uploadedImageData;
+    prev.classList.remove('hidden');
+    document.getElementById('upload-placeholder').classList.add('hidden');
+  };
+  reader.readAsDataURL(file);
+}
+
+// Border picker
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.border-swatch').forEach(sw=>{
+    sw.addEventListener('click',()=>{
+      document.querySelectorAll('.border-swatch').forEach(s=>s.classList.remove('selected'));
+      sw.classList.add('selected');
+      selectedBorderColor=sw.dataset.color;
+    });
+  });
+  document.getElementById('new-player-name').addEventListener('keydown',e=>{if(e.key==='Enter') createPlayer();});
+});
+
+// =====================================================
+// CREATE STICKER
+// =====================================================
+async function createSticker() {
+  if(!currentPlayer) return;
+  if(currentPlayer.paper<1) return toast('Need sticker paper!','error');
+  const name=document.getElementById('sticker-name').value.trim();
+  if(!name) return toast('Give your sticker a name!','error');
+  if(!uploadedImageData) return toast('Upload an image first!','error');
+  const forceBoost=currentPlayer.rarityBoost;
+  const rarity=rollRarity(forceBoost);
+  const value=rarityValue(rarity);
+  const stickerId='sticker-'+genId();
+  const sticker={id:stickerId,name,imageData:uploadedImageData,borderColor:selectedBorderColor,rarity,value,owner:currentPlayer.id,createdAt:Date.now()};
+  await storageSet(stickerId,sticker,true);
+  let myStickers=await storageGet('stickers-'+currentPlayer.id)||[];
+  myStickers.push(stickerId);
+  await storageSet('stickers-'+currentPlayer.id,myStickers);
+  currentPlayer.paper--;
+  if(forceBoost){currentPlayer.rarityBoost=false;toast('✨ RARITY BOOSTER used!');}
+  await savePlayer();
+  updateHUD();
+  toast(`🎉 Created "${name}" — ${rarity.toUpperCase()}! 🪙 ${value}`,'success');
+  document.getElementById('sticker-name').value='';
+  document.getElementById('sticker-file').value='';
+  uploadedImageData=null;
+  document.getElementById('upload-preview').classList.add('hidden');
+  document.getElementById('upload-placeholder').classList.remove('hidden');
+  if(rarity==='legendary') spawnConfetti();
+  renderBook();
+  loadCanvasStickers();
+}
+
+// =====================================================
+// STICKER BOOK
+// =====================================================
+async function populateBookSelect() {
+  const sel=document.getElementById('book-player-select');
+  sel.innerHTML='<option value="">My Book</option>';
+  const players=await loadPlayerList();
+  players.forEach(p=>{
+    if(p.id!==currentPlayer.id){
+      const o=document.createElement('option');
+      o.value=p.id; o.textContent=p.name+"'s Book";
+      sel.appendChild(o);
+    }
+  });
+}
+
+async function renderBook() {
+  const grid=document.getElementById('sticker-book-grid');
+  grid.innerHTML='<span class="loading-spinner"></span>';
+  const sel=document.getElementById('book-player-select');
+  const viewId=sel&&sel.value?sel.value:(currentPlayer?currentPlayer.id:null);
+  if(!viewId){grid.innerHTML='';return;}
+  const stickerIds=await storageGet('stickers-'+viewId)||[];
+  const stickers=[];
+  for(const sid of stickerIds){const s=await storageGet(sid,true);if(s)stickers.push(s);}
+  grid.innerHTML='';
+  if(!stickers.length){grid.innerHTML='<div style="color:var(--mid);font-style:italic;padding:20px;">No stickers yet!</div>';return;}
+  stickers.forEach(s=>{
+    const el=s.aiGenerated?renderHexStickerEl(s):renderStickerEl(s);
+    el.onclick=()=>openStickerModal(s,viewId===currentPlayer.id);
+    grid.appendChild(el);
+  });
+}
+
+// =====================================================
+// STICKER MODAL
+// =====================================================
+async function openStickerModal(sticker, isOwner) {
+  document.getElementById('modal-sticker-title').textContent=sticker.name;
+  const disp=document.getElementById('modal-sticker-display');
+  disp.innerHTML='';
+  disp.appendChild(sticker.aiGenerated?renderHexStickerEl(sticker,130):renderStickerEl(sticker,140));
+  document.getElementById('modal-sticker-info').innerHTML=`<strong>Rarity:</strong> ${sticker.rarity}<br><strong>Value:</strong> 🪙 ${sticker.value}<br><strong>Border:</strong> ${sticker.borderColor}`;
+  const actions=document.getElementById('modal-sticker-actions');
+  actions.innerHTML='';
+  if(isOwner){
+    const listed=await storageGet('auction-'+sticker.id,true);
+    if(!listed){
+      const lb=document.createElement('button');
+      lb.className='btn btn-yellow';lb.textContent='🏷️ List for Auction';
+      lb.onclick=()=>{closeModal('sticker-modal');openListModal(sticker);};
+      actions.appendChild(lb);
+    } else {
+      const sp=document.createElement('span');sp.style.color='var(--mid)';sp.textContent='🏷️ Currently listed';
+      actions.appendChild(sp);
+    }
+    if((currentPlayer.sillyPutty||0)>0){
+      const pb=document.createElement('button');pb.className='btn btn-pink';pb.textContent='🤍 Use SILLY PUTTY';
+      pb.onclick=()=>{closeModal('sticker-modal');duplicateSticker(sticker);};
+      actions.appendChild(pb);
+    }
+  }
+  document.getElementById('sticker-modal').classList.remove('hidden');
+}
+
+function closeModal(id){document.getElementById(id).classList.add('hidden');}
+
+// =====================================================
+// AUCTION HOUSE
+// =====================================================
+async function loadAuctions() {
+  const loading=document.getElementById('auction-loading');
+  const grid=document.getElementById('auction-grid');
+  loading.classList.remove('hidden');grid.innerHTML='';
+  const keys=await storageList('auction-',true);
+  const auctions=[];
+  for(const k of keys){const a=await storageGet(k,true);if(a)auctions.push(a);}
+  loading.classList.add('hidden');
+  if(!auctions.length){grid.innerHTML='<div style="color:var(--mid);font-style:italic;grid-column:1/-1;padding:20px;">NO ACTIVE AUCTIONS — LIST A STICKER FROM YOUR BINDER</div>';return;}
+  for(const auction of auctions){
+    const sticker=await storageGet(auction.stickerId,true);
+    if(!sticker) continue;
+    const card=document.createElement('div');card.className='auction-card';
+    const sEl=renderStickerEl(sticker,80);sEl.style.margin='0 auto 8px';sEl.style.cursor='default';card.appendChild(sEl);
+    const seller=document.createElement('div');seller.className='auction-seller';seller.textContent='Listed by: '+auction.sellerName;card.appendChild(seller);
+    const curBid=document.createElement('div');curBid.className='current-bid';curBid.textContent='Bid: 🪙 '+auction.currentBid;card.appendChild(curBid);
+    if(auction.topBidder){const h=document.createElement('div');h.className='bid-history';h.textContent='Top: '+auction.topBidderName;card.appendChild(h);}
+    const isOwn=auction.sellerId===currentPlayer.id;
+    if(!isOwn){
+      const row=document.createElement('div');row.className='auction-bid-row';
+      const inp=document.createElement('input');inp.type='number';inp.className='auction-bid-input';inp.value=auction.currentBid+10;inp.min=auction.currentBid+1;
+      const btn=document.createElement('button');btn.className='btn btn-red';btn.style.cssText='padding:6px 10px;font-size:0.8rem;';btn.textContent='⬆ Bid';
+      btn.onclick=()=>placeBid(auction,sticker,parseInt(inp.value));
+      row.appendChild(inp);row.appendChild(btn);card.appendChild(row);
+    } else {
+      const claimBtn=document.createElement('button');claimBtn.className='btn btn-green';claimBtn.style.cssText='font-size:0.78rem;margin-top:8px;width:100%;';
+      claimBtn.textContent=auction.topBidder?`✅ Sell to ${auction.topBidderName}`:'❌ Cancel Listing';
+      claimBtn.onclick=()=>settleAuction(auction,sticker);card.appendChild(claimBtn);
+    }
+    if(auction.topBidder===currentPlayer.id){const y=document.createElement('div');y.style.cssText='color:var(--green);font-size:0.75rem;font-weight:800;margin-top:6px;';y.textContent='🏆 You are winning!';card.appendChild(y);}
+    grid.appendChild(card);
+  }
+}
+
+function openListModal(sticker){
+  document.getElementById('list-sticker-preview').innerHTML='';
+  document.getElementById('list-sticker-preview').appendChild(renderStickerEl(sticker,90));
+  document.getElementById('list-start-bid').value=sticker.value;
+  document.getElementById('list-modal').classList.remove('hidden');
+  document.getElementById('list-modal').dataset.stickerId=sticker.id;
+}
+
+async function confirmList(){
+  const stickerId=document.getElementById('list-modal').dataset.stickerId;
+  const startBid=parseInt(document.getElementById('list-start-bid').value);
+  if(!stickerId||isNaN(startBid)||startBid<1) return toast('Invalid bid amount.','error');
+  const sticker=await storageGet(stickerId,true);if(!sticker) return;
+  const auction={id:'auction-'+stickerId,stickerId,sellerId:currentPlayer.id,sellerName:currentPlayer.name,startBid,currentBid:startBid,topBidder:null,topBidderName:null,listedAt:Date.now()};
+  await storageSet('auction-'+stickerId,auction,true);
+  closeModal('list-modal');
+  toast(`🏷️ "${sticker.name}" listed!`,'success');
+  loadAuctions();
+}
+
+async function placeBid(auction, sticker, amount){
+  if(isNaN(amount)||amount<=auction.currentBid) return toast(`Bid must be > 🪙 ${auction.currentBid}`,'error');
+  if(currentPlayer.tokens<amount) return toast(`Need 🪙 ${amount}`,'error');
+  if(auction.topBidder&&auction.topBidder!==currentPlayer.id){
+    const prev=await storageGet(auction.topBidder);
+    if(prev){prev.tokens+=auction.currentBid;await storageSet(prev.id,prev);}
+  }
+  currentPlayer.tokens-=amount;
+  auction.currentBid=amount;auction.topBidder=currentPlayer.id;auction.topBidderName=currentPlayer.name;
+  await storageSet('auction-'+sticker.id,auction,true);
+  await savePlayer();updateHUD();
+  toast(`⬆ Bid 🪙 ${amount} on "${sticker.name}"!`,'success');
+  loadAuctions();
+}
+
+async function settleAuction(auction, sticker){
+  if(auction.topBidder){
+    const winner=await storageGet(auction.topBidder);
+    if(winner){
+      sticker.owner=winner.id;
+      await storageSet(sticker.id,sticker,true);
+      let ws=await storageGet('stickers-'+winner.id)||[];
+      ws=ws.filter(id=>id!==sticker.id);ws.push(sticker.id);
+      await storageSet('stickers-'+winner.id,ws);
+      let ms=await storageGet('stickers-'+currentPlayer.id)||[];
+      ms=ms.filter(id=>id!==sticker.id);
+      await storageSet('stickers-'+currentPlayer.id,ms);
+      currentPlayer.tokens+=auction.currentBid;
+      await savePlayer();updateHUD();
+      toast(`💸 Sold "${sticker.name}" for 🪙 ${auction.currentBid}!`,'success');
+    }
+  } else {
+    toast('Listing cancelled.','info');
+  }
+  await storageDel('auction-'+sticker.id,true);
+  loadAuctions();
+}
+
+// =====================================================
+// TRADING
+// =====================================================
+async function loadTradeUI(){
+  if(!currentPlayer) return;
+  const myGrid=document.getElementById('trade-my-stickers');
+  const sel=document.getElementById('trade-partner-select');
+  myGrid.innerHTML='<span class="loading-spinner"></span>';
+  sel.innerHTML='<option value="">Pick a player...</option>';
+  tradeMySelected=null;tradeTheirSelected=null;
+  const myIds=await storageGet('stickers-'+currentPlayer.id)||[];
+  myGrid.innerHTML='';
+  if(!myIds.length){myGrid.innerHTML='<div style="color:var(--mid);font-size:0.8rem;padding:10px;">No stickers</div>';return;}
+  for(const sid of myIds){
+    const s=await storageGet(sid,true);if(!s) continue;
+    const el=renderStickerEl(s,60);
+    el.onclick=()=>{tradeMySelected=s;myGrid.querySelectorAll('.sticker').forEach(e=>e.style.outline='none');el.style.outline='2px solid var(--yellow)';toast(`Selected: ${s.name}`);};
+    myGrid.appendChild(el);
+  }
+  const players=await loadPlayerList();
+  players.forEach(p=>{
+    if(p.id!==currentPlayer.id){
+      const o=document.createElement('option');o.value=p.id;o.textContent=p.name;sel.appendChild(o);
+    }
+  });
+}
+
+async function loadTradePartner(){
+  const sel=document.getElementById('trade-partner-select');
+  const grid=document.getElementById('trade-their-stickers');
+  const partnerId=sel.value;
+  if(!partnerId){grid.innerHTML='<div style="color:var(--mid);font-size:0.8rem;padding:10px;">Select a player</div>';return;}
+  grid.innerHTML='<span class="loading-spinner"></span>';
+  tradeTheirSelected=null;
+  const ids=await storageGet('stickers-'+partnerId)||[];
+  grid.innerHTML='';
+  if(!ids.length){grid.innerHTML='<div style="color:var(--mid);font-size:0.8rem;padding:10px;">They have no stickers</div>';return;}
+  for(const sid of ids){
+    const s=await storageGet(sid,true);if(!s)continue;
+    const el=renderStickerEl(s,60);
+    el.onclick=()=>{tradeTheirSelected=s;grid.querySelectorAll('.sticker').forEach(e=>e.style.outline='none');el.style.outline='2px solid var(--blue)';toast(`Want: ${s.name}`);};
+    grid.appendChild(el);
+  }
+}
+
+async function executeTrade(){
+  if(!tradeMySelected||!tradeTheirSelected) return toast('Select one sticker from each side.','error');
+  const partnerSel=document.getElementById('trade-partner-select');
+  const partnerId=partnerSel.value;if(!partnerId) return toast('Pick a partner.','error');
+  const partner=await storageGet(partnerId);if(!partner) return toast('Partner not found.','error');
+  // Swap sticker IDs in collections
+  let myIds=await storageGet('stickers-'+currentPlayer.id)||[];
+  let partnerIds=await storageGet('stickers-'+partnerId)||[];
+  myIds=myIds.filter(id=>id!==tradeMySelected.id);
+  myIds.push(tradeTheirSelected.id);
+  partnerIds=partnerIds.filter(id=>id!==tradeTheirSelected.id);
+  partnerIds.push(tradeMySelected.id);
+  tradeMySelected.owner=partnerId;
+  tradeTheirSelected.owner=currentPlayer.id;
+  await storageSet(tradeMySelected.id,tradeMySelected,true);
+  await storageSet(tradeTheirSelected.id,tradeTheirSelected,true);
+  await storageSet('stickers-'+currentPlayer.id,myIds);
+  await storageSet('stickers-'+partnerId,partnerIds);
+  toast(`🤝 Traded "${tradeMySelected.name}" for "${tradeTheirSelected.name}"!`,'success');
+  tradeMySelected=null;tradeTheirSelected=null;
+  loadTradeUI();
+}
+
+// =====================================================
+// SILLY PUTTY
+// =====================================================
+async function duplicateSticker(sticker){
+  if(!currentPlayer||(currentPlayer.sillyPutty||0)<1) return toast('No SILLY PUTTY!','error');
+  currentPlayer.sillyPutty--;
+  const newId='sticker-'+genId();
+  const newSticker={...sticker,id:newId,rarity:rollRarity(),owner:currentPlayer.id,createdAt:Date.now()};
+  newSticker.value=rarityValue(newSticker.rarity);
+  await storageSet(newId,newSticker,true);
+  let myIds=await storageGet('stickers-'+currentPlayer.id)||[];
+  myIds.push(newId);
+  await storageSet('stickers-'+currentPlayer.id,myIds);
+  await savePlayer();updateHUD();
+  toast(`🤍 Duplicated "${sticker.name}" → new ${newSticker.rarity}! 🪙 ${newSticker.value}`,'success');
+  if(newSticker.rarity==='legendary') spawnConfetti();
+  renderBook();loadCanvasStickers();
+}
+
+async function buySillyPuttyForSticker(){
+  const grid=document.getElementById('putty-sticker-grid');
+  grid.innerHTML='<span class="loading-spinner"></span>';
+  document.getElementById('putty-modal').classList.remove('hidden');
+  const ids=await storageGet('stickers-'+currentPlayer.id)||[];
+  const stickers=[];
+  for(const id of ids){const s=await storageGet(id,true);if(s)stickers.push(s);}
+  grid.innerHTML='';
+  if(!stickers.length){grid.innerHTML='<div style="color:var(--mid);">No stickers to duplicate!</div>';return;}
+  stickers.forEach(s=>{
+    const el=renderStickerEl(s,80);
+    el.onclick=()=>{closeModal('putty-modal');duplicateSticker(s);};
+    grid.appendChild(el);
+  });
+}
+
+// =====================================================
+// SHOP
+// =====================================================
+async function buyPaper(){
+  if(!currentPlayer||currentPlayer.tokens<200) return toast('Need 🪙 200 tokens!','error');
+  currentPlayer.tokens-=200;currentPlayer.paper+=5;
+  await savePlayer();updateHUD();
+  toast('🧻 +5 sticker paper!','success');
+}
+
+async function buyRarityBoost(){
+  if(!currentPlayer||currentPlayer.tokens<500) return toast('Need 🪙 500 tokens!','error');
+  currentPlayer.tokens-=500;currentPlayer.rarityBoost=true;
+  await savePlayer();updateHUD();
+  toast('✨ RARITY BOOSTER active! Next sticker is Rare+','success');
+}
+
+async function buySillyPutty(){
+  if(!currentPlayer||currentPlayer.tokens<1500) return toast('Need 🪙 1,500 tokens!','error');
+  currentPlayer.tokens-=1500;currentPlayer.sillyPutty=(currentPlayer.sillyPutty||0)+1;
+  await savePlayer();updateHUD();
+  toast('🤍 SILLY PUTTY acquired!','success');
+  buySillyPuttyForSticker();
+}
+
+// =====================================================
+// DAILY SHOP (Shared AI stickers)
+// =====================================================
+function updateDailyShopTimer(){
+  const now=new Date();
+  const midnight=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,0,0);
+  const ms=midnight-now;
+  const el=document.getElementById('daily-shop-countdown');
+  if(el) el.textContent=fmtTime(ms);
+}
+
+async function loadDailyShop(){
+  const grid=document.getElementById('daily-sticker-shop-grid');
+  grid.innerHTML='<div class="daily-sticker-loading"><span class="loading-spinner"></span> Loading…</div>';
+  const key='daily-shop-'+todayKey();
+  let dailyData=await storageGet(key,true);
+  if(!dailyData){
+    dailyData=await generateDailyStickers();
+    if(dailyData) await storageSet(key,dailyData,true);
+  }
+  grid.innerHTML='';
+  if(!dailyData||!dailyData.stickers){grid.innerHTML='<div class="daily-sticker-loading">Could not load daily stickers.</div>';return;}
+  for(const s of dailyData.stickers){
+    const alreadyBought=s.soldTo&&s.soldTo.includes(currentPlayer.id);
+    const card=document.createElement('div');card.className='daily-sticker-card'+(alreadyBought?' sold-out':'');
+    const sEl=renderHexStickerEl(s,80);sEl.style.cursor='default';card.appendChild(sEl);
+    const price=document.createElement('div');price.className='daily-sticker-price';price.textContent='🪙 '+s.shopPrice;card.appendChild(price);
+    const btn=document.createElement('button');btn.className='btn btn-'+(alreadyBought?'yellow':'green');btn.style.cssText='font-size:0.8rem;padding:7px 14px;';btn.disabled=alreadyBought;btn.textContent=alreadyBought?'✓ Purchased':'🛒 Buy';
+    if(!alreadyBought) btn.onclick=()=>buyDailySticker(s,card,btn,price);
+    card.appendChild(btn);grid.appendChild(card);
+  }
+}
+
+async function generateDailyStickers(){
+  const themes=['a neon cat','a cyberpunk dragon','a vaporwave sun','a glitchy robot','a holographic mushroom','a pixel phoenix'];
+  const rarities=['common','rare','legendary'];
+  const stickers=[];
+  for(let i=0;i<3;i++){
+    const rarity=rarities[i];
+    const theme=themes[Math.floor(Math.random()*themes.length)];
+    let imageData=null;
+    try {
+      const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:`Create a small SVG sticker of ${theme} in vaporwave style. Return ONLY an SVG tag, no explanation.`}]})});
+      const data=await resp.json();
+      const text=data.content?.map(c=>c.text||'').join('');
+      const match=text.match(/<svg[\s\S]*?<\/svg>/i);
+      if(match) imageData='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(match[0])));
+    } catch{}
+    const shopPrice=rarity==='legendary'?500:rarity==='rare'?200:80;
+    stickers.push({id:'daily-'+genId(),name:`${theme.split(' ').map(w=>w[0].toUpperCase()+w.slice(1)).join(' ')} #${i+1}`,imageData:imageData||generateFallbackSVG(theme,rarity),rarity,value:rarityValue(rarity),shopPrice,aiGenerated:true,soldTo:[]});
+  }
+  return{stickers,generatedAt:Date.now()};
+}
+
+function generateFallbackSVG(theme,rarity){
+  const colors={legendary:'#e4ff00',rare:'#05d9e8',common:'#bf5af2'};
+  const emojis={'a neon cat':'🐱','a cyberpunk dragon':'🐉','a vaporwave sun':'🌅','a glitchy robot':'🤖','a holographic mushroom':'🍄','a pixel phoenix':'🦅'};
+  const emoji=emojis[theme]||'⭐';
+  const col=colors[rarity]||'#fff';
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0d0221"/><text x="50" y="55" text-anchor="middle" font-size="45" dominant-baseline="middle">${emoji}</text><circle cx="50" cy="50" r="48" fill="none" stroke="${col}" stroke-width="2"/></svg>`;
+  return 'data:image/svg+xml;base64,'+btoa(svg);
+}
+
+async function buyDailySticker(sticker,card,btn,priceEl){
+  if(!currentPlayer) return;
+  if(currentPlayer.tokens<sticker.shopPrice){toast(`Need 🪙 ${sticker.shopPrice} tokens!`,'error');return;}
+  btn.disabled=true;btn.textContent='…';
+  const key='daily-shop-'+todayKey();
+  const dailyData=await storageGet(key,true);
+  if(!dailyData){toast('Shop data missing.','error');return;}
+  const latest=dailyData.stickers.find(s=>s.id===sticker.id);
+  if(!latest){toast('Sticker not found.','error');return;}
+  if(latest.soldTo&&latest.soldTo.includes(currentPlayer.id)){toast("Already bought!",'error');btn.textContent='✓ Purchased';return;}
+  currentPlayer.tokens-=sticker.shopPrice;
+  const personalId='sticker-'+genId();
+  const personalSticker={...latest,id:personalId,owner:currentPlayer.id,createdAt:Date.now()};
+  await storageSet(personalId,personalSticker,true);
+  let myStickers=await storageGet('stickers-'+currentPlayer.id)||[];
+  myStickers.push(personalId);
+  await storageSet('stickers-'+currentPlayer.id,myStickers);
+  latest.soldTo=latest.soldTo||[];
+  latest.soldTo.push(currentPlayer.id);
+  await storageSet(key,dailyData,true);
+  await savePlayer();updateHUD();
+  card.classList.add('sold-out');btn.textContent='✓ Purchased';btn.className='btn btn-yellow';btn.disabled=true;
+  toast(`🛒 Bought "${latest.name}"! 🪙 -${sticker.shopPrice}`,'success');
+}
+
+// =====================================================
+// VENDING MACHINE
+// =====================================================
+function getVendUses(){
+  if(!currentPlayer) return{used:2,slot1:0,slot2:0};
+  const now=Date.now();
+  const dayStart=new Date();dayStart.setHours(0,0,0,0);const ds=dayStart.getTime();
+  const s1=currentPlayer.vendSlot1||0;
+  const s2=currentPlayer.vendSlot2||0;
+  const used=(s1>=ds?1:0)+(s2>=ds?1:0);
+  return{used,slot1:s1,slot2:s2};
+}
+
+function updateVendingUI(){
+  if(!currentPlayer) return;
+  const{used,slot1,slot2}=getVendUses();
+  const usesEl=document.getElementById('vm-lcd-uses');
+  const coolRow=document.getElementById('vm-cooldown-row');
+  const btn=document.getElementById('vm-btn');
+  if(usesEl) usesEl.textContent=used+' / 2';
+  if(used>=2){
+    if(btn) btn.disabled=true;
+    const now=Date.now();
+    const dayStart=new Date();dayStart.setHours(0,0,0,0);
+    const nextMidnight=dayStart.getTime()+86400000;
+    const timerEl=document.getElementById('vm-cooldown-timer');
+    if(timerEl) timerEl.textContent=fmtTime(nextMidnight-now);
+    if(coolRow) coolRow.classList.remove('hidden');
+  } else {
+    if(btn) btn.disabled=false;
+    if(coolRow) coolRow.classList.add('hidden');
+  }
+}
+
+async function vendSticker(){
+  if(!currentPlayer) return;
+  const{used,slot1,slot2}=getVendUses();
+  if(used>=2){toast('Come back tomorrow for more vends!','error');return;}
+  const btn=document.getElementById('vm-btn');
+  btn.disabled=true;btn.textContent='DISPENSING…';
+  const vmWindow=document.getElementById('vm-window');
+  vmWindow.innerHTML='<div class="vm-idle-text" id="vm-idle" style="animation:none;">⬡ GENERATING ⬡<br><span class="loading-spinner"></span></div>';
+  // Generate AI sticker
+  const themes=['a pastel cat astronaut','a glitchy TV ghost','a neon palm tree','a pixel art donut','a retro robot','a vaporwave skull','a hologram butterfly','a cyber samurai'];
+  const theme=themes[Math.floor(Math.random()*themes.length)];
+  let imageData=null;
+  try {
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:`Create a cute SVG sticker illustration of ${theme} in vaporwave/synthwave aesthetic. Bold outlines, neon colors. Return ONLY the SVG tag.`}]})});
+    const data=await resp.json();
+    const text=data.content?.map(c=>c.text||'').join('');
+    const match=text.match(/<svg[\s\S]*?<\/svg>/i);
+    if(match) imageData='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(match[0])));
+  } catch{}
+  const rarity=rollRarity();
+  const value=rarityValue(rarity);
+  const stickerId='sticker-'+genId();
+  const name=theme.split(' ').map(w=>w[0].toUpperCase()+w.slice(1)).join(' ');
+  const sticker={id:stickerId,name,imageData:imageData||generateFallbackSVG(theme,rarity),rarity,value,owner:currentPlayer.id,aiGenerated:true,createdAt:Date.now(),borderColor:rarity==='legendary'?'#e4ff00':rarity==='rare'?'#05d9e8':'#bf5af2'};
+  await storageSet(stickerId,sticker,true);
+  let myIds=await storageGet('stickers-'+currentPlayer.id)||[];
+  myIds.push(stickerId);
+  await storageSet('stickers-'+currentPlayer.id,myIds);
+  // Mark vend slot
+  const now=Date.now();
+  const{slot1:s1}=getVendUses();
+  const dayStart=new Date();dayStart.setHours(0,0,0,0);
+  if(s1<dayStart.getTime()) currentPlayer.vendSlot1=now;
+  else currentPlayer.vendSlot2=now;
+  await savePlayer();updateHUD();
+  vmWindow.innerHTML='';
+  const hexEl=renderHexStickerEl(sticker,90);
+  vmWindow.appendChild(hexEl);
+  btn.textContent='🎰 DISPENSE STICKER';
+  btn.disabled=false;
+  if(rarity==='legendary') spawnConfetti();
+  toast(`🎰 Dispensed: "${name}" — ${rarity.toUpperCase()}! 🪙 ${value}`,'success');
+  renderVendingHistory();
+  updateVendingUI();
+}
+
+async function renderVendingHistory(){
+  if(!currentPlayer) return;
+  const grid=document.getElementById('vm-sticker-grid');
+  grid.innerHTML='<span class="loading-spinner"></span>';
+  const myIds=await storageGet('stickers-'+currentPlayer.id)||[];
+  const all=[];
+  for(const id of myIds){const s=await storageGet(id,true);if(s&&s.aiGenerated)all.push(s);}
+  grid.innerHTML='';
+  if(!all.length){grid.innerHTML='<div style="color:var(--mid);font-family:var(--font-mono);font-size:0.75rem;">No machine stickers yet!</div>';return;}
+  all.slice().reverse().forEach(s=>{
+    const el=renderHexStickerEl(s,70);
+    el.onclick=()=>openStickerModal(s,true);
+    grid.appendChild(el);
+  });
+}
+
+// =====================================================
+// CANVAS TAB
+// =====================================================
+async function loadCanvasStickers(){
+  if(!currentPlayer) return;
+  const picker=document.getElementById('canvas-sticker-picker');
+  picker.innerHTML='<span class="loading-spinner"></span>';
+  const ids=await storageGet('stickers-'+currentPlayer.id)||[];
+  const stickers=[];
+  for(const id of ids){const s=await storageGet(id,true);if(s)stickers.push(s);}
+  picker.innerHTML='';
+  if(!stickers.length){picker.innerHTML='<div style="color:var(--mid);font-size:0.7rem;font-family:var(--font-mono);">No stickers yet</div>';return;}
+  selectedCanvasSticker=null;
+  stickers.forEach(s=>{
+    const item=document.createElement('div');
+    item.className='canvas-pick-item';
+    item.title=s.name;
+    const img=document.createElement('img');
+    img.src=s.imageData||'';img.alt=s.name;
+    item.appendChild(img);
+    item.onclick=()=>{
+      picker.querySelectorAll('.canvas-pick-item').forEach(i=>i.classList.remove('selected'));
+      item.classList.add('selected');
+      selectedCanvasSticker=s;
+      showCanvasMsg(`Selected: ${s.name} — click canvas to place!`);
+    };
+    picker.appendChild(item);
+  });
+  // Canvas click to place
+  const canvas=document.getElementById('sticker-canvas');
+  canvas.onclick=(e)=>{
+    if(!selectedCanvasSticker) return;
+    const rect=canvas.getBoundingClientRect();
+    const x=e.clientX-rect.left-45;
+    const y=e.clientY-rect.top-45;
+    placeOnCanvas(selectedCanvasSticker,x,y);
+    showCanvasMsg(`Placed: ${selectedCanvasSticker.name}!`);
+  };
+}
+
+function placeOnCanvas(sticker, x, y){
+  const canvas=document.getElementById('sticker-canvas');
+  const wrap=document.createElement('div');
+  wrap.className='canvas-sticker';
+  wrap.style.left=Math.max(0,x)+'px';
+  wrap.style.top=Math.max(0,y)+'px';
+  const angle=(Math.random()-0.5)*16;
+  const inner=document.createElement('div');
+  inner.className='canvas-sticker-inner';
+  inner.style.transform=`rotate(${angle}deg)`;
+  const line=document.createElement('div');line.className='canvas-rotate-line';
+  const handle=document.createElement('div');handle.className='canvas-rotate-handle';handle.textContent='↻';handle.title='Rotate';
+  const img=document.createElement('img');
+  img.className='canvas-sticker-img';
+  img.src=sticker.imageData||'';img.alt=sticker.name;
+  inner.appendChild(line);inner.appendChild(handle);inner.appendChild(img);
+  wrap.appendChild(inner);
+  canvas.appendChild(wrap);
+  makeCanvasStickerInteractive(wrap,inner,handle,canvas);
+}
+
+function makeCanvasStickerInteractive(wrap,inner,handle,canvas){
+  let angle=parseFloat(inner.style.transform.replace('rotate(','').replace('deg)','')||0);
+  let isDragging=false,isRotating=false,startX,startY,startLeft,startTop;
+
+  wrap.addEventListener('mousedown',()=>bringCanvasToFront(wrap,canvas));
+  wrap.addEventListener('touchstart',()=>bringCanvasToFront(wrap,canvas));
+
+  const onDragStart=(e)=>{
+    if(e.target===handle||e.target.closest('.canvas-rotate-handle')) return;
+    isDragging=true;wrap.classList.add('active');
+    const cx=e.touches?e.touches[0].clientX:e.clientX;
+    const cy=e.touches?e.touches[0].clientY:e.clientY;
+    startX=cx;startY=cy;
+    startLeft=parseInt(wrap.style.left)||0;startTop=parseInt(wrap.style.top)||0;
+    e.preventDefault();
+  };
+  const onDragMove=(e)=>{
+    if(!isDragging) return;
+    const cx=e.touches?e.touches[0].clientX:e.clientX;
+    const cy=e.touches?e.touches[0].clientY:e.clientY;
+    const rect=canvas.getBoundingClientRect();
+    wrap.style.left=Math.max(-60,Math.min(rect.width-60,startLeft+(cx-startX)))+'px';
+    wrap.style.top=Math.max(-60,Math.min(rect.height-60,startTop+(cy-startY)))+'px';
+    e.preventDefault();
+  };
+  const onDragEnd=()=>{isDragging=false;wrap.classList.remove('active');};
+
+  const onRotStart=(e)=>{isRotating=true;wrap.classList.add('active');e.stopPropagation();e.preventDefault();};
+  const onRotMove=(e)=>{
+    if(!isRotating) return;
+    const cx=e.touches?e.touches[0].clientX:e.clientX;
+    const cy=e.touches?e.touches[0].clientY:e.clientY;
+    const cr=canvas.getBoundingClientRect();
+    const sr=wrap.getBoundingClientRect();
+    const a=Math.atan2((cy-cr.top)-(sr.top+sr.height/2-cr.top),(cx-cr.left)-(sr.left+sr.width/2-cr.left))*180/Math.PI+90;
+    angle=a;inner.style.transform=`rotate(${a}deg)`;
+    e.preventDefault();
+  };
+  const onRotEnd=()=>{isRotating=false;wrap.classList.remove('active');};
+
+  wrap.addEventListener('mousedown',onDragStart);
+  wrap.addEventListener('touchstart',onDragStart,{passive:false});
+  handle.addEventListener('mousedown',onRotStart);
+  handle.addEventListener('touchstart',onRotStart,{passive:false});
+  document.addEventListener('mousemove',(e)=>{onDragMove(e);onRotMove(e);});
+  document.addEventListener('touchmove',(e)=>{onDragMove(e);onRotMove(e);},{passive:false});
+  document.addEventListener('mouseup',()=>{onDragEnd();onRotEnd();});
+  document.addEventListener('touchend',()=>{onDragEnd();onRotEnd();});
+}
+
+function bringCanvasToFront(el,canvas){
+  let max=0;
+  canvas.querySelectorAll('.canvas-sticker').forEach(s=>{max=Math.max(max,parseInt(s.style.zIndex)||0);});
+  el.style.zIndex=max+1;
+}
+
+function clearCanvas(){
+  document.getElementById('sticker-canvas').querySelectorAll('.canvas-sticker').forEach(s=>s.remove());
+  showCanvasMsg('CANVAS CLEARED');
+}
+
+let canvasMsgTimeout;
+function showCanvasMsg(text){
+  const el=document.getElementById('canvas-msg');
+  if(el){el.textContent=text;clearTimeout(canvasMsgTimeout);canvasMsgTimeout=setTimeout(()=>el.textContent='',3000);}
+}
+
+// =====================================================
+// PACK OPENING
+// =====================================================
+const PACK_CARDS=[
+  {id:1,name:'Neon Dragon',emoji:'🐉',rarity:'legendary',desc:'Legendary fire'},{id:2,name:'Pixel Phoenix',emoji:'🦅',rarity:'legendary',desc:'Reborn in neon'},
+  {id:3,name:'Cyber Shark',emoji:'🦈',rarity:'rare',desc:'Deep neon sea'},{id:4,name:'Glitch Fox',emoji:'🦊',rarity:'rare',desc:'Digital trickster'},
+  {id:5,name:'Vapor Cat',emoji:'🐱',rarity:'rare',desc:'Chill vibes'},{id:6,name:'Plasma Frog',emoji:'🐸',rarity:'rare',desc:'Electro-hop'},
+  {id:7,name:'Star Sprite',emoji:'⭐',rarity:'common',desc:'Tiny light'},{id:8,name:'Cloud Puff',emoji:'☁️',rarity:'common',desc:'Soft float'},
+  {id:9,name:'Pixel Stone',emoji:'🪨',rarity:'common',desc:'Solid data'},{id:10,name:'Neon Leaf',emoji:'🍃',rarity:'common',desc:'Bio-electric'},
+  {id:11,name:'Code Seed',emoji:'🌱',rarity:'common',desc:'First loop'},{id:12,name:'Grid Fish',emoji:'🐟',rarity:'common',desc:'Binary swim'},
+  {id:13,name:'Digi Mushroom',emoji:'🍄',rarity:'common',desc:'Byte forager'},{id:14,name:'Warp Star',emoji:'🌟',rarity:'rare',desc:'Hyper jump'},
+  {id:15,name:'Signal Ghost',emoji:'👻',rarity:'common',desc:'Lost packet'},{id:16,name:'Laser Bee',emoji:'🐝',rarity:'common',desc:'Hex protocol'},
+];
+
+function weightedCard(packType){
+  if(packType==='legendary'){
+    const r=Math.random();
+    if(r<0.2) return PACK_CARDS.filter(c=>c.rarity==='legendary')[Math.floor(Math.random()*2)];
+    if(r<0.7) return PACK_CARDS.filter(c=>c.rarity==='rare')[Math.floor(Math.random()*5)];
+    return PACK_CARDS.filter(c=>c.rarity==='common')[Math.floor(Math.random()*9)];
+  }
+  if(packType==='premium'){
+    const r=Math.random();
+    if(r<0.05) return PACK_CARDS.filter(c=>c.rarity==='legendary')[Math.floor(Math.random()*2)];
+    if(r<0.4) return PACK_CARDS.filter(c=>c.rarity==='rare')[Math.floor(Math.random()*5)];
+    return PACK_CARDS.filter(c=>c.rarity==='common')[Math.floor(Math.random()*9)];
+  }
+  // standard
+  const r=Math.random();
+  if(r<0.02) return PACK_CARDS.filter(c=>c.rarity==='legendary')[Math.floor(Math.random()*2)];
+  if(r<0.2) return PACK_CARDS.filter(c=>c.rarity==='rare')[Math.floor(Math.random()*5)];
+  return PACK_CARDS.filter(c=>c.rarity==='common')[Math.floor(Math.random()*9)];
+}
+
+async function openPack(packType, cost){
+  if(!currentPlayer) return;
+  if(currentPlayer.tokens<cost) return toast(`Need 🪙 ${cost} tokens!`,'error');
+  currentPlayer.tokens-=cost;
+  await savePlayer();updateHUD();
+  const drawn=Array.from({length:5},()=>weightedCard(packType));
+  drawn.forEach(c=>{cardCollection[c.id]=(cardCollection[c.id]||0)+1;});
+  packsOpened++;
+  document.getElementById('packs-opened-count').textContent=packsOpened;
+  const total=Object.values(cardCollection).reduce((a,b)=>a+b,0);
+  document.getElementById('cards-collected-count').textContent=total;
+  const rev=document.getElementById('pack-reveal-cards');
+  rev.innerHTML='';
+  drawn.forEach((card,i)=>{
+    setTimeout(()=>{
+      const div=document.createElement('div');
+      div.className=`pack-card rarity-${card.rarity}`;
+      div.style.animationDelay=`${i*0.12}s`;
+      div.innerHTML=`<span class="pack-card-emoji">${card.emoji}</span><div class="pack-card-name">${card.name}</div><div class="pack-card-rarity ${card.rarity}">${card.rarity.toUpperCase()}</div>`;
+      rev.appendChild(div);
+      if(card.rarity==='legendary') spawnConfetti();
+    },i*320);
+  });
+  const hasLeg=drawn.some(c=>c.rarity==='legendary');
+  toast(hasLeg?'🌟 LEGENDARY PULL!':'🎴 Pack opened!',hasLeg?'success':'info');
+}
+
+function doTradeUp(){
+  const commons=Object.entries(cardCollection).filter(([id,count])=>{
+    const card=PACK_CARDS.find(c=>c.id===parseInt(id));
+    return card&&card.rarity==='common'&&count>0;
+  });
+  const totalCommons=commons.reduce((a,[,c])=>a+c,0);
+  const statusEl=document.getElementById('trade-up-status');
+  if(totalCommons<5){statusEl.textContent=`Need 5 commons, have ${totalCommons}`;toast('Need 5 common cards to trade up!','error');return;}
+  let remaining=5;
+  commons.forEach(([id,count])=>{
+    if(remaining<=0) return;
+    const use=Math.min(count,remaining);
+    cardCollection[parseInt(id)]-=use;remaining-=use;
+    if(cardCollection[parseInt(id)]===0) delete cardCollection[parseInt(id)];
+  });
+  const rares=PACK_CARDS.filter(c=>c.rarity==='rare');
+  const won=rares[Math.floor(Math.random()*rares.length)];
+  cardCollection[won.id]=(cardCollection[won.id]||0)+1;
+  const total=Object.values(cardCollection).reduce((a,b)=>a+b,0);
+  document.getElementById('cards-collected-count').textContent=total;
+  const rev=document.getElementById('pack-reveal-cards');
+  rev.innerHTML=`<div style="text-align:center;color:var(--mid);font-family:var(--font-mono);font-size:0.75rem;margin-bottom:12px;">TRADE-UP RESULT:</div>`;
+  const div=document.createElement('div');
+  div.className='pack-card rarity-rare';
+  div.innerHTML=`<span class="pack-card-emoji">${won.emoji}</span><div class="pack-card-name">${won.name}</div><div class="pack-card-rarity rare">RARE</div>`;
+  rev.appendChild(div);
+  statusEl.textContent=`Traded 5 commons for ${won.name}!`;
+  toast(`🔄 Trade-up! Got ${won.name} (Rare)!`,'success');
+}
+
+// =====================================================
+// BLACKJACK
+// =====================================================
+const SUITS=['♠','♥','♦','♣'];
+const RANKS_BJ=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+let bjDeck=[],bjPlayerHand=[],bjDealerHand=[];
+let bjBet=0,bjActive=false,bjDealerHidden=true;
+
+function bjNewDeck(){bjDeck=[];for(const s of SUITS)for(const r of RANKS_BJ)bjDeck.push({suit:s,rank:r});bjDeck.sort(()=>Math.random()-0.5);}
+function bjDraw(){return bjDeck.pop();}
+function bjValue(hand,hidden=false){
+  let sum=0,aces=0;
+  const cards=hidden?hand.slice(1):hand;
+  for(const c of cards){if(c.rank==='A'){sum+=11;aces++;}else if(['J','Q','K'].includes(c.rank))sum+=10;else sum+=parseInt(c.rank);}
+  while(sum>21&&aces>0){sum-=10;aces--;}
+  return sum;
+}
+function bjRenderCard(card,faceDown=false){
+  const el=document.createElement('div');el.className='card-tile';
+  if(faceDown){el.classList.add('face-down');return el;}
+  const isRed=card.suit==='♥'||card.suit==='♦';
+  el.classList.add(isRed?'red':'black');
+  el.innerHTML=`<div style="font-size:0.65rem;">${card.rank}</div><div>${card.suit}</div>`;
+  return el;
+}
+function bjRender(){
+  const dh=document.getElementById('dealer-hand');
+  const ph=document.getElementById('player-hand');
+  if(!dh||!ph) return;
+  dh.innerHTML='';ph.innerHTML='';
+  bjDealerHand.forEach((c,i)=>dh.appendChild(bjRenderCard(c,bjDealerHidden&&i===0)));
+  bjPlayerHand.forEach(c=>ph.appendChild(bjRenderCard(c)));
+  const ds=document.getElementById('dealer-score');
+  const ps=document.getElementById('player-score');
+  if(ds) ds.textContent=bjActive&&bjDealerHidden?'?':bjValue(bjDealerHand);
+  if(ps) ps.textContent=bjValue(bjPlayerHand);
+}
+function bjSetActive(active){
+  bjActive=active;
+  const deal=document.getElementById('bj-deal-btn');const hit=document.getElementById('bj-hit-btn');
+  const stand=document.getElementById('bj-stand-btn');const dbl=document.getElementById('bj-double-btn');
+  if(deal) deal.disabled=active;if(hit) hit.disabled=!active;if(stand) stand.disabled=!active;
+  if(dbl) dbl.disabled=!active||bjPlayerHand.length!==2;
+}
+async function bjDeal(){
+  const bet=parseInt(document.getElementById('bj-bet').value);
+  if(isNaN(bet)||bet<1) return toast('Enter a valid bet!','error');
+  if(bet>currentPlayer.tokens) return toast(`Not enough tokens! Have 🪙 ${currentPlayer.tokens}`,'error');
+  bjBet=bet;currentPlayer.tokens-=bet;await savePlayer();updateHUD();
+  bjNewDeck();bjPlayerHand=[bjDraw(),bjDraw()];bjDealerHand=[bjDraw(),bjDraw()];
+  bjDealerHidden=true;bjSetActive(true);
+  const msg=document.getElementById('bj-msg');if(msg) msg.textContent='';
+  bjRender();
+  if(bjValue(bjPlayerHand)===21) bjStand(true);
+}
+async function bjHit(){bjPlayerHand.push(bjDraw());bjRender();if(bjValue(bjPlayerHand)>21) bjEnd('bust');}
+async function bjStand(isBlackjack=false){
+  bjDealerHidden=false;
+  while(bjValue(bjDealerHand)<17) bjDealerHand.push(bjDraw());
+  bjRender();
+  const pv=bjValue(bjPlayerHand),dv=bjValue(bjDealerHand);
+  if(isBlackjack&&pv===21&&bjPlayerHand.length===2) bjEnd('blackjack');
+  else if(dv>21||pv>dv) bjEnd('win');
+  else if(pv===dv) bjEnd('push');
+  else bjEnd('lose');
+}
+async function bjDouble(){
+  if(!bjActive||bjPlayerHand.length!==2) return;
+  if(currentPlayer.tokens<bjBet) return toast('Not enough tokens to double!','error');
+  currentPlayer.tokens-=bjBet;bjBet*=2;await savePlayer();updateHUD();
+  bjPlayerHand.push(bjDraw());bjRender();
+  if(bjValue(bjPlayerHand)>21) bjEnd('bust');else bjStand();
+}
+async function bjEnd(result){
+  bjSetActive(false);
+  bjDealerHidden=false;bjRender();
+  const msg=document.getElementById('bj-msg');
+  let payout=0,text='';
+  if(result==='blackjack'){payout=Math.floor(bjBet*2.5);text=`♠ BLACKJACK! +🪙${payout}`;}
+  else if(result==='win'){payout=bjBet*2;text=`✅ WIN! +🪙${payout}`;}
+  else if(result==='push'){payout=bjBet;text=`🤝 PUSH — 🪙${payout} returned`;}
+  else if(result==='bust'){text=`💥 BUST — lost 🪙${bjBet}`;}
+  else{text=`❌ LOSE — lost 🪙${bjBet}`;}
+  if(msg){msg.textContent=text;msg.style.color=result==='blackjack'||result==='win'?'var(--green)':result==='push'?'var(--yellow)':'var(--red)';}
+  if(payout>0){currentPlayer.tokens+=payout;await savePlayer();updateHUD();}
+  if(result==='blackjack'||result==='win') spawnConfetti();
+  toast(text,'info');
+}
+
+// =====================================================
+// SLOT MACHINE
+// =====================================================
+const SYMBOLS=['🍒','🍋','🍊','⭐','💎','7️⃣'];
+const SYM_WEIGHTS=[30,25,20,15,8,2];
+const SYM_PAYS={
+  '🍒🍒🍒':2,'🍋🍋🍋':3,'🍊🍊🍊':4,'⭐⭐⭐':5,'💎💎💎':10,'7️⃣7️⃣7️⃣':25
+};
+let slotSpinning=false;
+
+function pickSymbol(){
+  const total=SYM_WEIGHTS.reduce((a,b)=>a+b,0);
+  let r=Math.random()*total;
+  for(let i=0;i<SYMBOLS.length;i++){r-=SYM_WEIGHTS[i];if(r<=0)return SYMBOLS[i];}
+  return SYMBOLS[0];
+}
+
+function isNearMissResult(r0,r1,r2){
+  // Two matching symbols but not three
+  return (r0===r1&&r1!==r2)||(r0===r2&&r0!==r1)||(r1===r2&&r0!==r1);
+}
+
+async function spinSlots(){
+  if(!currentPlayer||slotSpinning) return;
+  const bet=parseInt(document.getElementById('slot-bet').value);
+  if(isNaN(bet)||bet<1) return toast('Enter a valid bet!','error');
+  if(bet>currentPlayer.tokens) return toast(`Need 🪙 ${bet} tokens!`,'error');
+  currentPlayer.tokens-=bet;await savePlayer();updateHUD();
+  slotSpinning=true;
+  const spinBtn=document.getElementById('slot-spin-btn');if(spinBtn) spinBtn.disabled=true;
+  const msg=document.getElementById('slot-result-msg');if(msg){msg.textContent='';msg.className='slot-result-msg';}
+  const reels=[0,1,2].map(i=>document.getElementById('reel'+i));
+  reels.forEach(r=>{if(r)r.classList.add('spinning');});
+  // Animate for 1.2s then reveal
+  let spinInterval=setInterval(()=>{reels.forEach(r=>{if(r)r.textContent=SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];});},80);
+  setTimeout(async()=>{
+    clearInterval(spinInterval);
+    reels.forEach(r=>{if(r)r.classList.remove('spinning');});
+    // Roll results — occasionally rig a near-miss (educational demo)
+    let r0=pickSymbol(),r1=pickSymbol(),r2=pickSymbol();
+    // Near-miss manipulation: 30% of losses become near-misses (educational)
+    const combo=r0+r1+r2;
+    const multiplier=SYM_PAYS[combo]||0;
+    const isNM=!multiplier&&isNearMissResult(r0,r1,r2);
+    if(multiplier){
+      reels.forEach(r=>{if(r)r.classList.add('win');});
+      const won=bet*multiplier;
+      currentPlayer.tokens+=won;await savePlayer();updateHUD();
+      if(msg){msg.textContent=`🏆 WIN! +🪙${won}`;msg.className='slot-result-msg win';}
+      spawnConfetti();
+      setTimeout(()=>reels.forEach(r=>{if(r)r.classList.remove('win');}),2000);
+    } else if(isNM){
+      // Manufactured near miss
+      if(Math.random()<0.4){const idx=Math.floor(Math.random()*3);const v=[r0,r1,r2];v[idx]=v[idx===0?1:0];[r0,r1,r2]=v;}
+      reels[0].textContent=r0;reels[1].textContent=r1;reels[2].textContent=r2;
+      if(msg){msg.textContent=`😤 SO CLOSE! Try again!`;msg.className='slot-result-msg nearmiss';}
+      const nm=document.createElement('div');nm.className='near-miss-flash';nm.innerHTML='😤 SO CLOSE!<br><small style="font-size:16px">The jackpot is warming up...</small>';document.body.appendChild(nm);
+      setTimeout(()=>nm.remove(),1800);
+    } else {
+      if(msg){msg.textContent=`😞 Lost 🪙${bet}`;msg.className='slot-result-msg lose';}
+    }
+    reels[0].textContent=r0;reels[1].textContent=r1;reels[2].textContent=r2;
+    slotSpinning=false;if(spinBtn) spinBtn.disabled=false;
+  },1200);
+}
+
+function switchCasinoTab(name,el){
+  document.querySelectorAll('.casino-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.casino-panel').forEach(p=>p.classList.remove('active'));
+  if(el) el.classList.add('active');
+  const panel=document.getElementById('casino-'+name);
+  if(panel) panel.classList.add('active');
+}
+
+// =====================================================
+// LEADERBOARD
+// =====================================================
+async function loadLeaderboard(){
+  const loadEl=document.getElementById('leaderboard-loading');
+  const wrap=document.getElementById('leaderboard-wrap');
+  if(loadEl) loadEl.style.display='flex';
+  if(wrap) wrap.style.display='none';
+  const players=await loadPlayerList();
+  // Build scores: count their stickers
+  const scores=[];
+  for(const p of players){
+    const ids=await storageGet('stickers-'+p.id)||[];
+    scores.push({id:p.id,name:p.name,tokens:p.tokens,stickers:ids.length,streak:p.streak||0});
+  }
+  scores.sort((a,b)=>b.stickers-a.stickers||b.tokens-a.tokens);
+  if(loadEl) loadEl.style.display='none';
+  if(!wrap) return;
+  wrap.style.display='block';
+  wrap.innerHTML='';
+  if(!scores.length){wrap.innerHTML='<div style="color:var(--mid);padding:20px;text-align:center;">No players yet!</div>';return;}
+  scores.forEach((p,i)=>{
+    const row=document.createElement('div');
+    row.className='lb-row'+(p.id===currentPlayer.id?' me':'');
+    const rank=i+1;
+    const rankClass=rank===1?'gold':rank===2?'silver':rank===3?'bronze':'';
+    const rankText=rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':rank;
+    const avatarEmoji=['🌟','🎯','🎮','🦊','🐉','⭐','🎨','🔮'][i%8];
+    row.innerHTML=`
+      <div class="lb-rank ${rankClass}">${rankText}</div>
+      <div class="lb-avatar">${avatarEmoji}</div>
+      <div class="lb-name">${p.name}${p.id===currentPlayer.id?' <span style="font-size:0.65rem;color:var(--blue)">(You)</span>':''}</div>
+      <div class="lb-stat">🃏 ${p.stickers} stickers · 🪙 ${p.tokens} ${p.streak?'🔥'+p.streak:''}</div>`;
+    wrap.appendChild(row);
+  });
+}
+
+// =====================================================
+// TAB NAVIGATION
+// =====================================================
+function showTab(name){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  const section=document.getElementById('tab-'+name);
+  if(section) section.classList.add('active');
+  event.target.classList.add('active');
+  if(name==='market') loadAuctions();
+  if(name==='book'){renderBook();populateBookSelect();}
+  if(name==='trade') loadTradeUI();
+  if(name==='ranks') loadLeaderboard();
+  if(name==='canvas') loadCanvasStickers();
+  if(name==='vending'){renderVendingHistory();updateVendingUI();clearInterval(vendTimerInterval);vendTimerInterval=setInterval(updateVendingUI,1000);}
+  else clearInterval(vendTimerInterval);
+  if(name==='home'){startDesktopClock();}
+  else clearInterval(clockInterval);
+  if(name==='shop'){loadDailyShop();clearInterval(dailyShopTimerInterval);updateDailyShopTimer();dailyShopTimerInterval=setInterval(updateDailyShopTimer,1000);}
+  else clearInterval(dailyShopTimerInterval);
+}
+
+// =====================================================
+// INIT
+// =====================================================
+async function ensureTestUser(){
+  const defaultProfile={id:'player-stickerstar-default',name:'StarKid',tokens:750,paper:5,clicks:0,sessionClicks:0,lastDaily:0,rarityBoost:false,sillyPutty:1,vendSlot1:0,vendSlot2:0,streak:3,createdAt:Date.now()};
+  try {
+    const players=await loadPlayerList();
+    let testPlayer=players.find(p=>p.name==='StarKid');
+    if(testPlayer){loginAs(testPlayer);return;}
+    const newId='player-'+genId();
+    const newPlayer={...defaultProfile,id:newId};
+    const saved=await storageSet(newId,newPlayer);
+    if(saved){loginAs(newPlayer);}else{loginAs(defaultProfile);}
+  } catch(err){
+    try{loginAs(defaultProfile);}catch{loadPlayerSelect();}
+  }
+}
+
+ensureTestUser();
+</script>
+</body>
+</html>

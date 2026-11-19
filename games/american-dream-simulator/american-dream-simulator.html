@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE AMERICAN DREAM™ SIMULATOR</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #070b07;
+  --panel: #0b140b;
+  --border: #1a381a;
+  --text: #90b890;
+  --bright: #6dff6d;
+  --accent: #39ff14;
+  --red: #ff3333;
+  --gold: #ffd700;
+  --dim: #3d5a3d;
+  --warn: #ff9944;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Mono', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ───── TITLE SCREEN ───── */
+#title-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  text-align: center;
+}
+.title-eagle { font-size: 72px; margin-bottom: 16px; animation: eaglepulse 4s ease-in-out infinite; }
+@keyframes eaglepulse { 0%,100%{opacity:.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.06)} }
+
+.title-main {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(48px, 10vw, 100px);
+  color: var(--accent);
+  letter-spacing: 8px;
+  line-height: 1;
+  text-shadow: 0 0 60px rgba(57,255,20,.35), 0 0 120px rgba(57,255,20,.1);
+}
+.title-sub {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 16px;
+  color: var(--dim);
+  letter-spacing: 4px;
+  margin: 10px 0 32px;
+}
+.disclaimer {
+  max-width: 540px;
+  font-size: 10px;
+  color: var(--dim);
+  line-height: 1.7;
+  border: 1px solid #101e10;
+  padding: 14px 16px;
+  margin-bottom: 36px;
+  background: #050905;
+}
+.choose-label { font-size: 10px; letter-spacing: 3px; color: var(--dim); margin-bottom: 16px; }
+.class-grid { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 28px; }
+
+.class-card {
+  border: 1px solid var(--border);
+  padding: 22px 18px;
+  width: 210px;
+  cursor: pointer;
+  transition: all .2s;
+  background: var(--panel);
+  text-align: left;
+  position: relative;
+}
+.class-card:hover { border-color: var(--accent); background: #0d1d0d; box-shadow: 0 0 24px rgba(57,255,20,.12); transform: translateY(-3px); }
+.class-card.selected { border-color: var(--accent); background: #0d1d0d; box-shadow: 0 0 24px rgba(57,255,20,.2); }
+
+.diff-label { font-size: 10px; letter-spacing: 2px; margin-bottom: 8px; }
+.diff-easy { color: var(--gold); }
+.diff-medium { color: var(--warn); }
+.diff-hard { color: var(--red); }
+
+.class-icon { font-size: 38px; margin-bottom: 10px; }
+.class-name { font-family: 'Bebas Neue'; font-size: 22px; color: var(--bright); letter-spacing: 3px; margin-bottom: 6px; }
+.class-desc { font-size: 10px; color: var(--dim); line-height: 1.6; margin-bottom: 10px; }
+.class-stats { font-size: 10px; color: var(--text); border-top: 1px solid var(--border); padding-top: 8px; line-height: 2; }
+.sv { float: right; }
+.sv.g { color: var(--bright); }
+.sv.b { color: var(--red); }
+.sv.w { color: var(--gold); }
+
+.start-btn {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  font-family: 'Bebas Neue';
+  font-size: 26px;
+  letter-spacing: 6px;
+  padding: 14px 60px;
+  cursor: pointer;
+  transition: all .2s;
+  display: none;
+}
+.start-btn.show { display: inline-block; }
+.start-btn:hover { background: var(--bright); transform: scale(1.04); }
+
+/* ───── GAME SCREEN ───── */
+#game-screen { display: none; }
+
+.g-header {
+  background: #040804;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+.ticker-bar {
+  background: #030503;
+  border-bottom: 1px solid #0d1a0d;
+  padding: 4px 16px;
+  font-size: 10px;
+  display: flex;
+  gap: 24px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.ti { color: var(--dim); }
+.ti .up { color: var(--bright); }
+.ti .dn { color: var(--red); }
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+}
+.g-title { font-family: 'Bebas Neue'; font-size: 26px; color: var(--accent); letter-spacing: 5px; }
+.year-num { font-family: 'Bebas Neue'; font-size: 40px; color: var(--gold); letter-spacing: 4px; }
+.class-badge-h { font-size: 10px; color: var(--dim); text-align: right; line-height: 1.8; }
+
+/* ───── MAIN GRID ───── */
+.g-main {
+  display: grid;
+  grid-template-columns: 234px 1fr 210px;
+  min-height: calc(100vh - 76px - 30px);
+}
+
+/* STATS PANEL */
+.stats-panel {
+  border-right: 1px solid var(--border);
+  padding: 14px 12px;
+  font-size: 11px;
+  background: var(--panel);
+  overflow-y: auto;
+}
+.panel-hdr {
+  font-family: 'Bebas Neue';
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: var(--dim);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 5px;
+  margin-bottom: 12px;
+}
+.s-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dotted #0c1c0c; }
+.s-label { color: var(--dim); }
+.s-val { font-weight: 700; }
+.s-val.pos { color: var(--bright); }
+.s-val.neg { color: var(--red); }
+.s-val.wrn { color: var(--warn); }
+.s-val.gld { color: var(--gold); }
+
+.bar-wrap { margin: 7px 0 3px; }
+.bar-lbl { display: flex; justify-content: space-between; font-size: 10px; color: var(--dim); margin-bottom: 3px; }
+.bar-track { height: 5px; background: #091509; border: 1px solid var(--border); border-radius: 2px; overflow: hidden; }
+.bar-fill { height: 100%; transition: width .6s ease; border-radius: 2px; }
+.bar-hp { background: linear-gradient(90deg, #ff3333, #ff9944 50%, #44ff88); }
+.bar-hap { background: linear-gradient(90deg, #223, #77f, #ffd700); }
+.bar-inf { background: linear-gradient(90deg, #112, #446, #88f); }
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+.warn-box { background: rgba(255,50,50,.07); border: 1px solid rgba(255,50,50,.25); padding: 7px 8px; font-size: 10px; color: #ff8888; line-height: 1.6; margin-top: 8px; display: none; }
+
+/* WEALTH TIER */
+.tier-badge { font-size: 9px; letter-spacing: 1px; padding: 2px 6px; display: inline-block; border-radius: 1px; }
+.t-broke { background: rgba(255,50,50,.2); color: #ff8888; border: 1px solid rgba(255,50,50,.3); }
+.t-struggle { background: rgba(255,150,0,.15); color: var(--warn); border: 1px solid rgba(255,150,0,.3); }
+.t-middle { background: rgba(255,220,0,.1); color: #ffdd77; border: 1px solid rgba(255,220,0,.3); }
+.t-comfort { background: rgba(50,200,100,.1); color: #88ff99; border: 1px solid rgba(50,200,100,.3); }
+.t-rich { background: rgba(255,215,0,.15); color: var(--gold); border: 1px solid rgba(255,215,0,.4); }
+
+/* CENTER PANEL */
+.center-panel {
+  padding: 18px 22px 60px;
+  display: flex;
+  flex-direction: column;
+}
+.event-area { flex: 1; margin-bottom: 16px; }
+.ev-year-tag { font-size: 10px; letter-spacing: 3px; color: var(--dim); margin-bottom: 14px; }
+.ev-headline {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(18px, 2.5vw, 26px);
+  color: var(--bright);
+  line-height: 1.3;
+  margin-bottom: 14px;
+  border-left: 3px solid var(--accent);
+  padding-left: 14px;
+}
+.ev-body { font-size: 11px; line-height: 1.85; color: var(--text); margin-bottom: 14px; max-width: 620px; }
+.ev-impacts { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
+.imp { font-size: 10px; padding: 3px 9px; letter-spacing: 1px; }
+.imp-bad { background: rgba(255,50,50,.12); border: 1px solid rgba(255,50,50,.35); color: #ff8888; }
+.imp-good { background: rgba(50,255,100,.08); border: 1px solid rgba(50,255,100,.25); color: #88ff99; }
+.imp-neu { background: rgba(255,200,0,.08); border: 1px solid rgba(255,200,0,.25); color: #ffdd77; }
+
+/* EVENT LOG */
+.ev-log { border-top: 1px solid var(--border); padding-top: 12px; max-height: 160px; overflow-y: auto; }
+.log-hdr { font-size: 10px; letter-spacing: 3px; color: var(--dim); margin-bottom: 6px; }
+.log-entry { font-size: 10px; color: var(--dim); padding: 3px 0; border-bottom: 1px dotted #0c1a0c; line-height: 1.5; animation: slidein .3s ease; }
+.log-entry .log-yr { color: var(--gold); margin-right: 8px; }
+.log-entry.bad .log-txt { color: #ff7777; }
+.log-entry.good .log-txt { color: #77ff99; }
+@keyframes slidein { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:none} }
+
+/* ACTION PANEL */
+.action-panel {
+  border-left: 1px solid var(--border);
+  padding: 14px 12px;
+  background: var(--panel);
+  overflow-y: auto;
+}
+.act-btn {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  text-align: left;
+  padding: 9px 10px;
+  cursor: pointer;
+  margin-bottom: 7px;
+  transition: all .15s;
+  line-height: 1.5;
+}
+.act-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--bright); background: rgba(57,255,20,.04); }
+.act-btn:disabled { opacity: .28; cursor: not-allowed; }
+.act-btn .an { display: block; font-weight: 700; color: var(--bright); margin-bottom: 2px; font-size: 11px; }
+.act-btn .ad { color: var(--dim); font-size: 9px; font-style: italic; }
+.act-btn .ac { color: var(--red); font-size: 9px; }
+.act-btn .ag { color: #88ff99; font-size: 9px; }
+
+.next-btn {
+  display: block;
+  width: 100%;
+  background: var(--border);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: 'Bebas Neue';
+  font-size: 20px;
+  letter-spacing: 4px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all .2s;
+  margin-top: 10px;
+}
+.next-btn:hover { background: var(--accent); color: #000; }
+
+.act-note { font-size: 10px; color: var(--dim); line-height: 1.7; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; }
+
+/* NEWS TICKER */
+.news-ticker {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #020302;
+  border-top: 1px solid var(--border);
+  padding: 5px 16px;
+  font-size: 10px;
+  color: var(--dim);
+  overflow: hidden;
+  z-index: 300;
+  white-space: nowrap;
+}
+.tick-scroll { display: inline-block; animation: ticker-go 80s linear infinite; }
+@keyframes ticker-go { from{transform:translateX(100vw)} to{transform:translateX(-100%)} }
+
+/* ───── END SCREEN ───── */
+#end-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  text-align: center;
+}
+.end-icon { font-size: 80px; margin-bottom: 16px; }
+.end-title { font-family: 'Bebas Neue'; font-size: 68px; letter-spacing: 6px; margin-bottom: 10px; }
+.end-sub { font-family: 'Playfair Display', serif; font-style: italic; font-size: 18px; color: var(--dim); margin-bottom: 28px; }
+.end-card {
+  border: 1px solid var(--border);
+  padding: 22px 28px;
+  max-width: 520px;
+  width: 100%;
+  text-align: left;
+  font-size: 12px;
+  line-height: 2;
+  background: var(--panel);
+  margin-bottom: 28px;
+}
+.replay-btn {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: 'Bebas Neue';
+  font-size: 22px;
+  letter-spacing: 5px;
+  padding: 12px 50px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.replay-btn:hover { background: var(--accent); color: #000; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); }
+
+@media (max-width: 800px) {
+  .g-main { grid-template-columns: 1fr; }
+  .stats-panel, .action-panel { border: none; border-bottom: 1px solid var(--border); }
+}
+</style>
+<link rel="stylesheet" href="../../portfolio-toolbar.css">
+<style id="portfolio-toolbar-theme">
+/* Back-to-portfolio bar, themed to match this game (green-screen terminal) */
+#portfolio-toolbar {
+    --pt-bar-bg: #020302;
+    --pt-bar-border: 1px solid #1a381a;
+    --pt-bar-shadow: 0 0 14px rgba(57, 255, 20, 0.08);
+    --pt-font: 'IBM Plex Mono', monospace;
+    --pt-size: 12px;
+    --pt-weight: 700;
+    --pt-spacing: 2px;
+    --pt-transform: uppercase;
+    --pt-btn-bg: transparent;
+    --pt-btn-border: 1px solid #39ff14;
+    --pt-btn-shadow: 0 0 8px rgba(57, 255, 20, 0.25);
+    --pt-btn-color: #6dff6d;
+    --pt-hover-bg: #39ff14;
+    --pt-hover-color: #000;
+    --pt-hover-border-color: #39ff14;
+    --pt-hover-shadow: 0 0 14px rgba(57, 255, 20, 0.5);
+}
+</style>
+<script src="../../game-versions.js" defer></script>
+<script src="../../portfolio-toolbar.js" defer></script>
+</head>
+<body style="padding-top: 56px !important;">
+    <div id="portfolio-toolbar">
+        <a href="../../index.html" class="portfolio-back-btn"><span class="portfolio-back-arrow" aria-hidden="true">←</span>Back<span class="portfolio-back-extra"> to Portfolio</span></a>
+    </div>
+
+<!-- ████ TITLE SCREEN ████ -->
+<div id="title-screen">
+  <div class="title-eagle">🦅</div>
+  <div class="title-main">THE AMERICAN DREAM™</div>
+  <div class="title-sub">A CYNICAL ECONOMY SIMULATION — EST. 1776</div>
+
+  <div class="disclaimer">
+    ⚠ LEGAL DISCLAIMER: This simulation uses real economic data and trends. Any resemblance 
+    to actual structural inequality, regulatory capture, wage stagnation, or the systematic 
+    transfer of wealth from workers to shareholders is purely intentional. Past performance 
+    of the market does not guarantee future results. Past performance of the working class 
+    does not guarantee dignity, healthcare, or retirement.
+  </div>
+
+  <div class="choose-label">SELECT YOUR STARTING CLASS:</div>
+
+  <div class="class-grid">
+    <div class="class-card" id="card-worker" onclick="selectClass('worker',this)">
+      <div class="diff-label diff-hard">⬛⬛⬛ AUTHENTIC MODE</div>
+      <div class="class-icon">🧑‍🏭</div>
+      <div class="class-name">THE WORKER</div>
+      <div class="class-desc">Born with nothing. Will probably die with less. Experience America™ as most Americans actually do.</div>
+      <div class="class-stats">
+        SAVINGS<span class="sv b">$1,200</span><br>
+        DEBT<span class="sv b">$8,400</span><br>
+        INCOME<span class="sv w">$32,000/yr</span><br>
+        INVESTMENTS<span class="sv b">$0</span><br>
+        HEALTH INS.<span class="sv b">NONE</span><br>
+        POLITICAL PULL<span class="sv b">0%</span>
+      </div>
+    </div>
+
+    <div class="class-card" id="card-manager" onclick="selectClass('manager',this)">
+      <div class="diff-label diff-medium">⬛⬛⬜ MODERATE ANXIETY</div>
+      <div class="class-icon">👔</div>
+      <div class="class-name">THE MANAGER</div>
+      <div class="class-desc">College-educated. Student loans to prove it. One medical emergency from ruin.</div>
+      <div class="class-stats">
+        SAVINGS<span class="sv w">$18,000</span><br>
+        DEBT<span class="sv b">$67,000</span><br>
+        INCOME<span class="sv w">$68,000/yr</span><br>
+        INVESTMENTS<span class="sv w">$5,000</span><br>
+        HEALTH INS.<span class="sv w">PARTIAL</span><br>
+        POLITICAL PULL<span class="sv w">12%</span>
+      </div>
+    </div>
+
+    <div class="class-card" id="card-heir" onclick="selectClass('heir',this)">
+      <div class="diff-label diff-easy">⬛⬜⬜ TUTORIAL MODE</div>
+      <div class="class-icon">🎩</div>
+      <div class="class-name">THE HEIR</div>
+      <div class="class-desc">Born on third base. Coached to believe you hit a triple. The system was built for you.</div>
+      <div class="class-stats">
+        SAVINGS<span class="sv g">$2,400,000</span><br>
+        DEBT<span class="sv g">$0</span><br>
+        INCOME<span class="sv g">$180,000/yr</span><br>
+        INVESTMENTS<span class="sv g">$1,200,000</span><br>
+        HEALTH INS.<span class="sv g">PREMIUM</span><br>
+        POLITICAL PULL<span class="sv g">55%</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="start-btn" id="start-btn" onclick="startGame()">BEGIN SIMULATION</button>
+</div>
+
+<!-- ████ GAME SCREEN ████ -->
+<div id="game-screen">
+  <div class="g-header">
+    <div class="ticker-bar">
+      <span class="ti">S&P 500 <span class="up" id="t-spx">↑ 1,400</span></span>
+      <span class="ti">DOW <span class="up" id="t-dow">↑ 10,800</span></span>
+      <span class="ti">NASDAQ <span class="up" id="t-nas">↑ 2,900</span></span>
+      <span class="ti" style="margin-left:auto">CEO:WORKER PAY RATIO <span class="up" id="t-ratio">↑ 300:1</span></span>
+    </div>
+    <div class="header-row">
+      <div class="g-title">THE AMERICAN DREAM™</div>
+      <div class="year-num" id="g-year">2000</div>
+      <div class="class-badge-h" id="g-class-badge">CLASS: —</div>
+    </div>
+  </div>
+
+  <div class="g-main">
+    <!-- STATS -->
+    <div class="stats-panel">
+      <div class="panel-hdr">YOUR LEDGER</div>
+      <div class="s-row"><span class="s-label">NET WORTH</span><span class="s-val" id="s-nw">—</span></div>
+      <div class="s-row"><span class="s-label">ANNUAL INC.</span><span class="s-val" id="s-inc">—</span></div>
+      <div class="s-row"><span class="s-label">TOTAL DEBT</span><span class="s-val" id="s-debt">—</span></div>
+      <div class="s-row"><span class="s-label">INVESTMENTS</span><span class="s-val" id="s-inv">—</span></div>
+      <div class="s-row"><span class="s-label">HEALTH INS.</span><span class="s-val" id="s-ins">—</span></div>
+      <hr class="divider">
+      <div class="bar-wrap">
+        <div class="bar-lbl"><span>HEALTH</span><span id="hp-num">100</span></div>
+        <div class="bar-track"><div class="bar-fill bar-hp" id="hp-bar" style="width:100%"></div></div>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-lbl"><span>HAPPINESS</span><span id="hap-num">70</span></div>
+        <div class="bar-track"><div class="bar-fill bar-hap" id="hap-bar" style="width:70%"></div></div>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-lbl"><span>POLITICAL PULL</span><span id="inf-num">0</span></div>
+        <div class="bar-track"><div class="bar-fill bar-inf" id="inf-bar" style="width:0%"></div></div>
+      </div>
+      <hr class="divider">
+      <div class="panel-hdr" style="margin-top:0">NATIONAL STATS</div>
+      <div class="s-row"><span class="s-label">MARKET INDEX</span><span class="s-val pos" id="s-mkt">10,000</span></div>
+      <div class="s-row"><span class="s-label">YOUR SHARE</span><span class="s-val" id="s-share">$0</span></div>
+      <div class="s-row"><span class="s-label">GDP GROWTH</span><span class="s-val pos">+3.2%</span></div>
+      <div class="s-row"><span class="s-label">WAGE GROWTH</span><span class="s-val wrn">+0.9%</span></div>
+      <div class="s-row"><span class="s-label">INFLATION</span><span class="s-val wrn">+3.2%</span></div>
+      <div class="warn-box" id="warn-box"></div>
+    </div>
+
+    <!-- CENTER -->
+    <div class="center-panel">
+      <div class="event-area">
+        <div class="ev-year-tag" id="ev-tag">◈ FISCAL YEAR 2000 REPORT</div>
+        <div class="ev-headline" id="ev-head">Welcome to the Simulation.</div>
+        <div class="ev-body" id="ev-body">The American Dream awaits. Please note: results are not guaranteed, distributed equitably, or in any way related to effort applied.</div>
+        <div class="ev-impacts" id="ev-impacts"></div>
+      </div>
+      <div class="ev-log">
+        <div class="log-hdr">◈ INCIDENT LOG</div>
+        <div id="log-list"></div>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="action-panel">
+      <div class="panel-hdr">YOUR OPTIONS</div>
+      <div id="act-btns"></div>
+      <button class="next-btn" onclick="nextYear()">ADVANCE YEAR →</button>
+      <div class="act-note" id="act-note">Choose wisely. Or don't. The system has already decided.</div>
+    </div>
+  </div>
+</div>
+
+<!-- NEWS TICKER -->
+<div class="news-ticker" id="news-ticker" style="display:none">
+  <span class="tick-scroll" id="tick-text">Loading economic data...</span>
+</div>
+
+<!-- ████ END SCREEN ████ -->
+<div id="end-screen">
+  <div class="end-icon" id="e-icon">💀</div>
+  <div class="end-title" id="e-title">GAME OVER</div>
+  <div class="end-sub" id="e-sub">The dream didn't work out.</div>
+  <div class="end-card" id="e-card"></div>
+  <button class="replay-btn" onclick="resetGame()">PLAY AGAIN</button>
+  <p style="font-size:10px;color:var(--dim);margin-top:18px;max-width:420px;line-height:1.7">
+    In real life, there is no replay button. Consider supporting organizations 
+    that advocate for workers, healthcare access, and economic equity.
+  </p>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// GAME CONFIG
+// ═══════════════════════════════════════════════════════
+
+const CLASSES = {
+  worker:  { name:'THE WORKER',  icon:'🧑‍🏭', savings:1200,   debt:8400,  income:32000,  investments:0,       health:74, happiness:54, influence:0,  ins:'none',    incGrow:0.018 },
+  manager: { name:'THE MANAGER', icon:'👔',   savings:18000,  debt:67000, income:68000,  investments:5000,    health:80, happiness:60, influence:12, ins:'partial', incGrow:0.025 },
+  heir:    { name:'THE HEIR',    icon:'🎩',   savings:2400000,debt:0,     income:180000, investments:1200000, health:91, happiness:70, influence:55, ins:'premium', incGrow:0.042 },
+};
+
+// ═══════════════════════════════════════════════════════
+// SCRIPTED HISTORICAL EVENTS (by year)
+// ═══════════════════════════════════════════════════════
+const SCRIPTED = [
+  { year:2001, head:'DOT-COM BUBBLE BURSTS', body:'Tech stocks collapse. The NASDAQ loses 80% of peak value. Thousands of "visionaries" reveal themselves to be regular fraudsters. Your 401(k) files a formal complaint.', impacts:[{l:'MARKET −38%',t:'bad'},{l:'LAYOFFS SURGE',t:'bad'},{l:'CEOs KEEP BONUSES',t:'neu'}], fx:{savings:-.12,investments:-.38,happiness:-8}, log:'Dot-com bubble. Investments tank.' },
+  { year:2001, head:'9/11 — NATION IN MOURNING', body:'A national tragedy. The government responds with the Patriot Act, two forever-wars costing $8 trillion, and a TSA that will confiscate your shampoo indefinitely. Defense contractors receive record contracts.', impacts:[{l:'NATIONAL TRAGEDY',t:'bad'},{l:'DEFENSE STOCKS ↑',t:'neu'},{l:'CIVIL LIBERTIES ↓',t:'bad'}], fx:{happiness:-14}, log:'9/11. Nation grieves. Contractors do not.' },
+  { year:2003, head:'BUSH TAX CUTS SIGNED', body:'Massive tax reductions signed into law. The wealthy receive permanent, large cuts. You receive enough to buy a modest television. GDP growth is predicted. Deficits are not mentioned.', impacts:[{l:'DEFICIT +$1.7T',t:'bad'},{l:'RICH: WINDFALL',t:'bad'},{l:'YOU: $600',t:'neu'}], fx:{savings:600}, richFx:{savings:42000}, log:'Tax cuts. Rich got windfall. You got a coupon.' },
+  { year:2005, head:'HOUSING BOOM: EVERYONE\'S GETTING RICH!', body:'Banks are offering mortgages to people who demonstrably cannot repay them, then bundling these loans into securities rated AAA by agencies they pay. Financial innovation is occurring. What could possibly go wrong?', impacts:[{l:'HOME VALUES ↑',t:'good'},{l:'PREDATORY LOANS',t:'bad'},{l:'BANKS: GIDDY',t:'neu'}], fx:{}, richFx:{investments:80000}, poorFx:{debt:2400}, log:'Housing boom. Banks innovating dangerously.' },
+  { year:2008, head:'FINANCIAL SYSTEM COLLAPSES', body:'It turns out that bundling unpayable mortgages into complex securities and selling them globally as AAA-rated assets was, financially speaking, suboptimal. The banks are "too big to fail." You, however, are not a bank.', impacts:[{l:'BANKS: BAILED OUT',t:'neu'},{l:'YOU: NOT A BANK',t:'bad'},{l:'UNEMPLOYMENT 10%',t:'bad'},{l:'EXECS KEEP BONUSES',t:'bad'}], fx:{savings:-.22,investments:-.45,income:-.09,happiness:-22,health:-5}, log:'2008 Crash. Banks saved. You are not a bank.' },
+  { year:2009, head:'$700B BANK BAILOUT APPROVED', body:'TARP passes. The institutions responsible for the crisis receive taxpayer funds. Several executives receive bonuses during bailout receipt. No prosecutions occur. The word "accountability" briefly trends on MySpace.', impacts:[{l:'BANKS SAVED',t:'neu'},{l:'SOCIALISM (FOR BANKS)',t:'neu'},{l:'FORECLOSURES ONGOING',t:'bad'}], fx:{happiness:-8}, richFx:{savings:25000,investments:55000}, log:'TARP: $700B for banks. Accountability: $0.' },
+  { year:2010, head:'AFFORDABLE CARE ACT PASSES', body:'After brutal legislative warfare, the ACA passes. It preserves the private insurance industry, expands coverage, and ensures premiums will still rise every year. Congress celebrates. Insurance stocks rise 34% on the news.', impacts:[{l:'COVERAGE EXPANDS',t:'good'},{l:'INSURANCE STOCKS ↑34%',t:'neu'},{l:'PREMIUMS STILL RISING',t:'bad'}], fx:{health:4}, poorFx:{savings:-1800}, log:'ACA passes. Healthcare now merely expensive.' },
+  { year:2012, head:'GIG ECONOMY: BE YOUR OWN BOSS!™', body:'Platforms arrive offering workers "flexibility" — the flexibility to work three jobs with no benefits, no overtime protection, no retirement, and no guaranteed income. You are now an entrepreneur. Congratulations.', impacts:[{l:'NO BENEFITS',t:'bad'},{l:'VC FUNDING BOOMS',t:'good'},{l:'LABOR RIGHTS ↓',t:'bad'}], fx:{health:-4,happiness:-5}, poorFx:{income:3500}, log:'Gig economy arrives. "Entrepreneur" = no benefits.' },
+  { year:2016, head:'OPIOID CRISIS REACHES PEAK', body:'Pharmaceutical companies legally distributed billions of opioid pills into communities. Executives received bonuses. Several eventually paid fines that amounted to fractions of profits. Communities received thoughts and prayers.', impacts:[{l:'100K+ DEATHS/YR',t:'bad'},{l:'PHARMA PROFITS ↑',t:'neu'},{l:'SETTLEMENT: PARTIAL',t:'neu'}], fx:{happiness:-8,health:-4}, log:'Opioid crisis peaks. Pharma pays fraction of profits.' },
+  { year:2018, head:'TAX CUTS & JOBS ACT: THE SEQUEL', body:'Corporate tax rate cut permanently from 35% to 21%. Individual cuts expire in 2025. Corporations use savings primarily for $1 trillion in stock buybacks rather than, as advertised, worker wages. Trickle-down economics does not trickle.', impacts:[{l:'CORPS SAVE BILLIONS',t:'neu'},{l:'DEFICIT +$1.9T',t:'bad'},{l:'BUYBACKS: $1T',t:'bad'}], fx:{savings:400}, richFx:{savings:75000,investments:110000}, log:'Tax cuts again. Corps did stock buybacks. Wages: unchanged.' },
+  { year:2020, head:'PANDEMIC. ECONOMY SHUTTERS.', body:'A global pandemic arrives. "Essential workers" are told to risk their lives at pre-existing wages. Executives work from vacation homes. Billionaire wealth grows $1.3 trillion in one year. Congress debates whether $1,400 is sufficient to survive a year.', impacts:[{l:'1M+ US DEATHS',t:'bad'},{l:'BILLIONAIRES +$1.3T',t:'bad'},{l:'STIMULUS: $1,400',t:'neu'}], fx:{health:-14,happiness:-20,savings:-.08}, poorFx:{savings:1400,debt:3500}, richFx:{investments:.22,savings:40000}, log:'COVID. $1.3T for billionaires. $1,400 for you.' },
+  { year:2022, head:'INFLATION: 40-YEAR HIGH', body:'Inflation hits 9.1%. The Fed raises interest rates aggressively. This combats inflation by making everyone\'s debt more expensive and crashing the housing market. Economists call this "a soft landing." The landing is hard.', impacts:[{l:'GROCERIES +22%',t:'bad'},{l:'RENT +18%',t:'bad'},{l:'RATES RAISED',t:'bad'},{l:'HEDGE FUNDS: FINE',t:'neu'}], fx:{savings:-.07,happiness:-10,debt:1800}, log:'Inflation 9.1%. Everything costs more. Wages: did not.' },
+  { year:2024, head:'AI THREATENS YOUR JOB', body:'Artificial intelligence tools can now perform significant portions of many jobs. Corporations announce "workforce optimization." Executives receive bonuses for finding cost savings. The savings are not shared with the remaining workforce.', impacts:[{l:'AUTOMATION ↑',t:'bad'},{l:'EXEC BONUSES ↑',t:'bad'},{l:'YOUR JOB: PENDING',t:'bad'}], fx:{happiness:-10,income:-.06}, richFx:{investments:.1}, log:'AI disruption. Workforce "optimized." Execs: bonus.' },
+];
+
+// ═══════════════════════════════════════════════════════
+// RANDOM EVENT POOLS
+// ═══════════════════════════════════════════════════════
+const POOR_EVENTS = [
+  { head:'MEDICAL EMERGENCY', body:'A health situation requires a hospital visit. The procedure takes 90 minutes. The bill takes a decade to pay off. This is American healthcare operating as designed.', impacts:[{l:'BILL: $47,000',t:'bad'},{l:'CREDIT RATING ↓',t:'bad'}], fx:{health:-18,happiness:-14}, insFx:{none:{debt:47000,savings:-3000,body:'Without insurance: $47,000. You are now a medical debt statistic. Welcome to the majority.'}, partial:{debt:8500,body:'With partial insurance: $8,500 after deductibles. This is considered "good."'}, premium:{savings:-500,body:'Premium insurance covers nearly all of it. $500 copay. Healthcare is wonderful when you can afford it.'}}, log:'Medical emergency. Bill: $47,000 (or less if insured).' },
+  { head:'LANDLORD RAISES RENT 20%', body:'Your landlord, citing "market conditions" (i.e., the market permits it), raises your rent 20%. Moving costs money you don\'t have. You stay. You eat out less. Then less.', impacts:[{l:'RENT +20%',t:'bad'},{l:'LANDLORD THRIVING',t:'neu'}], fx:{savings:-3600,happiness:-10,health:-3}, log:'Rent +20%. Market conditions™.' },
+  { head:'CAR BREAKDOWN', body:'Your car breaks down. There is no functional public transit near your job. You need the car to earn money to fix the car. America\'s infrastructure policy watches from a distance.', impacts:[{l:'REPAIR: $2,800',t:'bad'},{l:'CREDIT CARD DEBT ↑',t:'bad'}], fx:{savings:-1200,debt:1600,happiness:-10}, log:'Car broke. $2,800 on credit card. Interest accruing.' },
+  { head:'EMPLOYER COMMITS WAGE THEFT', body:'Your employer shaves hours, withholds overtime, and misclassifies you as exempt. Wage theft costs American workers $50 billion annually — more than all burglaries, robberies, and car thefts combined. Enforcement: minimal.', impacts:[{l:'LOST: $4,200',t:'bad'},{l:'ENFORCEMENT: 0',t:'bad'}], fx:{income:-4200,happiness:-9}, log:'Wage theft. $4,200 lost. No prosecution.' },
+  { head:'PAYDAY LOAN TRAP', body:'To cover a gap, you take a payday loan at 391% annual interest. You will roll this over four times. This is legal in 30 states. This is also how "predatory lending" becomes someone\'s business model.', impacts:[{l:'APR: 391%',t:'bad'},{l:'LEGAL: YES',t:'bad'}], fx:{debt:900,savings:500,happiness:-6}, log:'Payday loan at 391% APR. The system works.' },
+  { head:'LAYOFF: YOU\'VE BEEN DOWNSIZED', body:'Your position has been "eliminated" to "right-size" the organization ahead of Q4 earnings. The CEO who authorized the layoffs receives a performance bonus for reducing costs. You receive a cardboard box and best wishes.', impacts:[{l:'INCOME: SUSPENDED',t:'bad'},{l:'CEO BONUS: INTACT',t:'bad'},{l:'SEVERANCE: 2 WKS',t:'neu'}], fx:{income:-.7,happiness:-22,health:-6,savings:-2000}, log:'Layoff. CEO bonus: untouched. Your income: 70% gone.' },
+  { head:'DATA BREACH: YOUR INFO WAS SOLD', body:'A company you gave your Social Security number to was hacked. They\'ve offered you two years of free credit monitoring — meaning your personal data is worth more to criminals than you are to the institution that lost it.', impacts:[{l:'IDENTITY STOLEN',t:'bad'},{l:'COMPANY FINE: SMALL',t:'bad'}], fx:{savings:-1800,debt:1200,happiness:-7}, log:'Data breach. Credit monitoring offered. Damage done.' },
+  { head:'STUDENT LOANS RESUME', body:'After a brief pause, student loan payments resume at $450/month. Your degree in a field that no longer pays what it promised now costs you this amount for 20 years. The university that accepted your money is doing fine.', impacts:[{l:'PAYMENT: $450/MO',t:'bad'},{l:'INTEREST: ACCRUING',t:'bad'}], fx:{savings:-5400,happiness:-8}, log:'Student loans resumed. $5,400/year for the foreseeable future.' },
+  { head:'PREDATORY CREDIT CARD OFFER', body:'You receive a credit card offer with a "low introductory rate" that becomes 29.99% APR after six months. The terms are 47 pages long. You use it because you need groceries.', impacts:[{l:'APR: 29.99%',t:'bad'},{l:'ACCESSIBLE: YES',t:'neu'}], fx:{debt:2200,savings:1000,happiness:-4}, log:'Credit card debt added. APR: 29.99%. Terms: 47 pages.' },
+];
+
+const RICH_EVENTS = [
+  { head:'PORTFOLIO OUTPERFORMS', body:'Your diversified investment portfolio, managed by professionals who charge 1.2% of assets to underperform index funds (which they mostly do), has grown substantially this year. Money makes money. This is the system working.', impacts:[{l:'RETURN: +12%',t:'good'},{l:'CAPITAL GAINS TAX: 15%',t:'good'}], fx:{investments:.12,happiness:5}, cond: s => s.investments > 50000, log:'Portfolio +12%. Capital gains taxed less than wages.' },
+  { head:'POLITICAL DONATION YIELDS RESULTS', body:'The politician your PAC funded has sponsored legislation favorable to your sector. Economists call this "regulatory capture." The rest of us call it what it is. The new regulation passes with bipartisan support.', impacts:[{l:'REGULATION EASED',t:'good'},{l:'COMPETITION ↓',t:'good'},{l:'DEMOCRACY ↓',t:'bad'}], fx:{income:.08,influence:12,savings:-50000}, cond: s => s.influence > 35 && s.savings > 60000, log:'$50K donation → regulation eased → +8% income.' },
+  { head:'ACCOUNTANT FINDS TAX LOOPHOLE', body:'Through carried interest, offshore trusts, depreciation scheduling, and a Cayman structure your accountant has legally reduced your effective tax rate to something a schoolteacher would find morally objectionable.', impacts:[{l:'TAXES: AVOIDED (LEGALLY)',t:'good'},{l:'FAIRNESS: OPTIONAL',t:'neu'}], fx:{savings:32000,influence:5}, cond: s => s.netWorth > 400000, log:'Tax loophole found. Rate now lower than assistant\'s.' },
+  { head:'REAL ESTATE PORTFOLIO APPRECIATES', body:'Your rental properties have increased 18% in value. Your tenants are spending 40% of income on rent. You have not repaired the heating. A property manager handles their complaints.', impacts:[{l:'PROPERTY +18%',t:'good'},{l:'RENTAL INC. ↑',t:'good'},{l:'TENANTS: STRAINED',t:'neu'}], fx:{investments:.14,savings:22000,happiness:4}, cond: s => s.investments > 200000, log:'Real estate +18%. Tenants spending 40% of income on rent.' },
+  { head:'STARTUP IPO: MASSIVE RETURNS', body:'A company you invested in early has gone public at a $14 billion valuation. The company has never been profitable. Several employees are now millionaires. The venture capitalists are substantially wealthier than that.', impacts:[{l:'RETURN: 420%',t:'good'},{l:'PROFITABILITY: PENDING',t:'neu'}], fx:{investments:.3,savings:80000}, cond: s => s.investments > 400000, log:'IPO windfall. Profitability: optional, apparently.' },
+  { head:'PRIVATE EQUITY DEAL CLOSES', body:'Your firm acquires a mid-size company, cuts costs (primarily staff and benefits), loads it with debt, extracts management fees, and sells it at 340% return. The company later goes bankrupt. Your return is already in the Caymans.', impacts:[{l:'RETURN: 340%',t:'good'},{l:'JOBS CUT: 600',t:'bad'},{l:'TAX RATE: 20%',t:'good'}], fx:{savings:350000,influence:14,happiness:8}, cond: s => s.netWorth > 2000000, log:'PE deal. 600 jobs cut. Return: 340%. Tax rate: 20%.' },
+];
+
+const GENERIC_EVENTS = [
+  { head:'ANOTHER YEAR PASSES', body:'GDP grows 3.2%. Productivity rises. Wages increase 1.1% — approximately matching the rate at which your rent increased by 8%. The economy is, technically, doing well.', impacts:[{l:'GDP: UP',t:'good'},{l:'WAGES: FLAT',t:'bad'},{l:'RENT: UP 8%',t:'bad'}], fx:{savings:-800,happiness:-4}, log:'GDP up. Wages flat. Rent up. Classic year.' },
+  { head:'HEALTHCARE COSTS RISE — AGAIN', body:'Health insurance premiums increase 7% this year. Pharmaceutical companies raise drug prices an average of 10%. Hospital systems report record profits. The American healthcare industry is, financially speaking, in excellent health.', impacts:[{l:'PREMIUMS +7%',t:'bad'},{l:'PHARMA PROFITS ↑',t:'neu'}], fx:{health:-3}, insFx:{none:{debt:700},partial:{savings:-1500},premium:{savings:-3000}}, log:'Healthcare costs up 7%. Industry: thriving.' },
+  { head:'INFLATION ERODES PURCHASING POWER', body:'Prices rise 3-4% across categories. Wages rise 1.7%. The mathematical difference between these numbers is called "purchasing power decline" and is practically experienced as "eating out less frequently."', impacts:[{l:'PRICES +3.8%',t:'bad'},{l:'WAGES +1.7%',t:'neu'}], fx:{savings:-1600,happiness:-5}, log:'Inflation outpaces wages. Again.' },
+  { head:'HOUSING MARKET REMAINS UNAFFORDABLE', body:'Home prices in your area rise again. Institutional investors, algorithmic buyers, and out-of-market cash offers account for 40% of purchases. Rent is due. The American dream of ownership recedes further.', impacts:[{l:'PRICES ↑ 9%',t:'bad'},{l:'INVESTORS: BUYING',t:'bad'},{l:'YOU: RENTING',t:'bad'}], fx:{happiness:-8}, poorFx:{savings:-2400}, richFx:{investments:18000}, log:'Housing unaffordable. Investors buy more. You rent.' },
+  { head:'ELECTION SEASON: PROMISES MADE', body:'Candidates make bold promises about healthcare, wages, student debt, and housing. After the election, the same industries receive the same policy outcomes they funded. The Overton window remains precisely where donors prefer it.', impacts:[{l:'PROMISES: MANY',t:'neu'},{l:'OUTCOMES: FEW',t:'bad'},{l:'DONATIONS: EFFECTIVE',t:'neu'}], fx:{happiness:-5}, log:'Election. Promises made. Donors satisfied.' },
+  { head:'SUPPLY CHAIN DISRUPTION', body:'Global supply chains experience disruption. Corporations pass costs to consumers while protecting margins. The phrase "greedflation" briefly appears in economic discourse before being dismissed. Your bill is larger.', impacts:[{l:'PRICES UP',t:'bad'},{l:'MARGINS: PROTECTED',t:'neu'}], fx:{savings:-1300,happiness:-4}, log:'Supply chain disruption. Consumer prices up. Margins: protected.' },
+  { head:'CORPORATE LAYOFFS: EFFICIENCY DRIVE', body:'Major corporations announce layoffs to "right-size" operations. This is announced during record-profit quarters. Stock prices rise on the news. The laid-off workers are wished "all the best in future endeavors."', impacts:[{l:'STOCKS ↑',t:'neu'},{l:'WORKERS ↓',t:'bad'}], fx:{happiness:-7,health:-2}, poorFx:{savings:-3000}, richFx:{investments:12000}, log:'Mass layoffs during record profits. Stocks rise.' },
+  { head:'PRESCRIPTION DRUG COSTS RISE', body:'The price of common medications increases 12-30% this year. The United States is the only developed country where this is possible. This is described as "the cost of innovation." You are asked to demonstrate innovation in your budgeting.', impacts:[{l:'DRUG COSTS +20%',t:'bad'},{l:'PHARMA PROFITS ↑',t:'neu'}], fx:{savings:-800,health:-4}, log:'Drug prices up 20%. Innovation costs money, apparently.' },
+];
+
+// ═══════════════════════════════════════════════════════
+// GAME STATE
+// ═══════════════════════════════════════════════════════
+let G = null;
+let selectedCls = null;
+let actionsUsed = [];
+
+function makeState(k) {
+  const c = CLASSES[k];
+  return {
+    k, name: c.name, icon: c.icon,
+    year: 2000,
+    savings: c.savings,
+    debt: c.debt,
+    income: c.income,
+    investments: c.investments,
+    health: c.health,
+    happiness: c.happiness,
+    influence: c.influence,
+    ins: c.ins,
+    mkt: 10000,
+    usedYears: new Set(),
+    usedRandom: new Set(),
+    log: [],
+    get netWorth() { return this.savings + this.investments - this.debt; },
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+// UTILITY
+// ═══════════════════════════════════════════════════════
+function fmtM(n) {
+  const abs = Math.abs(n), sign = n < 0 ? '-' : '';
+  if (abs >= 1e9) return sign + '$' + (abs/1e9).toFixed(2) + 'B';
+  if (abs >= 1e6) return sign + '$' + (abs/1e6).toFixed(2) + 'M';
+  if (abs >= 1000) return sign + '$' + Math.round(abs/10)*10 ;
+  return sign + '$' + Math.round(abs);
+}
+function fmtMFull(n) {
+  const abs = Math.abs(n), sign = n < 0 ? '-' : '';
+  if (abs >= 1e9) return sign + '$' + (abs/1e9).toFixed(1) + 'B';
+  if (abs >= 1e6) return sign + '$' + (abs/1e6).toFixed(2) + 'M';
+  return sign + '$' + Math.round(abs).toLocaleString();
+}
+function tier(nw) {
+  if (nw < -20000) return ['DEBT SPIRAL 📉', 't-broke'];
+  if (nw < 5000)   return ['BARELY SURVIVING', 't-broke'];
+  if (nw < 50000)  return ['STRUGGLING', 't-struggle'];
+  if (nw < 300000) return ['MIDDLE CLASS (ANXIOUS)', 't-middle'];
+  if (nw < 2e6)    return ['COMFORTABLE', 't-comfort'];
+  if (nw < 1e7)    return ['WEALTHY', 't-rich'];
+  if (nw < 1e8)    return ['RICH', 't-rich'];
+  return ['DONOR CLASS 🎩', 't-rich'];
+}
+
+function applyFx(fx) {
+  if (!fx) return;
+  if (fx.savings)     G.savings     += typeof fx.savings < 1 && typeof fx.savings > -1 && typeof fx.savings === 'number' && Math.abs(fx.savings) < 1 ? G.savings * fx.savings : fx.savings;
+  if (fx.debt)        G.debt        += fx.debt;
+  if (fx.income)      G.income      += Math.abs(fx.income) < 1 ? G.income * fx.income : fx.income;
+  if (fx.investments) G.investments += Math.abs(fx.investments) < 1 ? G.investments * fx.investments : fx.investments;
+  if (fx.health)      G.health      = Math.max(0, Math.min(100, G.health + fx.health));
+  if (fx.happiness)   G.happiness   = Math.max(0, Math.min(100, G.happiness + fx.happiness));
+  if (fx.influence)   G.influence   = Math.max(0, Math.min(100, G.influence + fx.influence));
+  G.investments = Math.max(0, G.investments);
+  G.savings = Math.max(-999999, G.savings);
+}
+
+function applyFxScaled(fx) {
+  if (!fx) return;
+  const fxCopy = {};
+  for (const k in fx) {
+    if (typeof fx[k] === 'number' && Math.abs(fx[k]) < 1 && k !== 'health' && k !== 'happiness' && k !== 'influence') {
+      fxCopy[k] = fx[k]; // percentages
+    } else {
+      fxCopy[k] = fx[k];
+    }
+  }
+  applyFx(fxCopy);
+}
+
+// ═══════════════════════════════════════════════════════
+// UI UPDATE
+// ═══════════════════════════════════════════════════════
+function uiUpdate() {
+  const nw = G.netWorth;
+  const [tierLabel, tierCls] = tier(nw);
+
+  const nwEl = document.getElementById('s-nw');
+  nwEl.textContent = fmtMFull(nw);
+  nwEl.className = 's-val ' + (nw >= 0 ? (nw > 200000 ? 'pos' : 'wrn') : 'neg');
+
+  document.getElementById('s-inc').textContent = fmtMFull(G.income) + '/yr';
+
+  const dEl = document.getElementById('s-debt');
+  dEl.textContent = fmtMFull(G.debt);
+  dEl.className = 's-val ' + (G.debt > 60000 ? 'neg' : G.debt > 15000 ? 'wrn' : 'pos');
+
+  const iEl = document.getElementById('s-inv');
+  iEl.textContent = fmtMFull(G.investments);
+  iEl.className = 's-val ' + (G.investments > 0 ? 'pos' : '');
+
+  const ins = {none:['NONE','neg'], partial:['PARTIAL','wrn'], premium:['PREMIUM','pos']}[G.ins];
+  document.getElementById('s-ins').textContent = ins[0];
+  document.getElementById('s-ins').className = 's-val ' + ins[1];
+
+  document.getElementById('hp-num').textContent = Math.round(G.health);
+  document.getElementById('hp-bar').style.width = Math.max(0, G.health) + '%';
+  document.getElementById('hap-num').textContent = Math.round(G.happiness);
+  document.getElementById('hap-bar').style.width = Math.max(0, G.happiness) + '%';
+  document.getElementById('inf-num').textContent = Math.round(G.influence);
+  document.getElementById('inf-bar').style.width = Math.max(0, G.influence) + '%';
+
+  document.getElementById('s-mkt').textContent = Math.round(G.mkt).toLocaleString();
+  document.getElementById('s-share').textContent = G.investments > 0 ? fmtMFull(G.investments) : '$0';
+
+  document.getElementById('g-year').textContent = G.year;
+  document.getElementById('g-class-badge').innerHTML = G.icon + ' ' + G.name + '<br><span class="tier-badge ' + tierCls + '">' + tierLabel + '</span>';
+
+  // Market ticker
+  const yr = G.year - 2000;
+  document.getElementById('t-spx').textContent = '↑ ' + Math.round(1400 + yr*160 + Math.random()*80).toLocaleString();
+  document.getElementById('t-dow').textContent = '↑ ' + Math.round(10000 + yr*1400 + Math.random()*300).toLocaleString();
+  document.getElementById('t-nas').textContent = '↑ ' + Math.round(2900 + yr*500 + Math.random()*150).toLocaleString();
+  document.getElementById('t-ratio').textContent = '↑ ' + Math.round(300 + yr*18) + ':1';
+
+  // Warnings
+  const warns = [];
+  if (G.health < 25) warns.push('⚠ CRITICAL HEALTH — care needed (if affordable)');
+  if (G.savings < 0) warns.push('⚠ NEGATIVE SAVINGS — spending money you don\'t have');
+  if (G.debt > G.income) warns.push('⚠ DEBT EXCEEDS ANNUAL INCOME');
+  if (G.happiness < 20) warns.push('⚠ SEVERE UNHAPPINESS — consider therapy ($200/hr)');
+  const wb = document.getElementById('warn-box');
+  if (warns.length) { wb.innerHTML = warns.join('<br>'); wb.style.display = 'block'; }
+  else { wb.style.display = 'none'; }
+
+  // News ticker
+  const NEWS = [
+    '◆ YEAR: ' + G.year,
+    '◆ MARKET: ' + Math.round(G.mkt).toLocaleString(),
+    '◆ CEO PAY RATIO: ' + Math.round(300 + yr*18) + ':1',
+    '◆ YOUR NET WORTH: ' + fmtMFull(nw),
+    '◆ Billionaire wealth grows 70% during crisis',
+    '◆ EXPERTS: Just work harder',
+    '◆ CEO receives $47M bonus after layoffs',
+    '◆ Congress votes itself a raise',
+    '◆ 63% of Americans can\'t cover a $400 emergency',
+    '◆ Pharmaceutical company raises insulin 400%',
+    '◆ Trickle-down economics still not trickling',
+    '◆ Top 1% owns more wealth than bottom 90% combined',
+    '◆ "Thoughts and prayers," says politician',
+    '◆ GDP at record. Wages: not at record.',
+    '◆ New: Work three gigs to afford one apartment',
+    '◆ Minimum wage unchanged for 15th consecutive year',
+    '◆ Private equity acquires hospital, removes ICU',
+    '◆ Study: Social mobility at 50-year low',
+    '◆ "The fundamentals are sound" — economist, 2008',
+    '◆ Student loan interest accrued as you read this',
+    '◆ Insulin: $300 in US, $30 in Canada. Curious.',
+    '◆ Lobbyist-written bill passes with bipartisan support',
+  ];
+  document.getElementById('tick-text').textContent = [...NEWS].sort(()=>Math.random()-.5).join('   ');
+}
+
+function showEvent(head, body, impacts) {
+  document.getElementById('ev-tag').textContent = '◈ FISCAL YEAR ' + G.year + ' REPORT';
+  document.getElementById('ev-head').textContent = head;
+  document.getElementById('ev-body').textContent = body;
+  const imp = document.getElementById('ev-impacts');
+  imp.innerHTML = '';
+  (impacts||[]).forEach(i => {
+    const s = document.createElement('span');
+    s.className = 'imp imp-' + (i.t === 'bad' ? 'bad' : i.t === 'good' ? 'good' : 'neu');
+    s.textContent = i.l;
+    imp.appendChild(s);
+  });
+}
+
+function addLog(text, type) {
+  const list = document.getElementById('log-list');
+  const e = document.createElement('div');
+  e.className = 'log-entry ' + (type||'');
+  e.innerHTML = '<span class="log-yr">' + G.year + '</span><span class="log-txt">' + text + '</span>';
+  list.insertBefore(e, list.firstChild);
+  if (list.children.length > 25) list.removeChild(list.lastChild);
+}
+
+// ═══════════════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════════════
+function buildActions() {
+  const a = [];
+  const nw = G.netWorth;
+
+  // Always available to non-rich: Overtime
+  if (G.income < 150000) {
+    const earn = Math.round(G.income * 0.11);
+    a.push({ id:'ot', name:'💼 WORK OVERTIME', desc:'Extra hours for extra pay. Your employer thanks you.', cost:'Health −5, Happiness −3', gain:'+' + fmtM(earn),
+      ok: true,
+      run() { G.savings += earn; G.health = Math.max(0, G.health-5); G.happiness = Math.max(0, G.happiness-3); addLog('Worked overtime. +' + fmtM(earn) + '. Health declining.'); }
+    });
+  }
+
+  // Invest
+  if (G.savings > 800) {
+    const amt = Math.round(Math.min(G.savings * .28, 40000));
+    a.push({ id:'inv', name:'📈 INVEST IN MARKET', desc:'Index funds. ~7%/yr historically. Market can crash.', cost:'−' + fmtM(amt), gain:'Expected +7%/yr',
+      ok: true,
+      run() { G.savings -= amt; G.investments += amt; addLog('Invested ' + fmtM(amt) + ' in market.', 'good'); }
+    });
+  }
+
+  // Buy insurance
+  if (G.ins === 'none' && G.savings > 2500) {
+    a.push({ id:'ins1', name:'🏥 BUY HEALTH INSURANCE', desc:'Basic coverage. Deductibles still apply. Still counts.', cost:'−$2,400/yr', gain:'Health protection',
+      ok: true,
+      run() { G.savings -= 2400; G.ins = 'partial'; G.health = Math.min(100, G.health+5); addLog('Bought health insurance. $2,400/yr. Deductibles: still exist.', 'good'); }
+    });
+  }
+  if (G.ins === 'partial' && G.savings > 8000) {
+    a.push({ id:'ins2', name:'🏥 UPGRADE INSURANCE', desc:'Premium coverage. Fewer surprise bills.', cost:'−$7,200/yr', gain:'Full protection',
+      ok: true,
+      run() { G.savings -= 7200; G.ins = 'premium'; G.health = Math.min(100, G.health+8); addLog('Upgraded to premium insurance. $7,200/yr.', 'good'); }
+    });
+  }
+
+  // Pay debt
+  if (G.debt > 0 && G.savings > 1500) {
+    const pay = Math.round(Math.min(G.savings*.35, G.debt, 25000));
+    a.push({ id:'debt', name:'💳 PAY DOWN DEBT', desc:'Chip away at what you owe. Interest doesn\'t sleep.', cost:'−' + fmtM(pay), gain:'Debt −' + fmtM(pay),
+      ok: true,
+      run() { G.savings -= pay; G.debt = Math.max(0, G.debt-pay); G.happiness = Math.min(100, G.happiness+4); addLog('Paid off ' + fmtM(pay) + ' in debt.', 'good'); }
+    });
+  }
+
+  // Side hustle
+  if (G.income < 90000) {
+    a.push({ id:'gig', name:'🚗 GIG ECONOMY HUSTLE', desc:'Drive rideshare. Deliver food. Be your own boss™.', cost:'Health −3', gain:'+$4,000–8,000',
+      ok: true,
+      run() { const earn = 4000 + Math.random()*4000; G.savings += earn; G.health = Math.max(0, G.health-3); G.happiness = Math.max(0, G.happiness-2); addLog('Side hustled. Earned ' + fmtM(earn) + '. No benefits gained.'); }
+    });
+  }
+
+  // Labor organizing (worker/low influence)
+  if (G.k === 'worker' && G.influence < 35) {
+    a.push({ id:'org', name:'✊ LABOR ORGANIZING', desc:'Unite coworkers. The only leverage you have.', cost:'Risk of retaliation', gain:'Influence +8, possible raise',
+      ok: true,
+      run() {
+        G.influence = Math.min(100, G.influence+8);
+        if (Math.random() > .42) { const r = Math.round(G.income*.07); G.income += r; G.happiness = Math.min(100, G.happiness+8); addLog('Organizing won! +' + fmtM(r) + '/yr wages.', 'good'); }
+        else { G.happiness = Math.max(0, G.happiness-5); addLog('Organizing attempt. Retaliation mild. Spirits: lower.', 'bad'); }
+      }
+    });
+  }
+
+  // Political donation
+  if (nw > 150000 && G.savings > 55000) {
+    a.push({ id:'pol', name:'🏛 POLITICAL DONATION', desc:'Fund candidates who support your interests. Technically legal.', cost:'−$50,000', gain:'Influence +15',
+      ok: G.savings > 50000,
+      run() { G.savings -= 50000; G.influence = Math.min(100, G.influence+15); addLog('$50K to political campaign. Influence secured.'); }
+    });
+  }
+
+  // Wealth management
+  if (nw > 400000 && G.investments > 0) {
+    a.push({ id:'wm', name:'💰 WEALTH MANAGEMENT', desc:'Professionals grow your money. Tax optimization included.', cost:'−$15,000 fee', gain:'Investments +15%',
+      ok: G.savings > 20000,
+      run() { G.savings -= 15000; const g = Math.round(G.investments*.15); G.investments += g; addLog('Wealth manager returns ' + fmtM(g) + '. Money makes money.', 'good'); }
+    });
+  }
+
+  // Vacation
+  if (G.savings > 4000) {
+    a.push({ id:'vac', name:'🏖 TAKE A VACATION', desc:'Rest. Recover. You\'ve earned it (or your credit card has).', cost:'−$3,000', gain:'Happiness +20, Health +8',
+      ok: true,
+      run() { G.savings -= 3000; G.happiness = Math.min(100, G.happiness+20); G.health = Math.min(100, G.health+8); addLog('Took a vacation. Happiness restored. Savings: less so.', 'good'); }
+    });
+  }
+
+  // Stock buyback (very rich)
+  if (nw > 4000000 && G.savings > 500000) {
+    a.push({ id:'buyback', name:'📊 CORPORATE STOCK BUYBACK', desc:'Use profits to inflate stock price. Workers: not mentioned.', cost:'−$500K', gain:'Investments +22%',
+      ok: true,
+      run() { G.savings -= 500000; const g = Math.round(G.investments*.22); G.investments += g; addLog('Stock buyback. Investments +22%. Workers: not consulted.', 'good'); }
+    });
+  }
+
+  // Bankruptcy (last resort)
+  if (G.debt > 40000 && G.savings < 3000) {
+    a.push({ id:'bk', name:'⚠ DECLARE BANKRUPTCY', desc:'Debt cleared. Everything else: also cleared.', cost:'Lose all savings & investments', gain:'Debt reset',
+      ok: true,
+      run() { G.debt = 0; G.savings = 400; G.investments = 0; G.influence = Math.max(0, G.influence-20); G.happiness = Math.max(0, G.happiness-28); G.health = Math.max(0, G.health-8); addLog('Declared bankruptcy. Debt gone. Everything else: also gone.', 'bad'); }
+    });
+  }
+
+  return a;
+}
+
+function renderActions() {
+  const el = document.getElementById('act-btns');
+  el.innerHTML = '';
+  buildActions().forEach(a => {
+    const used = actionsUsed.includes(a.id);
+    const btn = document.createElement('button');
+    btn.className = 'act-btn';
+    btn.disabled = !a.ok || used;
+    btn.innerHTML = `<span class="an">${used ? '✓ ' : ''}${a.name}</span>${a.desc ? '<span class="ad">' + a.desc + '</span>' : ''}${a.cost ? '<span class="ac">' + a.cost + '</span>' : ''}${a.gain ? ' <span class="ag">' + a.gain + '</span>' : ''}`;
+    btn.onclick = () => {
+      if (!actionsUsed.includes(a.id) && a.ok) {
+        a.run();
+        actionsUsed.push(a.id);
+        uiUpdate();
+        renderActions();
+        document.getElementById('act-note').textContent = 'Action registered. The market has noted your compliance.';
+      }
+    };
+    el.appendChild(btn);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// EVENT ENGINE
+// ═══════════════════════════════════════════════════════
+function pickEvent() {
+  // Scripted historical events
+  const scripted = SCRIPTED.filter(e => e.year === G.year && !G.usedYears.has(e.year + '-' + e.head.slice(0,8)));
+  if (scripted.length > 0) {
+    const ev = scripted[0];
+    G.usedYears.add(ev.year + '-' + ev.head.slice(0,8));
+    return { ...ev, scripted: true };
+  }
+
+  const nw = G.netWorth;
+  let pool = [...GENERIC_EVENTS];
+
+  // Add poor events if struggling
+  if (nw < 200000) {
+    const available = POOR_EVENTS.filter(e => !G.usedRandom.has(e.head.slice(0,12)));
+    pool = [...pool, ...available, ...available]; // weighted
+  }
+
+  // Add rich events if wealthy
+  if (nw > 150000) {
+    const available = RICH_EVENTS.filter(e => (!e.cond || e.cond(G)) && !G.usedRandom.has(e.head.slice(0,12)));
+    pool = [...pool, ...available];
+  }
+
+  const ev = pool[Math.floor(Math.random() * pool.length)];
+  G.usedRandom.add(ev.head.slice(0,12));
+  return ev;
+}
+
+function processEvent(ev) {
+  // Main fx
+  if (ev.fx) applyFxScaled(ev.fx);
+
+  // Poor/rich targeting
+  const nw = G.netWorth;
+  if (ev.poorFx && nw < 150000) applyFxScaled(ev.poorFx);
+  if (ev.richFx && nw > 500000) applyFxScaled(ev.richFx);
+
+  // Insurance-based effects
+  if (ev.insFx && ev.insFx[G.ins]) {
+    const ifx = ev.insFx[G.ins];
+    applyFxScaled(ifx);
+    if (ifx.body) document.getElementById('ev-body').textContent = ifx.body;
+  }
+
+  // Savings floor
+  G.investments = Math.max(0, G.investments);
+  G.debt = Math.max(0, G.debt);
+  G.health = Math.max(0, Math.min(100, G.health));
+  G.happiness = Math.max(0, Math.min(100, G.happiness));
+}
+
+// ═══════════════════════════════════════════════════════
+// YEARLY SYSTEM (AUTOMATIC)
+// ═══════════════════════════════════════════════════════
+function yearlySystem() {
+  // Progressive tax (simplified)
+  const taxRate = G.income < 40000 ? .14 : G.income < 90000 ? .22 : G.income < 200000 ? .28 : .33;
+  G.savings += G.income * (1 - taxRate);
+
+  // Investment growth (markets always trend up)
+  if (G.investments > 0) {
+    const growth = G.investments * (0.06 + Math.random()*.06 - Math.random()*.02);
+    G.investments += growth * (1 - 0.15); // capital gains tax (always lower than income tax)
+  }
+  G.mkt *= (1 + .07 + Math.random()*.04);
+
+  // Debt interest
+  if (G.debt > 0) {
+    const rate = G.k === 'worker' ? .19 : G.k === 'manager' ? .07 : .04;
+    const interest = G.debt * rate;
+    G.debt += interest;
+    // auto-minimum payment
+    const minPay = Math.min(G.savings * .08, interest * 1.1);
+    G.savings -= minPay;
+  }
+
+  // Living costs (rent, food, transport)
+  const living = G.k === 'worker' ? 22000 : G.k === 'manager' ? 38000 : 75000;
+  G.savings -= living;
+
+  // Insurance cost
+  if (G.ins === 'partial') G.savings -= 2400;
+  if (G.ins === 'premium') G.savings -= 7200;
+
+  // Health without insurance declines
+  if (G.ins === 'none') G.health = Math.max(0, G.health - 2.5);
+
+  // Income growth (wage stagnation for workers)
+  G.income *= (1 + CLASSES[G.k].incGrow);
+
+  // Happiness drift
+  if (G.debt > 40000) G.happiness = Math.max(0, G.happiness - 2);
+  if (G.savings < 0)  G.happiness = Math.max(0, G.happiness - 7);
+  if (G.health < 40)  G.happiness = Math.max(0, G.happiness - 4);
+
+  // Age-related health
+  G.health = Math.max(0, G.health - 1);
+}
+
+// ═══════════════════════════════════════════════════════
+// WIN/LOSE
+// ═══════════════════════════════════════════════════════
+function checkEnd() {
+  const nw = G.netWorth;
+  if (nw >= 10000000) return { end:true, won:true, reason:'billionaire' };
+  if (G.year >= 2025)  return { end:true, won: nw > 50000, reason:'timeout' };
+  if (G.health <= 0)   return { end:true, won:false, reason:'health' };
+  if (nw < -150000 && G.income < 18000) return { end:true, won:false, reason:'broke' };
+  return { end:false };
+}
+
+function showEnd(result) {
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('news-ticker').style.display = 'none';
+  const scr = document.getElementById('end-screen');
+  scr.style.display = 'flex';
+
+  const nw = G.netWorth;
+  const [tierLabel] = tier(nw);
+  const yearsPlayed = G.year - 2000;
+
+  let icon, title, titleColor, sub, card;
+
+  if (result.reason === 'billionaire') {
+    icon = '🎩'; title = 'YOU WIN!'; titleColor = 'var(--gold)';
+    sub = 'You have successfully accumulated obscene wealth.';
+    card = `
+      <strong style="color:var(--gold)">CONGRATULATIONS:</strong><br>
+      Net Worth: ${fmtMFull(nw)}<br>
+      Status: DONOR CLASS<br>
+      Starting Class: ${G.name}<br>
+      Years to Win: ${yearsPlayed}<br><br>
+      You have joined the 0.001% who control more wealth than the bottom 50% combined. 
+      Your effective tax rate is lower than your housekeeper's. Your political influence is 
+      vast. The system worked — for you.<br><br>
+      <span style="color:var(--dim);font-size:10px">${G.k === 'heir' ? 'You started with $2.4M. The game was designed for you. There is a metaphor here.' : 'Statistically, this outcome is nearly impossible. You either played brilliantly or the RNG was kind.'}</span>
+    `;
+  } else if (result.reason === 'health') {
+    icon = '💀'; title = 'YOU DIED'; titleColor = 'var(--red)';
+    sub = 'Medical bills are still pending. Estate: insolvent.';
+    card = `
+      <strong style="color:var(--red)">CAUSE OF DEATH:</strong><br>
+      Untreated health conditions, compounded by inability to afford preventive care 
+      and insufficient sick leave to recover. A routine condition became catastrophic.<br><br>
+      <strong style="color:var(--dim)">FINAL STATS:</strong><br>
+      Net Worth: ${fmtMFull(nw)}<br>
+      Outstanding Debt: ${fmtMFull(G.debt)}<br>
+      Insurance: ${G.ins.toUpperCase()}<br>
+      Years Survived: ${yearsPlayed}<br><br>
+      <span style="color:var(--dim);font-size:10px">In the U.S., medical debt is the leading cause of personal bankruptcy. 
+      You are now a data point in a statistic that politicians will cite without acting on.</span>
+    `;
+  } else if (result.reason === 'broke') {
+    icon = '📉'; title = 'BANKRUPT'; titleColor = 'var(--red)';
+    sub = 'The banks were too big to fail. You were not.';
+    card = `
+      <strong style="color:var(--red)">FINANCIAL COLLAPSE:</strong><br>
+      Your debt became unserviceable. Unlike financial institutions in 2008, you were not 
+      deemed systemically important. There was no bailout. There was a credit score impact.<br><br>
+      <strong style="color:var(--dim)">FINAL STATS:</strong><br>
+      Net Worth: ${fmtMFull(nw)}<br>
+      Total Debt: ${fmtMFull(G.debt)}<br>
+      Annual Income: ${fmtMFull(G.income)}<br>
+      Years Survived: ${yearsPlayed}<br>
+    `;
+  } else {
+    const won = result.won;
+    icon = won ? '😌' : '😔';
+    title = won ? 'SURVIVED' : 'SURVIVED (TECHNICALLY)';
+    titleColor = won ? 'var(--bright)' : 'var(--warn)';
+    sub = '25 years of the American Dream™. Here you are.';
+    card = `
+      <strong style="color:var(--gold)">25-YEAR REVIEW:</strong><br>
+      Net Worth: ${fmtMFull(nw)}<br>
+      Final Status: ${tierLabel}<br>
+      Class: ${G.name}<br>
+      Health Remaining: ${Math.round(G.health)}/100<br>
+      Happiness: ${Math.round(G.happiness)}/100<br><br>
+      ${won 
+        ? '<span style="color:var(--bright)">You accumulated meaningful wealth. You are doing considerably better than the median American. Consider what structural factors contributed to this outcome.</span>' 
+        : '<span style="color:var(--dim)">After 25 years of labor, you are approximately where you started, adjusted for inflation. This is, statistically, about average.</span>'
+      }<br><br>
+      <span style="color:var(--dim);font-size:10px">From 2000–2025, the S&P 500 grew ~650%. 
+      ${G.investments > 0 ? 'Your investments participated in this growth.' : 'You did not have money to invest. The growth happened without you.'}</span>
+    `;
+  }
+
+  document.getElementById('e-icon').textContent = icon;
+  document.getElementById('e-title').textContent = title;
+  document.getElementById('e-title').style.color = titleColor;
+  document.getElementById('e-sub').textContent = sub;
+  document.getElementById('e-card').innerHTML = card;
+}
+
+// ═══════════════════════════════════════════════════════
+// GAME LOOP
+// ═══════════════════════════════════════════════════════
+function selectClass(k, el) {
+  selectedCls = k;
+  document.querySelectorAll('.class-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const btn = document.getElementById('start-btn');
+  btn.classList.add('show');
+}
+
+function startGame() {
+  if (!selectedCls) return;
+  G = makeState(selectedCls);
+  actionsUsed = [];
+
+  document.getElementById('title-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'block';
+  document.getElementById('news-ticker').style.display = 'block';
+  document.getElementById('log-list').innerHTML = '';
+
+  const opens = {
+    worker:  { head:'WELCOME, WORKER. THE YEAR IS 2000.', body:'You begin with $1,200 in savings and $8,400 in debt. The dot-com boom is underway — for other people. The market is at an all-time high. Your wages are not. The system is functioning as designed.', impacts:[{l:'SAVINGS: $1,200',t:'bad'},{l:'DEBT: $8,400',t:'bad'},{l:'MARKET: BULLISH',t:'neu'}] },
+    manager: { head:'WELCOME, MANAGER. THE YEAR IS 2000.', body:'You have a degree, a salary, and $67,000 in student loans that will follow you for decades. You have partial health insurance, which is better than nothing. You are one medical emergency from discovering how partial "partial" really means.', impacts:[{l:'INCOME: $68K/YR',t:'neu'},{l:'STUDENT DEBT: $67K',t:'bad'},{l:'HEALTH INS: PARTIAL',t:'neu'}] },
+    heir:    { head:'WELCOME, HEIR. THE YEAR IS 2000.', body:'You have $2.4 million in savings, $1.2 million in investments, no debt, and premium healthcare. A family connection golfs with a senator. The game\'s difficulty settings have been adjusted for your comfort. You are statistically unlikely to lose this.', impacts:[{l:'NET WORTH: $3.6M',t:'good'},{l:'POLITICAL PULL: 55%',t:'good'},{l:'DIFFICULTY: TUTORIAL',t:'neu'}] },
+  };
+  const o = opens[selectedCls];
+  showEvent(o.head, o.body, o.impacts);
+  uiUpdate();
+  renderActions();
+}
+
+function nextYear() {
+  if (!G) return;
+
+  // Annual income + costs
+  yearlySystem();
+
+  G.year++;
+  actionsUsed = [];
+
+  // Check for end
+  const end = checkEnd();
+  if (end.end) { showEnd(end); return; }
+
+  // Pick and process event
+  const ev = pickEvent();
+  showEvent(ev.head, ev.body, ev.impacts);
+  processEvent(ev);
+  if (ev.log) addLog(ev.log, (ev.impacts||[]).some(i=>i.t==='bad') ? 'bad' : '');
+
+  uiUpdate();
+  renderActions();
+  document.getElementById('act-note').textContent = 'Choose wisely. The system is watching. Or indifferently grinding forward. Probably the latter.';
+}
+
+function resetGame() {
+  G = null; selectedCls = null; actionsUsed = [];
+  document.getElementById('end-screen').style.display = 'none';
+  document.getElementById('title-screen').style.display = 'flex';
+  document.getElementById('news-ticker').style.display = 'none';
+  document.getElementById('log-list').innerHTML = '';
+  document.querySelectorAll('.class-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('start-btn').classList.remove('show');
+}
+</script>
+</body>
+</html>

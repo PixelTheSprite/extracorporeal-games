@@ -1,0 +1,2718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PETAMON: Mythic Beast Kennel</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+/* ===== css: base.css ===== */
+  :root {
+    --bg: #0a0a14;
+    --panel: #12121f;
+    --panel2: #1a1a2e;
+    --border: #2a2a4a;
+    --accent: #ff3cac;
+    --accent2: #7b2fff;
+    --accent3: #00f5ff;
+    --accent4: #ffea00;
+    --gold: #ffd700;
+    --text: #e8e8ff;
+    --text-dim: #8888aa;
+    --success: #00ff88;
+    --danger: #ff4444;
+    --power-color: #ff6b35;
+    --speed-color: #00f5ff;
+    --charm-color: #ff3cac;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(123,47,255,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(255,60,172,0.08) 0%, transparent 60%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.02) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.02) 40px);
+  }
+
+  /* Scanline effect */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px);
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .title-bar {
+    text-align: center;
+    padding: 20px;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .title-bar::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(123,47,255,0.1), rgba(255,60,172,0.1), transparent);
+    animation: shimmer 3s ease-in-out infinite;
+  }
+  @keyframes shimmer { 0%,100%{opacity:0.5} 50%{opacity:1} }
+
+  .title-bar h1 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(14px, 3vw, 24px);
+    background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    filter: drop-shadow(0 0 20px rgba(255,60,172,0.5));
+    letter-spacing: 4px;
+  }
+  .title-bar p {
+    color: var(--text-dim);
+    font-size: 12px;
+    margin-top: 6px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .main-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
+    gap: 16px;
+    padding: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 900px) {
+    .main-layout { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent2), var(--accent), transparent);
+    opacity: 0.6;
+  }
+
+  .panel-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: var(--accent3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* PET DISPLAY */
+  .pet-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+  }
+
+  .pet-viewport {
+    width: 200px;
+    height: 200px;
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    background: var(--panel2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .pet-viewport:hover { border-color: var(--accent2); }
+  .pet-viewport::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 110%, rgba(123,47,255,0.15) 0%, transparent 70%);
+  }
+
+  .pet-sprite {
+    font-size: 80px;
+    line-height: 1;
+    animation: float 3s ease-in-out infinite;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 8px 20px rgba(123,47,255,0.4));
+    transition: transform 0.1s;
+    user-select: none;
+  }
+  .pet-sprite.bounce {
+    animation: bigbounce 0.4s ease-out;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+  }
+  @keyframes bigbounce {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.3) rotate(-5deg); }
+    60% { transform: scale(0.9) rotate(3deg); }
+    100% { transform: scale(1); }
+  }
+  @keyframes hatch-shake {
+    0%,100% { transform: rotate(0deg); }
+    20% { transform: rotate(-8deg) scale(1.05); }
+    40% { transform: rotate(8deg) scale(1.05); }
+    60% { transform: rotate(-6deg); }
+    80% { transform: rotate(6deg); }
+  }
+  .pet-sprite.hatching { animation: hatch-shake 0.4s ease-in-out; }
+
+  .pet-name-display {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    text-align: center;
+    text-shadow: 0 0 10px currentColor;
+  }
+  .pet-stage-badge {
+    font-size: 10px;
+    color: var(--text-dim);
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Particles */
+  .particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .particle {
+    position: absolute;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    animation: particle-rise 1s ease-out forwards;
+    opacity: 0;
+  }
+  @keyframes particle-rise {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-80px) scale(0.2); }
+  }
+
+  /* STATS */
+  .stat-row {
+    margin-bottom: 10px;
+  }
+  .stat-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }
+  .stat-bar-track {
+    height: 8px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .stat-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-bar-fill::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+    animation: bar-shine 2s linear infinite;
+  }
+  @keyframes bar-shine { from{transform:translateX(-100%)} to{transform:translateX(200%)} }
+
+  .stat-power .stat-bar-fill { background: linear-gradient(90deg, var(--power-color), #ffaa00); }
+  .stat-speed .stat-bar-fill { background: linear-gradient(90deg, #0088cc, var(--speed-color)); }
+  .stat-charm .stat-bar-fill { background: linear-gradient(90deg, var(--accent2), var(--charm-color)); }
+
+  .stat-power .stat-label span:first-child { color: var(--power-color); }
+  .stat-speed .stat-label span:first-child { color: var(--speed-color); }
+  .stat-charm .stat-label span:first-child { color: var(--charm-color); }
+
+  /* BUTTONS */
+  .btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:active { transform: scale(0.95); }
+  .btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.1);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .btn:hover::before { opacity: 1; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(255,60,172,0.3);
+  }
+  .btn-primary:hover { box-shadow: 0 6px 30px rgba(255,60,172,0.5); transform: translateY(-1px); }
+
+  .btn-power {
+    background: linear-gradient(135deg, #c45000, var(--power-color));
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(255,107,53,0.3);
+  }
+  .btn-speed {
+    background: linear-gradient(135deg, #0066aa, var(--speed-color));
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(0,245,255,0.2);
+  }
+  .btn-charm {
+    background: linear-gradient(135deg, var(--accent2), var(--charm-color));
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(255,60,172,0.3);
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, #a07000, var(--gold));
+    color: #0a0a14;
+    box-shadow: 0 4px 20px rgba(255,215,0,0.3);
+  }
+  .btn-gold:hover { box-shadow: 0 6px 30px rgba(255,215,0,0.5); transform: translateY(-1px); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text-dim);
+    border-color: var(--border);
+  }
+  .btn-outline:hover { border-color: var(--accent3); color: var(--accent3); }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .btn-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .btn-full { grid-column: 1 / -1; width: 100%; justify-content: center; }
+
+  /* XP BAR */
+  .xp-section { margin-bottom: 14px; }
+  .xp-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+  .xp-bar-track {
+    height: 10px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .xp-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent3));
+    transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 0 10px rgba(0,245,255,0.4);
+  }
+
+  /* EGG HATCH */
+  .hatch-section {
+    text-align: center;
+    padding: 20px;
+  }
+  .hatch-instruction {
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+  .hatch-progress {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: var(--accent4);
+    margin-bottom: 8px;
+  }
+
+  /* CONTEST */
+  .contest-section { }
+  .contest-card {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .contest-card:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+  }
+  .contest-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .contest-card:hover::before { opacity: 1; }
+  .contest-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .contest-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+  .contest-meta {
+    display: flex;
+    gap: 8px;
+    font-size: 10px;
+  }
+  .contest-tag {
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid;
+  }
+  .tag-power { color: var(--power-color); border-color: var(--power-color); background: rgba(255,107,53,0.1); }
+  .tag-speed { color: var(--speed-color); border-color: var(--speed-color); background: rgba(0,245,255,0.1); }
+  .tag-charm { color: var(--charm-color); border-color: var(--charm-color); background: rgba(255,60,172,0.1); }
+  .tag-all { color: var(--accent4); border-color: var(--accent4); background: rgba(255,234,0,0.1); }
+
+  /* BATTLE/CONTEST ARENA */
+  .arena-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .arena-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .arena-box {
+    background: var(--panel);
+    border: 2px solid var(--accent);
+    border-radius: 20px;
+    padding: 28px;
+    width: min(600px, 95vw);
+    box-shadow: 0 0 60px rgba(255,60,172,0.3), 0 0 120px rgba(123,47,255,0.2);
+    position: relative;
+    transform: scale(0.8);
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .arena-overlay.active .arena-box { transform: scale(1); }
+
+  .arena-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 13px;
+    text-align: center;
+    color: var(--accent4);
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px currentColor;
+    letter-spacing: 3px;
+  }
+
+  .arena-fighters {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .fighter-card {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+  }
+  .fighter-card.winner { border-color: var(--gold); box-shadow: 0 0 20px rgba(255,215,0,0.3); }
+  .fighter-card.loser { border-color: var(--danger); opacity: 0.7; }
+  .fighter-emoji { font-size: 50px; display: block; margin-bottom: 8px; }
+  .fighter-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .fighter-score {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: var(--accent3);
+  }
+
+  .vs-label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    color: var(--accent);
+    text-align: center;
+    text-shadow: 0 0 20px currentColor;
+    animation: pulse-vs 1s ease-in-out infinite;
+  }
+  @keyframes pulse-vs {
+    0%,100%{transform:scale(1)} 50%{transform:scale(1.1)}
+  }
+
+  .arena-result {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .result-text {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .result-win { color: var(--gold); text-shadow: 0 0 30px currentColor; animation: result-pop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+  .result-lose { color: var(--danger); }
+  .result-draw { color: var(--accent3); }
+  @keyframes result-pop {
+    0%{transform:scale(0.5);opacity:0} 100%{transform:scale(1);opacity:1}
+  }
+  .result-desc { font-size: 12px; color: var(--text-dim); }
+
+  .arena-log {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    max-height: 120px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 2;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .log-entry { border-bottom: 1px solid rgba(255,255,255,0.04); padding: 2px 0; }
+  .log-entry .hl { color: var(--accent3); font-weight: 700; }
+  .log-entry .hl-bad { color: var(--danger); }
+  .log-entry .hl-good { color: var(--success); }
+
+  /* NOTIFICATIONS */
+  .notif-stack {
+    position: fixed;
+    top: 20px; right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+  }
+  .notif {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    max-width: 260px;
+    animation: notif-in 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .notif.fade-out { animation: notif-out 0.3s ease forwards; }
+  @keyframes notif-in { from{transform:translateX(120%);opacity:0} to{transform:translateX(0);opacity:1} }
+  @keyframes notif-out { from{transform:translateX(0);opacity:1} to{transform:translateX(120%);opacity:0} }
+  .notif-win { border-color: var(--gold); color: var(--gold); }
+  .notif-lose { border-color: var(--danger); color: var(--danger); }
+  .notif-level { border-color: var(--accent3); color: var(--accent3); }
+  .notif-evolve { border-color: var(--accent); color: var(--accent); }
+
+  /* TROPHIES */
+  .trophy-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .trophy-item {
+    font-size: 20px;
+    padding: 4px;
+    border-radius: 6px;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    cursor: default;
+    transition: transform 0.2s;
+    position: relative;
+  }
+  .trophy-item:hover { transform: scale(1.2); }
+  .trophy-item.dim { opacity: 0.2; filter: grayscale(1); }
+
+  /* HISTORY */
+  .history-entry {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .history-result { font-weight: 700; font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+  .hr-win { background: rgba(255,215,0,0.15); color: var(--gold); }
+  .hr-lose { background: rgba(255,68,68,0.1); color: var(--danger); }
+  .hr-draw { background: rgba(0,245,255,0.1); color: var(--accent3); }
+
+  /* EVOLVE GLOW */
+  @keyframes evolve-flash {
+    0%{box-shadow:0 0 0 0 rgba(255,60,172,0.8)}
+    50%{box-shadow:0 0 60px 30px rgba(123,47,255,0.6)}
+    100%{box-shadow:0 0 0 0 rgba(255,60,172,0)}
+  }
+  .pet-viewport.evolving { animation: evolve-flash 1s ease-out; }
+
+  .evolve-notice {
+    text-align: center;
+    padding: 10px;
+    background: linear-gradient(135deg, rgba(123,47,255,0.15), rgba(255,60,172,0.15));
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 700;
+    animation: pulse-border 2s ease-in-out infinite;
+  }
+  @keyframes pulse-border {
+    0%,100%{border-color:var(--accent);box-shadow:0 0 10px rgba(255,60,172,0.2)}
+    50%{border-color:var(--accent3);box-shadow:0 0 20px rgba(0,245,255,0.3)}
+  }
+
+  /* CLOSE BTN */
+  .close-btn {
+    position: absolute;
+    top: 12px; right: 12px;
+    width: 30px; height: 30px;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  .close-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* COIN */
+  .coin-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: var(--gold);
+    background: rgba(255,215,0,0.08);
+    border: 1px solid rgba(255,215,0,0.2);
+    padding: 6px 10px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+  }
+
+  /* RENAME */
+  .name-input {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 8px 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    width: 100%;
+    margin-bottom: 8px;
+    transition: border-color 0.2s;
+  }
+  .name-input:focus { outline: none; border-color: var(--accent2); }
+
+  /* Confetti particles */
+  .confetti-container {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 1999;
+    overflow: hidden;
+  }
+  .conf {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    animation: conf-fall linear forwards;
+    opacity: 0;
+  }
+  @keyframes conf-fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  .scroll-area { max-height: 400px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+
+  .section-gap { margin-bottom: 16px; }
+
+  /* Rage click meter */
+  .click-meter { text-align: center; }
+  .click-count {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 20px;
+    color: var(--accent4);
+    text-shadow: 0 0 20px currentColor;
+    animation: pulse-count 0.5s ease-out;
+  }
+  @keyframes pulse-count { 0%{transform:scale(1.4)} 100%{transform:scale(1)} }
+
+  .bar-meter-track {
+    height: 14px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin: 6px 0;
+  }
+  .bar-meter-fill {
+    height: 100%;
+    border-radius: 7px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent4), var(--accent));
+    transition: width 0.3s;
+    position: relative;
+  }
+  .bar-meter-fill.full { background: linear-gradient(90deg, var(--gold), #ff6600, var(--gold)); box-shadow: 0 0 15px rgba(255,215,0,0.5); }
+
+/* ===== css: petamon.css ===== */
+/* PETAMON additions: room canvas, kennel, care, evolution, shop, egg chooser, responsive. */
+.main-layout { grid-template-columns: 290px 1fr 300px; max-width: 1280px; }
+.col { min-width: 0; }
+.dim-note { color: var(--text-dim); font-size: 11px; text-align: center; padding: 12px; }
+.title-count { color: var(--text-dim); font-size: 8px; }
+.section-label { font-family: 'Press Start 2P', monospace; font-size: 8px; color: var(--text-dim); letter-spacing: 2px; margin: 14px 0 6px; }
+.section-label small { font-family: 'Nunito', sans-serif; font-size: 10px; letter-spacing: 0; }
+.btn:focus-visible, .kennel-slot:focus-visible, .contest-card:focus-visible, .egg-card:focus-visible, .food-btn:focus-visible { outline: 2px solid var(--accent3); outline-offset: 2px; }
+
+/* save bar */
+.save-bar { position: relative; display: flex; gap: 6px; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+.save-bar .btn { font-size: 7px; padding: 8px 10px; min-height: 36px; }
+.save-status { font-size: 11px; color: var(--success); min-width: 160px; text-align: left; }
+
+/* room */
+.center-panel { min-width: 0; }
+.pet-stage { gap: 8px; }
+.room-wrap { width: 100%; max-width: 512px; border: 2px solid var(--border); border-radius: 14px; overflow: hidden; background: #1d1838; box-shadow: 0 0 30px rgba(123,47,255,0.15) inset; }
+#room { display: block; width: 100%; aspect-ratio: 4 / 3; image-rendering: pixelated; image-rendering: crisp-edges; cursor: grab; touch-action: none; }
+#room:active { cursor: grabbing; }
+.room-hint { font-size: 11px; color: var(--text-dim); text-align: center; min-height: 16px; }
+.hatch-instruction { margin-top: 10px; font-style: italic; }
+
+/* care buttons */
+.care-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.btn-care { background: var(--panel2); color: var(--text); border-color: var(--border); justify-content: center; padding: 12px 4px; min-height: 44px; font-size: 7px; }
+.btn-care:hover:not(:disabled) { border-color: var(--accent3); color: var(--accent3); }
+.train-grid { grid-template-columns: repeat(3, 1fr); margin-top: 0; }
+.train-grid .btn { justify-content: center; min-height: 44px; }
+.throw-btn { margin-top: 8px; min-height: 48px; font-size: 10px; animation: pulse-border 1s infinite; }
+.food-tray { display: none; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 8px; padding: 8px; background: var(--panel2); border: 1px solid var(--border); border-radius: 10px; }
+.food-tray.open { display: flex; }
+.food-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; min-width: 52px; min-height: 44px; cursor: pointer; color: var(--text); display: flex; flex-direction: column; align-items: center; transition: transform .15s, border-color .15s; }
+.food-btn:hover { transform: translateY(-2px); border-color: var(--accent); }
+.food-btn.fav { border-color: var(--accent); box-shadow: 0 0 10px rgba(255,60,172,.35); }
+.food-icon { font-size: 20px; }
+.food-count { font-size: 10px; font-weight: 700; color: var(--text-dim); }
+
+/* kennel */
+.kennel-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.kennel-slot { position: relative; background: var(--panel2); border: 1px solid var(--border); border-radius: 10px; padding: 4px 2px 6px; cursor: pointer; display: flex; flex-direction: column; align-items: center; color: var(--text); min-height: 86px; transition: border-color .15s, transform .15s; font-family: inherit; }
+.kennel-slot:hover { transform: translateY(-2px); border-color: var(--accent2); }
+.kennel-slot.active { border-color: var(--accent); box-shadow: 0 0 12px rgba(255,60,172,.35); }
+.kennel-slot img { width: 56px; height: 56px; image-rendering: pixelated; }
+.kennel-name { font-size: 10px; font-weight: 700; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; }
+.kennel-mood { position: absolute; top: 3px; right: 4px; font-size: 12px; }
+.kennel-slot.empty { border-style: dashed; color: var(--text-dim); justify-content: center; }
+.kennel-plus { font-size: 26px; line-height: 1.3; }
+
+/* needs */
+.mood-line { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 13px; margin-bottom: 10px; }
+.mood-emoji { font-size: 22px; }
+.mood-mult { margin-left: auto; font-size: 10px; color: var(--text-dim); font-weight: 700; }
+.need-hunger .stat-bar-fill { background: linear-gradient(90deg, #c45000, #ffaa00); }
+.need-clean .stat-bar-fill { background: linear-gradient(90deg, #0088cc, #7ee8ff); }
+.need-energy .stat-bar-fill { background: linear-gradient(90deg, #a07000, var(--accent4)); }
+.need-fun .stat-bar-fill { background: linear-gradient(90deg, #00a060, var(--success)); }
+.need-bond .stat-bar-fill { background: linear-gradient(90deg, var(--accent2), var(--accent)); }
+.need .stat-label span:first-child { color: var(--text); }
+.need.low .stat-label span:first-child { color: var(--danger); animation: shimmer 1s infinite; }
+.stat-bar-fill { transition: width .4s ease-out; }
+
+/* evolution */
+.evo-box { margin-top: 14px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--panel2); font-size: 11px; }
+.evo-box.ready { border-color: var(--accent); animation: pulse-border 2s infinite; }
+.evo-box.legend { text-align: center; color: var(--gold); font-weight: 900; border-color: var(--gold); }
+.evo-title { font-family: 'Press Start 2P', monospace; font-size: 8px; color: var(--accent); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.evo-silhouette { width: 32px; height: 32px; image-rendering: pixelated; }
+.evo-req { display: flex; justify-content: space-between; color: var(--danger); padding: 2px 0; font-weight: 700; }
+.evo-req.ok { color: var(--success); }
+.evo-btn { margin-top: 8px; min-height: 44px; }
+
+/* rename */
+.rename-row { display: flex; gap: 6px; margin-top: 12px; align-items: stretch; }
+.rename-row .name-input { margin: 0; flex: 1; min-width: 0; }
+.rename-row .btn { font-size: 7px; min-height: 40px; }
+
+/* contests & shop */
+.contest-card.locked { opacity: .4; cursor: not-allowed; }
+.contest-card.locked:hover { transform: none; border-color: var(--border); }
+.contest-meta { flex-wrap: wrap; }
+.tag-gold { color: var(--gold); border-color: var(--gold); background: rgba(255,215,0,.1); }
+.tag-win { color: var(--success); border-color: var(--success); background: rgba(0,255,136,.1); }
+.tag-lock { color: var(--danger); border-color: var(--danger); }
+.shop-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.04); font-size: 11px; }
+.shop-row.fav { background: linear-gradient(90deg, rgba(255,60,172,.1), transparent); }
+.shop-icon { font-size: 18px; width: 24px; text-align: center; }
+.shop-name { flex: 1; font-weight: 700; display: flex; flex-direction: column; }
+.shop-name em { color: var(--accent); font-style: normal; font-size: 9px; }
+.shop-name small { color: var(--text-dim); font-weight: 400; font-size: 9px; }
+.shop-own { color: var(--text-dim); font-size: 10px; }
+.shop-buy { font-size: 7px; padding: 8px; min-height: 36px; }
+
+/* sprites in lists */
+.mini-sprite { width: 32px; height: 32px; image-rendering: pixelated; flex-shrink: 0; }
+.lb-row { display: flex; align-items: center; gap: 6px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,.04); font-size: 11px; color: var(--text-dim); }
+.lb-row.mine { color: var(--accent3); }
+.lb-rank { font-family: 'Press Start 2P', monospace; font-size: 8px; width: 16px; text-align: center; }
+.lb-rank.r0 { color: var(--gold); } .lb-rank.r1 { color: #aaa; } .lb-rank.r2 { color: #a08050; }
+.lb-name { flex: 1; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-score { font-family: 'Press Start 2P', monospace; font-size: 8px; color: var(--accent4); }
+.history-entry .mini-sprite { width: 24px; height: 24px; }
+
+/* arena sprites */
+.fighter-sprite { width: 96px; height: 96px; image-rendering: pixelated; display: block; margin: 0 auto 6px; }
+.fighter-sprite.flip { transform: scaleX(-1); }
+
+/* egg chooser */
+.egg-box { width: min(760px, 95vw); max-height: 90vh; overflow-y: auto; }
+.egg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.egg-card { background: var(--panel2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 8px; cursor: pointer; color: var(--text); font-family: inherit; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: transform .15s, border-color .15s; }
+.egg-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+.egg-card img { width: 64px; height: 64px; image-rendering: pixelated; animation: float 3s ease-in-out infinite; }
+.egg-species { font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--accent); margin-top: 4px; }
+.egg-element { font-size: 10px; color: var(--accent3); font-weight: 700; text-align: center; }
+.egg-hint { font-size: 10px; color: var(--text-dim); font-style: italic; text-align: center; }
+
+/* responsive: tablet stacks the side columns below the room, mobile is single column */
+@media (max-width: 1024px) {
+  .main-layout { grid-template-columns: 1fr 1fr; }
+  .center-panel { grid-column: 1 / -1; order: -1; }
+}
+@media (max-width: 600px) {
+  .main-layout { grid-template-columns: 1fr; padding: 10px; }
+  .care-grid { grid-template-columns: repeat(3, 1fr); }
+  .kennel-list { grid-template-columns: repeat(3, 1fr); }
+  .save-status { min-width: 0; text-align: center; width: 100%; }
+}
+.center-panel, .kennel-list, .care-grid, .train-grid { user-select: none; -webkit-user-select: none; }
+.center-panel input { user-select: text; -webkit-user-select: text; }
+
+/* hamburger + sidebar menu */
+.title-bar .hamburger { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 2; width: 48px; height: 48px; border-radius: 10px; border: 2px solid var(--border); background: var(--panel2); cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; transition: border-color .15s, box-shadow .15s; }
+.hamburger span { display: block; width: 22px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--accent2), var(--accent)); }
+.hamburger:hover { border-color: var(--accent); box-shadow: 0 0 16px rgba(255,60,172,.35); }
+.hamburger:focus-visible { outline: 2px solid var(--accent3); outline-offset: 2px; }
+.title-bar .mute-btn { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); z-index: 2; min-width: 44px; min-height: 44px; justify-content: center; font-size: 14px; padding: 6px; }
+.side-scrim { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 940; opacity: 0; pointer-events: none; transition: opacity .25s; }
+.side-scrim.open { opacity: 1; pointer-events: all; }
+.side-menu { position: fixed; top: 0; left: 0; bottom: 0; width: min(380px, 92vw); z-index: 950; background: var(--panel); border-right: 2px solid var(--accent2); box-shadow: 8px 0 40px rgba(123,47,255,.3); display: flex; flex-direction: column; transform: translateX(-105%); transition: transform .3s cubic-bezier(0.34,1.2,0.64,1); padding-top: 56px; }
+.side-menu.open { transform: translateX(0); }
+.side-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 8px; }
+.side-title { font-family: 'Press Start 2P', monospace; font-size: 11px; background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px; }
+.side-close { position: static; width: 36px; height: 36px; }
+.side-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 16px 10px; border-bottom: 1px solid var(--border); }
+.side-tab { font-family: 'Press Start 2P', monospace; font-size: 7px; letter-spacing: 1px; min-height: 44px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel2); color: var(--text-dim); cursor: pointer; transition: all .15s; }
+.side-tab:hover { color: var(--accent3); border-color: var(--accent3); }
+.side-tab.active { color: #fff; border-color: transparent; background: linear-gradient(135deg, var(--accent2), var(--accent)); box-shadow: 0 4px 16px rgba(255,60,172,.3); }
+.side-tab:focus-visible { outline: 2px solid var(--accent3); outline-offset: 2px; }
+.side-pages { flex: 1; overflow-y: auto; padding: 14px 16px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.side-page { display: none; animation: notif-in .25s ease-out; }
+.side-page.active { display: block; }
+.side-page .kennel-list { grid-template-columns: repeat(3, 1fr); }
+.side-footer { border-top: 1px solid var(--border); padding: 12px 16px 16px; background: var(--panel2); }
+.side-footer .panel-title { margin-bottom: 8px; }
+.side-save { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.side-save .btn { font-size: 7px; justify-content: center; min-height: 44px; padding: 8px 4px; }
+.side-footer .save-status { margin-top: 8px; min-width: 0; text-align: center; font-size: 11px; color: var(--success); min-height: 14px; }
+.link-btn { background: none; border: none; color: var(--accent3); font: inherit; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 4px; }
+@media (max-width: 600px) { .title-bar { padding-top: 70px; } .title-bar .hamburger, .title-bar .mute-btn { top: 12px; transform: none; } }
+</style>
+<link rel="stylesheet" href="../../portfolio-toolbar.css">
+<style id="portfolio-toolbar-theme">
+/* Back-to-portfolio bar, themed to match this game (neon pet arcade) */
+#portfolio-toolbar {
+    --pt-bar-bg: #12121f;
+    --pt-bar-border: 2px solid #2a2a4a;
+    --pt-bar-shadow: 0 2px 16px rgba(123, 47, 255, 0.15);
+    --pt-font: 'Press Start 2P', monospace;
+    --pt-size: 9px;
+    --pt-weight: 400;
+    --pt-spacing: 1px;
+    --pt-transform: uppercase;
+    --pt-btn-bg: linear-gradient(135deg, #7b2fff, #ff3cac);
+    --pt-btn-radius: 8px;
+    --pt-btn-shadow: 0 4px 20px rgba(255, 60, 172, 0.3);
+    --pt-btn-color: #fff;
+    --pt-hover-shadow: 0 6px 30px rgba(255, 60, 172, 0.5);
+    --pt-focus: #00f5ff;
+}
+/* keep pop-up notifications clear of the bar */
+.notif-stack { top: 76px !important; }
+</style>
+<script src="../../game-versions.js" defer></script>
+<script src="../../portfolio-toolbar.js" defer></script>
+</head>
+<body style="padding-top: 56px !important;">
+    <div id="portfolio-toolbar">
+        <a href="../../index.html" class="portfolio-back-btn"><span class="portfolio-back-arrow" aria-hidden="true">←</span>Back<span class="portfolio-back-extra"> to Portfolio</span></a>
+    </div>
+
+<div class="notif-stack" id="notifStack" aria-live="polite"></div>
+<div class="confetti-container" id="confettiContainer"></div>
+
+<!-- ARENA OVERLAY -->
+<div class="arena-overlay" id="arenaOverlay">
+  <div class="arena-box">
+    <button class="close-btn" onclick="closeArena()" aria-label="Close">✕</button>
+    <div class="arena-title" id="arenaTitle">⚔️ CONTEST ARENA ⚔️</div>
+    <div class="arena-fighters" id="arenaFighters"></div>
+    <div class="arena-result" id="arenaResult"></div>
+    <div class="arena-log" id="arenaLog"></div>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="btn btn-gold" onclick="closeArena()">🏠 BACK HOME</button>
+    </div>
+  </div>
+</div>
+
+<!-- EGG CHOOSER -->
+<div class="arena-overlay" id="eggOverlay">
+  <div class="arena-box egg-box">
+    <button class="close-btn" id="eggCloseBtn" onclick="closeEggChooser()" aria-label="Close">✕</button>
+    <div class="arena-title" id="eggTitle">✦ CHOOSE YOUR EGG ✦</div>
+    <div class="egg-grid" id="eggGrid"></div>
+  </div>
+</div>
+
+<div class="title-bar">
+  <h1>✦ PETAMON ✦</h1>
+  <p>Hatch · Care · Bond · Evolve · Compete</p>
+  <button class="hamburger" id="menuBtn" onclick="openMenu()" aria-label="Open menu" aria-expanded="false" aria-controls="sideMenu"><span></span><span></span><span></span></button>
+  <button class="btn btn-outline mute-btn" id="muteBtn" onclick="toggleMute()" aria-label="Toggle sound">🔊</button>
+</div>
+
+<!-- SIDEBAR MENU -->
+<div class="side-scrim" id="sideScrim" onclick="closeMenu()"></div>
+<aside class="side-menu" id="sideMenu" aria-hidden="true" aria-label="Menu">
+  <div class="side-head">
+    <span class="side-title">✦ MENU ✦</span>
+    <button class="close-btn side-close" onclick="closeMenu()" aria-label="Close menu">✕</button>
+  </div>
+  <nav class="side-tabs" role="tablist">
+    <button class="side-tab" role="tab" data-page="kennel" onclick="showPage('kennel')">🏠 Kennel</button>
+    <button class="side-tab" role="tab" data-page="shop" onclick="showPage('shop')">🛒 Shop</button>
+    <button class="side-tab" role="tab" data-page="contests" onclick="showPage('contests')">⚔️ Contests</button>
+  </nav>
+  <div class="side-pages">
+    <section class="side-page" id="page-kennel" role="tabpanel">
+      <div class="panel-title">🏠 Kennel <span class="title-count" id="kennelCount"></span></div>
+      <div class="kennel-list" id="kennelList"></div>
+    </section>
+    <section class="side-page" id="page-shop" role="tabpanel">
+      <div class="panel-title">🛒 Shop</div>
+      <div class="coin-display">🪙 <span id="sideCoins">0</span> COINS</div>
+      <div id="shopList"></div>
+    </section>
+    <section class="side-page" id="page-contests" role="tabpanel">
+      <div class="panel-title">⚔️ Contests</div>
+      <div id="contestSection"></div>
+    </section>
+  </div>
+  <div class="side-footer">
+    <div class="panel-title">💾 Save Game</div>
+    <div class="side-save">
+      <button class="btn btn-outline" onclick="exportSave()" title="Save your kennel to a file">💾 Export</button>
+      <button class="btn btn-outline" onclick="importSave()" title="Load a kennel save file">📂 Import</button>
+      <button class="btn btn-outline" onclick="newGame()" title="Start over">🔄 New</button>
+    </div>
+    <div class="save-status" id="saveStatus" role="status"></div>
+  </div>
+</aside>
+
+<div class="main-layout">
+
+  <!-- LEFT: Kennel, needs, stats -->
+  <div class="col">
+    <div class="panel section-gap">
+      <div class="panel-title">💗 Care</div>
+      <div id="needsPanel"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">📊 Stats</div>
+      <div id="statsSection"></div>
+    </div>
+  </div>
+
+  <!-- CENTER: Room -->
+  <div class="panel center-panel">
+    <div class="pet-stage">
+      <div class="pet-name-display" id="petNameDisplay">???</div>
+      <div class="pet-stage-badge" id="petStageBadge">EGG</div>
+      <div class="room-wrap"><canvas id="room" aria-label="Your beast's room. Rub to pet, tap to play."></canvas></div>
+      <div class="room-hint" id="roomHint"></div>
+
+      <div style="width:100%">
+        <div id="hatchSection">
+          <div class="hatch-section">
+            <div class="hatch-progress" id="hatchProgress">TAPS: 0 / 15</div>
+            <div class="bar-meter-track"><div class="bar-meter-fill" id="hatchBar" style="width:0%"></div></div>
+            <div class="hatch-instruction" id="hatchHint"></div>
+          </div>
+        </div>
+
+        <div id="petControls" style="display:none">
+          <div class="coin-display">🪙 <span id="coinDisplay">0</span> COINS</div>
+
+          <div class="section-label">CARE</div>
+          <div class="care-grid">
+            <button class="btn btn-care" id="btnFeed" onclick="toggleFoodTray()">🍖 FEED</button>
+            <button class="btn btn-care" id="btnBath" onclick="startBath()">🛁 BATHE</button>
+            <button class="btn btn-care" id="btnFetch" onclick="startFetch()">🎾 FETCH</button>
+            <button class="btn btn-care" id="btnWalk" onclick="startWalk()">🌳 WALK</button>
+            <button class="btn btn-care" id="btnNap" onclick="startNap()">😴 NAP</button>
+          </div>
+          <div class="food-tray" id="foodTray"></div>
+          <button class="btn btn-gold btn-full throw-btn" id="throwBtn" onclick="fetchThrow(activePet())" style="display:none">🎾 THROW! (or Space)</button>
+
+          <div class="section-label">TRAIN <small>(−10 ⚡)</small></div>
+          <div class="btn-grid train-grid">
+            <button class="btn btn-power" onclick="trainStat('power')" id="btnPower">⚡ POWER</button>
+            <button class="btn btn-speed" onclick="trainStat('speed')" id="btnSpeed">💨 SPEED</button>
+            <button class="btn btn-charm" onclick="trainStat('charm')" id="btnCharm">✨ CHARM</button>
+          </div>
+
+          <div id="evoPanel"></div>
+
+          <div class="rename-row">
+            <input class="name-input" id="nameInput" placeholder="Name your beast..." maxlength="15" aria-label="New name">
+            <button class="btn btn-outline" onclick="renamePet()">✏️ NAME</button>
+            <button class="btn btn-outline btn-release" id="btnRelease" onclick="releasePet()" title="Release this beast">🌄</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Contests, shop, trophies, history, leaderboard -->
+  <div class="col">
+    <div class="panel section-gap">
+      <div class="panel-title">🏆 Trophies</div>
+      <div class="trophy-row" id="trophyRow"></div>
+    </div>
+    <div class="panel section-gap">
+      <div class="panel-title">🌐 Leaderboard</div>
+      <div id="leaderboard"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">📜 History</div>
+      <div class="scroll-area" id="historyList"></div>
+    </div>
+  </div>
+
+</div>
+<script>
+const DATA = {"beasts":[{"id":"dragon","species":"Dragon","element":"Fire","stages":["Emberkit","Wyrmling","Drake","Dragon","Ancient Wyrm"],"eggHint":"Warm to the touch, it smells of campfire.","bias":{"power":2,"speed":1,"charm":0},"favoriteFood":"ember_pepper","palette":{"o":"#2a0b1a","b":"#e8443a","s":"#a82a35","l":"#ff8a6a","a":"#ffd27a","A":"#ff9a3c","h":"#fff2d0","k":"#1a0a12","w":"#ffffff","p":"#ff9ab0","f":"#ff7b00","f2":"#ffe14d"},"legendPalette":{"b":"#b8203f","s":"#6e1236","l":"#ff5a6a","a":"#ffcf3a","A":"#ffb020","h":"#fff8b0"}},{"id":"phoenix","species":"Phoenix","element":"Sun","stages":["Cinderchick","Flarelet","Pyrewing","Phoenix","Sunborn Phoenix"],"eggHint":"Glows faintly, as if lit from inside.","bias":{"power":0,"speed":1,"charm":2},"favoriteFood":"sun_berry","palette":{"o":"#2e0a05","b":"#ff5a1f","s":"#c4321a","l":"#ffa04a","a":"#ffd23f","A":"#ff2e4c","y":"#ffcc33","ys":"#c98a1a","k":"#1c0602","w":"#ffffff","p":"#ff9ab0","f":"#ff7b00","f2":"#fff27a"},"legendPalette":{"b":"#ffb21f","s":"#e0641a","l":"#fff07a","A":"#ff4a1f","a":"#fff6c0"}},{"id":"griffin","species":"Griffin","element":"Sky","stages":["Gryfflet","Talonkit","Skyclaw","Griffin","Storm Griffin"],"eggHint":"Speckled like a hawk's feather.","bias":{"power":1,"speed":2,"charm":0},"favoriteFood":"sky_jerky","palette":{"o":"#24160a","a":"#8a5a32","b":"#d9a35a","s":"#9c6a32","l":"#f2cd8a","c":"#fbf6ea","cs":"#c9bfa8","W":"#8a5a32","Ws":"#5c3a1e","Wl":"#b9824c","y":"#ffc93c","ys":"#c98a1a","k":"#140c05","w":"#ffffff","p":"#ff9ab0","f":"#7ee8ff","f2":"#ffffff"},"legendPalette":{"b":"#6c7ea8","s":"#3d4a70","l":"#9fb2dc","W":"#2f3a66","Ws":"#1c2244","Wl":"#5a6ca8","c":"#eef4ff","cs":"#a8b4d0"}},{"id":"kitsune","species":"Kitsune","element":"Spirit","stages":["Kit","Twintail","Foxfire","Kitsune","Nine-Tailed Kitsune"],"eggHint":"Something inside it giggles.","bias":{"power":0,"speed":2,"charm":1},"favoriteFood":"inari_pocket","palette":{"o":"#2b1206","b":"#ff8c2b","s":"#c95a17","l":"#ffc07a","a":"#fff4e0","A":"#e8304a","k":"#1a0a05","w":"#ffffff","p":"#ff8fa8","f":"#6ad4ff","f2":"#e6faff"},"legendPalette":{"b":"#ffcf3a","s":"#d98a14","l":"#fff2a8","a":"#ffffff","A":"#7b2fff","f":"#b48cff","f2":"#f4ecff"}},{"id":"unicorn","species":"Unicorn","element":"Star","stages":["Foalet","Hornling","Moonmare","Unicorn","Celestial Unicorn"],"eggHint":"Pearly, with a tiny spiral on top.","bias":{"power":0,"speed":1,"charm":2},"favoriteFood":"star_apple","palette":{"o":"#2a1840","b":"#f6f0ff","s":"#c7b8e8","l":"#ffffff","a":"#ff8fd8","A":"#9a6cff","h":"#ffd84a","H":"#ff9f1c","k":"#2a1840","w":"#ffffff","p":"#ffb3d1","f":"#9ff0ff","f2":"#fff9c4"},"legendPalette":{"a":"#7ee8ff","A":"#ff6ad5","w":"#e8ddff"}}],"contests":[{"id":"power","name":"POWER BRAWL","icon":"⚡","stat":"power","tag":"tag-power","desc":"Pure strength showdown!","minStage":1,"reward":15},{"id":"speed","name":"SPEED DASH","icon":"💨","stat":"speed","tag":"tag-speed","desc":"Who's the fastest beast around?","minStage":1,"reward":15},{"id":"charm","name":"CHARM SHOW","icon":"💖","stat":"charm","tag":"tag-charm","desc":"Dazzle the judges. A well-loved beast shines brighter!","minStage":1,"reward":20},{"id":"all","name":"GRAND PRIX","icon":"👑","stat":"all","tag":"tag-all","desc":"All stats combined. Glory awaits!","minStage":3,"reward":50}],"foods":[{"id":"beast_bites","name":"Beast Bites","icon":"🥣","price":4,"hunger":25,"fun":0,"bond":1},{"id":"ember_pepper","name":"Ember Pepper","icon":"🌶️","price":8,"hunger":20,"fun":10,"bond":1},{"id":"sun_berry","name":"Sun Berry","icon":"🍓","price":8,"hunger":20,"fun":10,"bond":1},{"id":"sky_jerky","name":"Sky Jerky","icon":"🍖","price":8,"hunger":30,"fun":5,"bond":1},{"id":"inari_pocket","name":"Inari Pocket","icon":"🍙","price":8,"hunger":25,"fun":8,"bond":1},{"id":"star_apple","name":"Star Apple","icon":"🍎","price":8,"hunger":20,"fun":10,"bond":1},{"id":"moon_cake","name":"Moon Cake","icon":"🥮","price":20,"hunger":45,"fun":20,"bond":4}],"rivals":[{"id":"blaze","name":"Blaze","species":"dragon","power":25,"speed":15,"charm":10},{"id":"cosmo","name":"Cosmo","species":"unicorn","power":10,"speed":20,"charm":35},{"id":"titan","name":"Titan","species":"griffin","power":35,"speed":20,"charm":10},{"id":"zephyr","name":"Zephyr","species":"griffin","power":15,"speed":35,"charm":15},{"id":"lumis","name":"Lumis","species":"phoenix","power":15,"speed":20,"charm":30},{"id":"rexor","name":"Rexor","species":"dragon","power":40,"speed":10,"charm":15},{"id":"aurora","name":"Aurora","species":"kitsune","power":15,"speed":25,"charm":35},{"id":"vex","name":"Vex","species":"kitsune","power":20,"speed":35,"charm":20}],"rules":{"hatchClicks":15,"kennelSize":6,"eggPrice":80,"startCoins":30,"startFood":{"beast_bites":4},"contestEntry":5,"contestEnergy":15,"trainEnergy":10,"fetchEnergy":5,"walkEnergy":15,"napSeconds":8,"statBarMax":300,"decayPerMin":{"hunger":1,"clean":0.5,"fun":0.8,"energy":-0.6},"offlineCapMinutes":360,"offlineFloor":15,"evolve":[{"stats":45,"bond":20},{"stats":110,"bond":40},{"stats":220,"bond":60},{"stats":400,"bond":85}],"evolveMood":60},"trophies":[{"id":"win_power","icon":"⚡","title":"Win a Power Brawl"},{"id":"win_speed","icon":"💨","title":"Win a Speed Dash"},{"id":"win_charm","icon":"💖","title":"Win a Charm Show"},{"id":"win_all","icon":"👑","title":"Win the Grand Prix"},{"id":"evolve","icon":"🌟","title":"Evolve a beast"},{"id":"legend","icon":"🔥","title":"Raise a Legend"},{"id":"wins10","icon":"🏅","title":"Win 10 contests"},{"id":"bond100","icon":"💞","title":"Reach max bond with a beast"},{"id":"perfect5","icon":"🎾","title":"Make 5 perfect fetch catches"},{"id":"collector","icon":"🏰","title":"Raise all 5 species"}]};
+</script>
+<script>
+/* ===== js: state.js ===== */
+// All mutable game state. appState is saved; appState.rt (runtime) is not.
+const SAVE_VERSION = 2;
+const appState = {
+  version: SAVE_VERSION,
+  coins: 0,
+  pets: [],
+  activeId: null,
+  inventory: {},
+  trophies: {},
+  history: [],
+  wins: 0,
+  losses: 0,
+  perfectCatches: 0,
+  speciesRaised: {},
+  muted: false,
+  lastTick: Date.now(),
+  rt: null, // runtime, rebuilt by resetRuntime()
+};
+
+function resetRuntime() {
+  appState.rt = {
+    mode: 'idle',        // idle | eat | bath | sleep | fetch | walk
+    modeT: 0,            // seconds in current mode
+    modeData: {},
+    petX: 120, targetX: 120, facing: 1, walkFrame: 0, hop: 0, blinkT: 0,
+    rubbing: false, rubDist: 0, petFatigue: 0, happyT: 0,
+    particles: [],
+    pointer: null,
+    warned: {},
+  };
+}
+
+function newGameState() {
+  const keep = { muted: appState.muted };
+  Object.assign(appState, {
+    version: SAVE_VERSION, coins: registry.rule('startCoins'), pets: [], activeId: null,
+    inventory: Object.assign({}, registry.rule('startFood')), trophies: {}, history: [],
+    wins: 0, losses: 0, perfectCatches: 0, speciesRaised: {}, lastTick: Date.now(),
+  }, keep);
+  resetRuntime();
+}
+
+let petSeq = 0;
+function makePet(speciesId) {
+  const b = registry.get('beasts', speciesId);
+  return {
+    id: `p${Date.now().toString(36)}${(petSeq++).toString(36)}`,
+    speciesId, name: b.stages[0], named: false,
+    stage: 0, hatchClicks: 0,
+    stats: { power: 0, speed: 0, charm: 0 },
+    xp: 0, level: 1, bond: 0, wins: 0,
+    needs: { hunger: 80, clean: 100, energy: 100, fun: 70 },
+    born: Date.now(),
+  };
+}
+
+/* ===== js: sprite-engine.js ===== */
+// Pixel sprite engine: 32x32 grids of palette keys (not colors), so palettes can be swapped
+// (legend shimmer, rival recolors) without redrawing. Pure functions, no DOM except drawGrid().
+const SPR = 32;
+
+class Pix {
+  constructor() { this.g = Array.from({ length: SPR }, () => Array(SPR).fill(null)); }
+  set(x, y, c) {
+    x = Math.floor(x); y = Math.floor(y);
+    if (c && x >= 0 && y >= 0 && x < SPR && y < SPR) this.g[y][x] = c;
+  }
+  get(x, y) { return (x >= 0 && y >= 0 && x < SPR && y < SPR) ? this.g[y][x] : null; }
+  // Filled ellipse. shade: key for the lower part, light: key for a top-left highlight.
+  ell(cx, cy, rx, ry, c, shade, light) {
+    for (let y = Math.floor(cy - ry - 1); y <= cy + ry + 1; y++) {
+      for (let x = Math.floor(cx - rx - 1); x <= cx + rx + 1; x++) {
+        const dx = (x + 0.5 - cx) / rx, dy = (y + 0.5 - cy) / ry;
+        if (dx * dx + dy * dy > 1) continue;
+        let col = c;
+        if (shade && dy > 0.4) col = shade;
+        if (light && dy < -0.35 && dx < 0.1 && dx > -0.7) col = light;
+        this.set(x, y, col);
+      }
+    }
+  }
+  rect(x, y, w, h, c) { for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) this.set(x + i, y + j, c); }
+  // Thick line built from discs; t0 -> t1 lets limbs and tails taper.
+  line(x0, y0, x1, y1, c, t0 = 1, t1 = t0) {
+    const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) * 2));
+    for (let i = 0; i <= n; i++) {
+      const k = i / n, x = x0 + (x1 - x0) * k, y = y0 + (y1 - y0) * k, t = t0 + (t1 - t0) * k;
+      if (t <= 1) this.set(x, y, c); else this.ell(x, y, t / 2, t / 2, c);
+    }
+  }
+  // Polyline through points [[x,y],...] tapering from t0 to t1.
+  path(pts, c, t0 = 1, t1 = t0) {
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = t0 + (t1 - t0) * (i / (pts.length - 1)), b = t0 + (t1 - t0) * ((i + 1) / (pts.length - 1));
+      this.line(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], c, a, b);
+    }
+  }
+  poly(pts, c) {
+    const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+    for (let y = Math.floor(Math.min(...ys)); y <= Math.max(...ys); y++) {
+      for (let x = Math.floor(Math.min(...xs)); x <= Math.max(...xs); x++) {
+        const px = x + 0.5, py = y + 0.5; let inside = false;
+        for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+          const [xi, yi] = pts[i], [xj, yj] = pts[j];
+          if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) inside = !inside;
+        }
+        if (inside) this.set(x, y, c);
+      }
+    }
+  }
+  // Eye: 2x2 dark with a highlight; closed = a short line. big = 2x3.
+  eye(x, y, big, closed) {
+    x = Math.floor(x); y = Math.floor(y);
+    if (closed) { this.set(x, y + 1, 'k'); this.set(x + 1, y + 1, 'k'); return; }
+    this.rect(x, y, 2, big ? 3 : 2, 'k');
+    this.set(x + 1, y, 'w');
+  }
+  // Outer outline: every empty pixel touching a filled one becomes 'o'.
+  outline() {
+    const src = this.g.map(r => r.slice());
+    for (let y = 0; y < SPR; y++) for (let x = 0; x < SPR; x++) {
+      if (src[y][x]) continue;
+      const n = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => {
+        const v = (src[y + dy] || [])[x + dx]; return v && v !== 'o' && v !== 'f2';
+      });
+      if (n) this.g[y][x] = 'o';
+    }
+    return this;
+  }
+}
+
+// Paint a grid onto a canvas context. pal maps keys to CSS colors.
+function drawGrid(ctx, grid, pal, ox, oy, scale, flip = false) {
+  for (let y = 0; y < SPR; y++) for (let x = 0; x < SPR; x++) {
+    const k = grid[y][x]; if (!k) continue;
+    const col = pal[k] || '#f0f'; ctx.fillStyle = col;
+    const dx = flip ? SPR - 1 - x : x;
+    ctx.fillRect(ox + dx * scale, oy + y * scale, scale, scale);
+  }
+}
+
+// Sprite cache keyed by species/stage/pose so the render loop never re-rasterises.
+const spriteCache = new Map();
+function getSprite(speciesId, stage, pose = 'idle') {
+  const key = `${speciesId}|${stage}|${pose}`;
+  if (!spriteCache.has(key)) {
+    const p = new Pix();
+    if (stage === 0) drawEgg(p, speciesId); else BEAST_DRAWERS[speciesId](p, stage, pose);
+    spriteCache.set(key, p.outline().g);
+  }
+  return spriteCache.get(key);
+}
+
+function drawEgg(p, speciesId) {
+  p.ell(16, 19, 8, 10, 'b', 's', 'l');
+  const spots = { dragon: 'a', phoenix: 'a', griffin: 'a', kitsune: 'a', unicorn: 'a' };
+  const c = spots[speciesId] || 'a';
+  [[12, 15], [19, 13], [17, 22], [11, 23], [21, 19]].forEach(([x, y]) => p.ell(x, y, 1.6, 1.3, c));
+}
+
+/* ===== js: sprites-beasts.js ===== */
+// Species drawers. Each draws one 32x32 side-view sprite (facing right) for stage 1..5
+// (Baby, Infant, Teen, Adult, Legend). pose: 'idle' | 'blink' | 'happy' | 'walk' | 'sleep'.
+// To add a species: add it to data/beasts.json and add a drawer here under the same id.
+const GROUND = 30;
+const pick = (arr, stage) => arr[stage - 1];
+
+function eyeFor(p, x, y, stage, pose) {
+  if (pose === 'happy') { p.set(x, y + 1, 'k'); p.set(x + 1, y, 'k'); p.set(x + 2, y + 1, 'k'); return; }
+  p.eye(x, y, stage <= 2, pose === 'blink' || pose === 'sleep');
+}
+
+// Four legs (far pair darker), returns body geometry. Draw tail/far wing BEFORE calling.
+function quadBody(p, o) {
+  const cy = GROUND - o.leg - o.ry;
+  const backX = o.cx - o.rx * 0.55, frontX = o.cx + o.rx * 0.45;
+  const top = cy + o.ry * 0.3, w = o.legW || 2;
+  const step = o.pose === 'walk' ? 1 : 0;
+  // far legs
+  p.rect(backX + 2 - step, top, w, GROUND - top, 's');
+  p.rect(frontX + 2 + step, top, w, GROUND - top, 's');
+  p.ell(o.cx, cy, o.rx, o.ry, o.body || 'b', o.shade || 's', o.light || 'l');
+  // near legs + feet
+  p.rect(backX + step, top, w, GROUND - top, o.body || 'b');
+  p.rect(frontX - step, top, w, GROUND - top, o.frontLeg || o.body || 'b');
+  p.rect(backX + step, GROUND - 1, w + 1, 1, o.foot || 's');
+  p.rect(frontX - step, GROUND - 1, w + 1, 1, o.frontFoot || o.foot || 's');
+  return { cx: o.cx, cy, rx: o.rx, ry: o.ry };
+}
+
+// Small floating flame/spirit wisp used by legend forms.
+function wisp(p, x, y) {
+  p.ell(x, y + 1, 1.6, 1.6, 'f'); p.set(x, y - 1, 'f'); p.set(x + 1, y - 2, 'f'); p.set(x, y + 1, 'f2');
+}
+
+const BEAST_DRAWERS = {
+  dragon(p, s, pose) {
+    const rx = pick([5.5, 6.5, 7, 7.5, 8], s), ry = pick([5, 5, 5, 5.5, 5.5], s);
+    const leg = pick([2, 3, 3, 4, 4], s), hr = pick([5.5, 5, 4.5, 4.5, 4.5], s);
+    const neck = pick([0, 1, 2, 3, 4], s), wing = pick([0, 4, 6, 8, 10], s);
+    const horn = pick([0, 1, 2, 3, 4], s), tail = pick([5, 6, 7, 8, 9], s), cx = pick([14, 13, 13, 13, 13], s);
+    const cy = GROUND - leg - ry;
+    // tail
+    const tx = cx - rx + 1, ty = cy + 1;
+    const tpts = [[tx, ty], [tx - tail * 0.45, ty + 2], [tx - tail * 0.8, ty], [tx - tail, ty - 3]];
+    p.path(tpts, 'b', ry * 0.9, 1.5);
+    const [ex, ey] = tpts[3];
+    if (s >= 3) p.poly([[ex - 2, ey - 1], [ex + 1, ey - 3], [ex + 1, ey + 1]], 'a');
+    if (s === 5) { p.ell(ex - 1, ey - 3, 1.8, 2.2, 'f'); p.set(ex - 1, ey - 3, 'f2'); }
+    // far wing
+    if (wing) p.poly([[cx + 1, cy - ry + 2], [cx + 1 - wing * 0.3, cy - ry - wing + 1], [cx - wing * 0.7, cy - ry - wing * 0.4], [cx - 2, cy - ry + 2]], 's');
+    const g = quadBody(p, { cx, rx, ry, leg, pose, legW: s >= 3 ? 3 : 2 });
+    p.ell(cx + rx * 0.25, cy + ry * 0.35, rx * 0.6, ry * 0.45, 'a');
+    // back spikes
+    if (s >= 4) for (let i = 0; i < 3; i++) { const x = cx - 3 + i * 3; p.poly([[x, cy - ry + 1], [x + 1, cy - ry - 2], [x + 2, cy - ry + 1]], 'a'); }
+    // neck + head
+    const hx = cx + rx * 0.55 + neck * 0.6 + 1, hy = cy - ry * 0.4 - neck * 0.9 - hr * 0.5;
+    if (neck) p.line(cx + rx * 0.4, cy - ry * 0.2, hx, hy + 1, 'b', hr * 1.2, hr);
+    if (horn) {
+      p.path([[hx - hr * 0.4, hy - hr * 0.6], [hx - hr * 0.6 - horn * 0.5, hy - hr * 0.7 - horn * 0.7], [hx - hr * 0.6 - horn, hy - hr * 0.5 - horn]], 'h', 2, 1);
+      if (s === 5) p.path([[hx + 0.5, hy - hr * 0.8], [hx - 1, hy - hr - 2.5]], 'h', 2, 1);
+    }
+    p.ell(hx, hy, hr, hr * 0.9, 'b', 's', 'l');
+    p.ell(hx + hr * 0.85, hy + hr * 0.3, hr * 0.7, hr * 0.5, 'b', 's');
+    if (s >= 2) p.set(hx + hr * 1.35, hy + hr * 0.05, 'k');
+    eyeFor(p, hx - 0.5, hy - hr * 0.45, s, pose);
+    if (s <= 2) p.set(hx - 1, hy + hr * 0.3, 'p');
+    // near wing
+    if (wing) {
+      const root = [cx, cy - ry + 3], tip = [cx - wing * 0.35, cy - ry - wing];
+      p.poly([root, tip, [cx - wing * 0.95, cy - ry - wing * 0.35], [cx - wing * 0.55, cy - ry + 1], [cx - 3, cy - ry + 3]], 'A');
+      p.line(root[0], root[1], tip[0], tip[1], 'b', 1.6, 1);
+      if (wing >= 6) p.line(tip[0], tip[1], cx - wing * 0.75, cy - ry - wing * 0.1, 's');
+    }
+  },
+
+  kitsune(p, s, pose) {
+    const rx = pick([5, 5.5, 6.5, 7, 7.5], s), ry = pick([4.5, 4.5, 4.5, 5, 5], s);
+    const leg = pick([2, 3, 4, 5, 5], s), hr = pick([5.5, 5, 4.5, 4.5, 4.5], s);
+    const tails = pick([1, 2, 3, 5, 9], s), tl = pick([6, 6, 7, 8, 9], s), cx = pick([16, 15, 15, 15, 15], s);
+    const cy = GROUND - leg - ry;
+    // fanned tails behind
+    const bx = cx - rx + 2, by = cy - 1;
+    for (let i = 0; i < tails; i++) {
+      const a = tails === 1 ? 2.6 : 1.45 + (1.85 * i) / (tails - 1); // radians; pi=left, pi/2=up
+      const tl2 = tl - (tails > 3 ? (i % 2) * 2 : 0);
+      const dx = Math.cos(a), dy = -Math.sin(a);
+      const mx = bx + dx * tl2 * 0.55 - dy * 1.2, my = by + dy * tl2 * 0.55 + dx * 1.2;
+      const ex = bx + dx * tl2, ey = by + dy * tl2;
+      p.path([[bx, by], [mx, my], [ex, ey]], i % 2 ? 's' : 'b', 2.5, 3.5);
+      p.ell(ex, ey, 1.8, 1.8, 'a');
+    }
+    quadBody(p, { cx, rx, ry, leg, pose, foot: 'k' });
+    p.ell(cx + rx * 0.45, cy + ry * 0.2, rx * 0.4, ry * 0.6, 'a');
+    const hx = cx + rx * 0.7 + 1, hy = cy - ry * 0.55 - hr * 0.45;
+    const eh = pick([3, 3, 3.5, 4, 4.5], s);
+    // far ear, head, near ear
+    p.poly([[hx + 0.5, hy - hr * 0.5], [hx + hr * 0.7, hy - hr * 0.3], [hx + hr * 0.5, hy - hr - eh]], 's');
+    p.ell(hx, hy, hr, hr * 0.85, 'b', 's', 'l');
+    p.poly([[hx - hr * 0.75, hy - hr * 0.3], [hx + 0.2, hy - hr * 0.6], [hx - hr * 0.5, hy - hr - eh]], 'b');
+    p.poly([[hx - hr * 0.5, hy - hr * 0.5], [hx - 0.5, hy - hr * 0.6], [hx - hr * 0.45, hy - hr - eh + 2]], 'a');
+    // muzzle
+    p.poly([[hx + hr * 0.3, hy - 0.5], [hx + hr + 2.5, hy + hr * 0.45], [hx + hr * 0.2, hy + hr * 0.85]], 'a');
+    p.set(hx + hr + 1.6, hy + hr * 0.3, 'k');
+    p.ell(hx - hr * 0.1, hy + hr * 0.55, hr * 0.55, hr * 0.3, 'a');
+    eyeFor(p, hx, hy - hr * 0.35, s, pose);
+    if (s <= 2) p.set(hx - 1, hy + hr * 0.25, 'p');
+    if (s >= 4) { p.set(hx - 1, hy - hr * 0.75, 'A'); p.set(hx, hy - hr * 0.8, 'A'); }
+    if (s === 5) [[3, 20], [27, 4], [29, 18]].forEach(([x, y]) => wisp(p, x, y));
+  },
+
+  unicorn(p, s, pose) {
+    const rx = pick([5, 6, 6.5, 7, 7.5], s), ry = pick([4, 4, 4.5, 4.5, 5], s);
+    const leg = pick([4, 5, 6, 7, 7], s), hr = pick([4.5, 4, 3.8, 3.8, 3.8], s);
+    const neck = pick([1, 2, 3, 4, 4], s), horn = pick([1, 2, 3, 5, 6], s), cx = pick([14, 13, 13, 12, 12], s);
+    const cy = GROUND - leg - ry;
+    // tail
+    const tx = cx - rx + 1, ty = cy - ry * 0.4, tlen = pick([4, 5, 7, 8, 9], s);
+    p.path([[tx, ty], [tx - 3, ty + 1], [tx - 4, ty + tlen * 0.6], [tx - 3, ty + tlen]], 'a', 2.5, 2);
+    if (s >= 3) p.path([[tx - 1, ty + 1], [tx - 3, ty + tlen * 0.5], [tx - 2, ty + tlen]], 'A', 1);
+    if (s === 5) { // wings (celestial)
+      p.poly([[cx + 1, cy - ry + 2], [cx - 2, cy - ry - 10], [cx - 9, cy - ry - 8], [cx - 6, cy - ry + 1]], 's');
+    }
+    quadBody(p, { cx, rx, ry, leg, pose, foot: 'H', legW: 2 });
+    const hx = cx + rx * 0.6 + neck * 0.6, hy = cy - ry * 0.4 - neck * 1.1 - hr * 0.5;
+    p.line(cx + rx * 0.45, cy - ry * 0.3, hx, hy + 1, 'b', hr * 1.3, hr * 1.1);
+    // mane along neck
+    p.path([[hx - hr * 0.6, hy - hr * 0.6], [hx - hr * 0.9 - neck * 0.4, hy + neck * 0.5], [cx + rx * 0.2, cy - ry + 0.5]], 'a', 2.5, 2);
+    if (s >= 3) p.path([[hx - hr * 0.9, hy], [cx + rx * 0.3, cy - ry + 1.5]], 'A', 1);
+    p.poly([[hx - hr * 0.5, hy - hr * 0.4], [hx + 0.3, hy - hr * 0.7], [hx - hr * 0.3, hy - hr - 2.5]], 'b');
+    p.ell(hx, hy, hr, hr * 0.9, 'b', 's', 'l');
+    p.ell(hx + hr * 0.95, hy + hr * 0.45, hr * 0.7, hr * 0.55, 'b', 's');
+    p.set(hx + hr * 1.4, hy + hr * 0.5, 's');
+    // horn
+    const hbx = hx + hr * 0.15, hby = hy - hr * 0.75;
+    p.line(hbx, hby, hbx + horn * 0.45, hby - horn, 'h', 2, 1);
+    if (horn >= 3) p.set(hbx + horn * 0.2, hby - horn * 0.45, 'H');
+    p.path([[hx - hr * 0.2, hy - hr * 0.9], [hx + hr * 0.3, hy - hr * 0.3]], 'a', 1.5); // forelock
+    eyeFor(p, hx - 0.5, hy - hr * 0.25, s, pose);
+    if (s <= 2) p.set(hx - 1, hy + hr * 0.4, 'p');
+    if (s === 5) {
+      const r = [cx - 1, cy - ry + 3];
+      p.poly([r, [cx - 3, cy - ry - 11], [cx - 11, cy - ry - 9], [cx - 9, cy - ry - 3], [cx - 5, cy - ry + 1]], 'w');
+      p.line(cx - 4, cy - ry - 5, cx - 9, cy - ry - 6, 'f'); p.line(cx - 4, cy - ry - 1, cx - 8, cy - ry - 2, 'f');
+      [[25, 4], [5, 14], [28, 13]].forEach(([x, y]) => { p.set(x, y, 'f2'); p.set(x - 1, y, 'f'); p.set(x + 1, y, 'f'); p.set(x, y - 1, 'f'); p.set(x, y + 1, 'f'); });
+    }
+  },
+
+  griffin(p, s, pose) {
+    const rx = pick([5.5, 6, 6.5, 7, 7.5], s), ry = pick([5, 5, 5, 5.5, 5.5], s);
+    const leg = pick([2, 3, 4, 4, 5], s), hr = pick([5.5, 5, 4.5, 4.5, 4.5], s);
+    const neck = pick([0, 1, 2, 2, 3], s), wing = pick([3, 5, 7, 9, 11], s), cx = pick([14, 13, 13, 13, 13], s);
+    const cy = GROUND - leg - ry;
+    // lion tail with tuft
+    const tx = cx - rx + 1, ty = cy;
+    const tlen = pick([4, 5, 7, 8, 9], s);
+    p.path([[tx, ty], [tx - tlen * 0.5, ty + 1], [tx - tlen * 0.8, ty - 2], [tx - tlen, ty - 5]], 'b', 1.8, 1.5);
+    p.ell(tx - tlen, ty - 6, 1.6, 2, 'W');
+    if (wing) p.poly([[cx + 1, cy - ry + 2], [cx - wing * 0.2, cy - ry - wing + 1], [cx - wing * 0.75, cy - ry - wing * 0.45], [cx - 3, cy - ry + 2]], 'Ws');
+    quadBody(p, { cx, rx, ry, leg, pose, frontLeg: 'b', frontFoot: 'y', foot: 's' });
+    // chest ruff
+    p.ell(cx + rx * 0.55, cy - ry * 0.05, rx * 0.4, ry * 0.75, 'c', 'cs');
+    const hx = cx + rx * 0.6 + neck * 0.6 + 1, hy = cy - ry * 0.5 - neck * 0.9 - hr * 0.5;
+    if (neck) p.line(cx + rx * 0.5, cy - ry * 0.3, hx, hy + 1, 'c', hr * 1.3, hr * 1.1);
+    p.ell(hx, hy, hr, hr * 0.9, 'c', 'cs', 'w');
+    if (s >= 3) p.poly([[hx - hr * 0.6, hy - hr * 0.6], [hx - hr - 2, hy - hr - 1], [hx - hr * 0.2, hy - hr * 0.8]], 'c'); // ear tuft
+    // hooked beak
+    const bk = pick([2, 2.5, 3, 3.5, 3.5], s);
+    p.poly([[hx + hr * 0.55, hy - hr * 0.45], [hx + hr + bk, hy - 0.5], [hx + hr + bk - 0.5, hy + 2], [hx + hr * 0.5, hy + hr * 0.45]], 'y');
+    p.set(hx + hr + bk - 1, hy + 1, 'ys'); p.line(hx + hr * 0.6, hy + 0.5, hx + hr + bk - 1.5, hy + 0.5, 'ys');
+    eyeFor(p, hx - 0.5, hy - hr * 0.4, s, pose);
+    if (s <= 2) p.set(hx - 1, hy + hr * 0.3, 'p');
+    // near wing, feathered
+    if (wing) {
+      const root = [cx, cy - ry + 3], tip = [cx - wing * 0.3, cy - ry - wing];
+      const pts = [root, tip, [cx - wing * 0.9, cy - ry - wing * 0.3], [cx - wing * 0.7, cy - ry + 1], [cx - 3, cy - ry + 3]];
+      p.poly(pts, 'W');
+      for (let i = 1; i <= Math.floor(wing / 3); i++) {
+        const k = i / (wing / 3 + 1);
+        p.line(root[0] - 1 - wing * 0.55 * k, root[1] - wing * 0.8 * k, root[0] - 3 - wing * 0.6 * k, root[1] - wing * 0.25 * k, 'Wl');
+      }
+    }
+    if (s === 5) { p.path([[27, 2], [25, 6], [27, 7], [24, 12]], 'f', 1); p.path([[4, 4], [3, 8], [5, 8], [3, 12]], 'f', 1); }
+  },
+
+  phoenix(p, s, pose) {
+    const rx = pick([6, 6, 6, 6.5, 6.5], s), ry = pick([5.5, 5.5, 5, 5, 5.5], s);
+    const leg = pick([2, 3, 4, 4, 5], s), hr = pick([4.5, 4, 3.8, 3.8, 4], s);
+    const cx = pick([15, 15, 15, 15, 15], s), cy = GROUND - leg - ry;
+    const tails = pick([1, 2, 3, 4, 5], s), tl = pick([4, 6, 8, 10, 12], s), wing = pick([0, 3, 6, 9, 11], s);
+    const step = pose === 'walk' ? 1 : 0;
+    // tail feathers sweeping back-down
+    const keys = ['a', 'A', 'f', 'a', 'A'];
+    for (let i = 0; i < tails; i++) {
+      const sx = cx - rx + 2, sy = cy + 1, spread = (i - (tails - 1) / 2) * 1.6;
+      const pts = [[sx, sy], [sx - tl * 0.5, sy + 1 + spread * 0.5], [sx - tl, sy - 1 + spread]];
+      p.path(pts, keys[i], 2, 1.5);
+      if (s >= 4) { const [ex, ey] = pts[2]; p.ell(ex, ey, 1.4, 1.4, 'f2'); }
+    }
+    // far wing
+    if (wing >= 6) p.poly([[cx + 1, cy - ry + 2], [cx - 1, cy - ry - wing + 1], [cx - wing * 0.65, cy - ry - wing * 0.5], [cx - 3, cy - ry + 2]], 's');
+    // legs
+    const lt = cy + ry - 1;
+    p.rect(cx - 1 + step, lt, 1, GROUND - lt, 'y'); p.rect(cx + 2 - step, lt, 1, GROUND - lt, 'ys');
+    p.rect(cx - 1 + step, GROUND - 1, 3, 1, 'y'); p.rect(cx + 2 - step, GROUND - 1, 3, 1, 'ys');
+    p.ell(cx, cy, rx, ry, 'b', 's', 'l');
+    p.ell(cx + rx * 0.35, cy + ry * 0.2, rx * 0.5, ry * 0.6, 'a');
+    // head
+    const hx = cx + rx * 0.45, hy = cy - ry * (s === 1 ? 0.55 : 0.8) - hr * 0.5;
+    const crest = pick([1, 2, 3, 3, 5], s);
+    for (let i = 0; i < crest; i++) {
+      const a = 1.9 + i * 0.32, len = 3 + (s >= 4 ? 2 : 0) + (i === 1 ? 1 : 0);
+      p.path([[hx - 0.5, hy - hr * 0.6], [hx - 0.5 + Math.cos(a) * len, hy - hr * 0.6 - Math.sin(a) * len]], i % 2 ? 'a' : 'f', 1.5, 1);
+    }
+    p.ell(hx, hy, hr, hr * 0.9, 'b', 's', 'l');
+    p.poly([[hx + hr * 0.7, hy - 1], [hx + hr + 2.5, hy + 0.5], [hx + hr * 0.7, hy + 1.5]], 'y');
+    eyeFor(p, hx, hy - hr * 0.35, s, pose);
+    if (s <= 2) p.set(hx - 1, hy + hr * 0.3, 'p');
+    // near wing
+    if (wing < 6) p.ell(cx - 1, cy, rx * 0.55, ry * 0.5, 'A', 's');
+    else {
+      const root = [cx, cy - ry + 3], tip = [cx - 2, cy - ry - wing];
+      p.poly([root, tip, [cx - wing * 0.8, cy - ry - wing * 0.45], [cx - wing * 0.5, cy - ry + 2], [cx - 3, cy + 1]], 'A');
+      p.line(root[0], root[1], tip[0], tip[1], 'a', 1.5, 1);
+      for (let i = 0; i < 3; i++) p.set(cx - wing * 0.8 + i * 2, cy - ry - wing * 0.45 + i * 2.2, 'f');
+    }
+    if (s === 5) [[4, 6], [28, 6], [27, 16]].forEach(([x, y]) => wisp(p, x, y));
+  },
+};
+
+/* ===== js: registry.js ===== */
+// Engine-side access to content. Code asks the registry; it never reads DATA directly.
+// To add content: edit a file in src/data/ (new species also need a drawer in sprites-beasts.js).
+const registry = {
+  get(collection, id) {
+    const found = (DATA[collection] || []).find((x) => x.id === id);
+    if (!found) throw new Error(`registry: no "${id}" in "${collection}"`);
+    return found;
+  },
+  all(collection) { return DATA[collection] || []; },
+  rule(key) { return DATA.rules[key]; },
+  validate() {
+    const errs = [];
+    for (const b of this.all('beasts')) {
+      if (!BEAST_DRAWERS[b.id]) errs.push(`beast "${b.id}" has no drawer in sprites-beasts.js`);
+      if (!b.stages || b.stages.length !== 5) errs.push(`beast "${b.id}" needs exactly 5 stage names`);
+      if (!this.all('foods').some(f => f.id === b.favoriteFood)) errs.push(`beast "${b.id}" favoriteFood "${b.favoriteFood}" missing from foods.json`);
+    }
+    for (const r of this.all('rivals')) if (!BEAST_DRAWERS[r.species]) errs.push(`rival "${r.id}" uses unknown species`);
+    if ((DATA.rules.evolve || []).length !== 4) errs.push('rules.evolve needs 4 thresholds (Baby→Infant … Adult→Legend)');
+    if (errs.length) {
+      document.body.innerHTML = `<pre style="color:#ff6b6b;padding:20px;font:14px monospace">PETAMON data error:\n${errs.join('\n')}</pre>`;
+      throw new Error(errs.join('; '));
+    }
+  },
+};
+
+/* ===== js: storage.js ===== */
+// Persistence: autosave to localStorage; Export/Import a JSON save via File System Access API
+// (falls back to download / file input where the API is missing).
+const STORE_KEY = 'petamon_save_v2';
+let fileHandle = null;
+
+function serialize() {
+  const { rt, ...save } = appState;
+  return JSON.stringify(save);
+}
+
+function applySave(data) {
+  if (!data || !Array.isArray(data.pets)) throw new Error('Not a PETAMON save');
+  newGameState();
+  const { rt, ...rest } = data;
+  Object.assign(appState, rest);
+  appState.pets = appState.pets.filter(p => DATA.beasts.some(b => b.id === p.speciesId));
+  if (!appState.pets.some(p => p.id === appState.activeId)) appState.activeId = appState.pets[0]?.id || null;
+}
+
+function autosave() {
+  try { localStorage.setItem(STORE_KEY, serialize()); } catch (e) { /* storage full or blocked */ }
+}
+
+function loadAutosave() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return false;
+    applySave(JSON.parse(raw));
+    return true;
+  } catch (e) { console.warn('autosave unreadable', e); return false; }
+}
+
+async function exportSave() {
+  const text = JSON.stringify(JSON.parse(serialize()), null, 2);
+  try {
+    if (window.showSaveFilePicker) {
+      fileHandle = fileHandle || await window.showSaveFilePicker({ suggestedName: 'petamon-save.json',
+        types: [{ description: 'PETAMON save', accept: { 'application/json': ['.json'] } }] });
+      const w = await fileHandle.createWritable(); await w.write(text); await w.close();
+    } else {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+      a.download = 'petamon-save.json'; a.click(); URL.revokeObjectURL(a.href);
+    }
+    setStatus('💾 Save exported');
+  } catch (e) { if (e.name !== 'AbortError') setStatus('⚠️ Export failed: ' + e.message); }
+}
+
+async function importSave() {
+  try {
+    let text;
+    if (window.showOpenFilePicker) {
+      [fileHandle] = await window.showOpenFilePicker({ types: [{ description: 'PETAMON save', accept: { 'application/json': ['.json'] } }] });
+      text = await (await fileHandle.getFile()).text();
+    } else {
+      text = await new Promise((res, rej) => {
+        const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json';
+        inp.onchange = () => inp.files[0] ? inp.files[0].text().then(res, rej) : rej(new Error('No file'));
+        inp.click();
+      });
+    }
+    applySave(JSON.parse(text));
+    autosave(); renderAll();
+    setStatus(`📂 Loaded · ${appState.pets.length} beast${appState.pets.length === 1 ? '' : 's'}`);
+  } catch (e) { if (e.name !== 'AbortError') setStatus('⚠️ Load failed: ' + e.message); }
+}
+
+function setStatus(msg) {
+  const el = document.getElementById('saveStatus');
+  if (el) el.textContent = msg;
+}
+
+/* ===== js: fx.js ===== */
+// Notifications, confetti and tiny chiptune sound effects (WebAudio, no assets).
+function showNotif(msg, cls = '') {
+  const stack = document.getElementById('notifStack');
+  const el = document.createElement('div');
+  el.className = `notif ${cls}`;
+  el.textContent = msg;
+  stack.appendChild(el);
+  while (stack.children.length > 4) stack.firstChild.remove();
+  setTimeout(() => { el.classList.add('fade-out'); setTimeout(() => el.remove(), 300); }, 2500);
+}
+
+function spawnConfetti(colors = ['#ff3cac', '#7b2fff', '#00f5ff', '#ffea00', '#ff6b35', '#00ff88']) {
+  const container = document.getElementById('confettiContainer');
+  for (let i = 0; i < 50; i++) {
+    const c = document.createElement('div');
+    c.className = 'conf';
+    const size = 5 + Math.random() * 7;
+    c.style.cssText = `left:${Math.random() * 100}%;top:-10px;background:${colors[i % colors.length]};
+      width:${size}px;height:${size}px;border-radius:${i % 2 ? '50%' : '1px'};
+      animation-delay:${Math.random() * 0.8}s;animation-duration:${1.5 + Math.random() * 1.5}s;`;
+    container.appendChild(c);
+    setTimeout(() => c.remove(), 3500);
+  }
+}
+
+let audioCtx = null;
+// notes: array of [freqHz, durationSec]; plays them in sequence.
+function sfx(name) {
+  if (appState.muted) return;
+  const tunes = {
+    tap: [[660, 0.05]], pet: [[880, 0.04], [1175, 0.06]], eat: [[300, 0.05], [260, 0.05], [330, 0.06]],
+    happy: [[523, 0.07], [659, 0.07], [784, 0.1]], sad: [[392, 0.12], [330, 0.18]],
+    coin: [[988, 0.05], [1319, 0.12]], hatch: [[392, 0.08], [523, 0.08], [659, 0.08], [1047, 0.2]],
+    evolve: [[523, 0.1], [659, 0.1], [784, 0.1], [1047, 0.1], [1319, 0.3]], splash: [[200, 0.06], [420, 0.08]],
+    throw: [[400, 0.04], [700, 0.06]], win: [[784, 0.1], [988, 0.1], [1175, 0.1], [1568, 0.3]], bubble: [[1200, 0.03]],
+  };
+  const seq = tunes[name]; if (!seq) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    let t = audioCtx.currentTime;
+    for (const [f, d] of seq) {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = 'square'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.05, t); g.gain.exponentialRampToValueAtTime(0.001, t + d);
+      o.connect(g).connect(audioCtx.destination); o.start(t); o.stop(t + d + 0.02);
+      t += d;
+    }
+  } catch (e) { /* audio unavailable */ }
+}
+
+/* ===== js: pets.js ===== */
+// Core pet model: needs, mood, bond, XP, hatching and evolution.
+const STAGE_LABELS = ['EGG', 'BABY', 'INFANT', 'TEEN', 'ADULT', 'LEGEND'];
+const NEED_KEYS = ['hunger', 'clean', 'energy', 'fun'];
+
+const activePet = () => appState.pets.find(p => p.id === appState.activeId) || null;
+const beastOf = (pet) => registry.get('beasts', pet.speciesId);
+const statTotal = (pet) => pet.stats.power + pet.stats.speed + pet.stats.charm;
+const stageName = (pet) => pet.stage === 0 ? `${beastOf(pet).species} Egg` : beastOf(pet).stages[pet.stage - 1];
+
+function petPalette(pet) {
+  const b = beastOf(pet);
+  return pet.stage === 5 ? Object.assign({}, b.palette, b.legendPalette) : b.palette;
+}
+
+function moodScore(pet) { return NEED_KEYS.reduce((s, k) => s + pet.needs[k], 0) / NEED_KEYS.length; }
+function moodInfo(pet) {
+  const m = moodScore(pet);
+  if (m >= 85) return { label: 'Ecstatic', emoji: '😆', mult: 1.3, score: m };
+  if (m >= 60) return { label: 'Happy', emoji: '😊', mult: 1.15, score: m };
+  if (m >= 40) return { label: 'Okay', emoji: '🙂', mult: 1, score: m };
+  if (m >= 20) return { label: 'Grumpy', emoji: '😠', mult: 0.7, score: m };
+  return { label: 'Miserable', emoji: '😢', mult: 0.5, score: m };
+}
+
+function evoRequirements(pet) {
+  if (pet.stage === 0 || pet.stage >= 5) return null;
+  const t = registry.rule('evolve')[pet.stage - 1], need = registry.rule('evolveMood');
+  const mood = moodScore(pet);
+  const r = {
+    stats: { have: statTotal(pet), need: t.stats }, bond: { have: Math.floor(pet.bond), need: t.bond },
+    mood: { have: Math.floor(mood), need },
+  };
+  for (const k in r) r[k].ok = r[k].have >= r[k].need;
+  r.ready = r.stats.ok && r.bond.ok && r.mood.ok;
+  return r;
+}
+
+function clampNeeds(pet) { for (const k of NEED_KEYS) pet.needs[k] = Math.max(0, Math.min(100, pet.needs[k])); }
+function changeNeeds(pet, delta) { for (const k in delta) pet.needs[k] += delta[k]; clampNeeds(pet); }
+
+// Real-time decay for every hatched beast in the kennel. dt in seconds.
+function tickPets(dt, floor = 0) {
+  const rates = registry.rule('decayPerMin');
+  for (const pet of appState.pets) {
+    if (pet.stage === 0) continue;
+    for (const k of NEED_KEYS) {
+      const before = pet.needs[k];
+      let v = before - rates[k] * dt / 60;
+      if (floor && rates[k] > 0) v = Math.max(Math.min(before, floor), v);
+      pet.needs[k] = v;
+    }
+    clampNeeds(pet);
+    const rt = appState.rt, low = NEED_KEYS.find(k => pet.needs[k] < 20 && k !== 'energy');
+    const key = pet.id + low;
+    if (low && !rt.warned[key]) {
+      rt.warned[key] = true;
+      const what = { hunger: 'is hungry', clean: 'needs a bath', fun: 'is bored' }[low];
+      showNotif(`${pet.name} ${what}!`, 'notif-lose');
+    }
+    for (const k of NEED_KEYS) if (pet.needs[k] > 40) delete rt.warned[pet.id + k];
+  }
+}
+
+function catchUpOffline() {
+  const mins = Math.min(registry.rule('offlineCapMinutes'), (Date.now() - appState.lastTick) / 60000);
+  if (mins > 0.2) tickPets(mins * 60, registry.rule('offlineFloor'));
+  if (mins > 10 && appState.pets.some(p => p.stage > 0)) showNotif('🌙 Your beasts missed you!', 'notif-level');
+  appState.lastTick = Date.now();
+}
+
+function addCoins(n) { appState.coins = Math.max(0, appState.coins + n); }
+
+function addXP(pet, n) {
+  pet.xp += n;
+  let need = pet.level * 20;
+  while (pet.xp >= need) {
+    pet.xp -= need; pet.level++; addCoins(10);
+    showNotif(`🎉 ${pet.name} reached Lv.${pet.level}! +10 coins`, 'notif-level');
+    need = pet.level * 20;
+  }
+}
+
+function addBond(pet, n) {
+  pet.bond = Math.min(100, pet.bond + n);
+  if (pet.bond >= 100) unlockTrophy('bond100');
+}
+
+function unlockTrophy(id) {
+  if (appState.trophies[id]) return;
+  appState.trophies[id] = true;
+  const t = registry.get('trophies', id);
+  showNotif(`${t.icon} Trophy: ${t.title}!`, 'notif-evolve');
+}
+
+function hatch(pet) {
+  pet.stage = 1;
+  pet.name = beastOf(pet).stages[0];
+  pet.stats = { power: 5, speed: 5, charm: 5 };
+  for (const k in beastOf(pet).bias) pet.stats[k] += beastOf(pet).bias[k] * 2;
+  pet.needs = { hunger: 70, clean: 90, energy: 90, fun: 70 };
+  appState.speciesRaised[pet.speciesId] = true;
+  if (registry.all('beasts').every(b => appState.speciesRaised[b.id])) unlockTrophy('collector');
+  spawnConfetti(); sfx('hatch');
+  showNotif(`🥚 A ${beastOf(pet).species} hatched! Give it a name.`, 'notif-level');
+}
+
+function evolve(pet) {
+  const req = evoRequirements(pet);
+  if (!req || !req.ready) return false;
+  const oldName = stageName(pet);
+  pet.stage++;
+  if (!pet.named) pet.name = stageName(pet);
+  spawnConfetti(); sfx('evolve');
+  showNotif(`💫 ${oldName} evolved into ${stageName(pet)}!`, 'notif-evolve');
+  unlockTrophy('evolve');
+  if (pet.stage === 5) unlockTrophy('legend');
+  appState.rt.flash = 1.2;
+  return true;
+}
+
+/* ===== js: room.js ===== */
+// The pet's room: canvas render loop, idle wandering, pointer input (tap, rub), particles.
+// Mode-specific behaviour lives in MODES (care.js); this file calls their update/draw hooks.
+const ROOM_W = 256, ROOM_H = 192, FLOOR = 166, SC = 4;
+let roomCtx = null, roomBg = null, lastFrame = 0;
+
+const HEART = ['.X.X.', 'XXXXX', 'XXXXX', '.XXX.', '..X..'];
+const SPARK = ['..X..', '.XXX.', 'XXXXX', '.XXX.', '..X..'];
+
+function initRoom() {
+  const cv = document.getElementById('room');
+  cv.width = ROOM_W; cv.height = ROOM_H;
+  roomCtx = cv.getContext('2d');
+  roomCtx.imageSmoothingEnabled = false;
+  roomBg = buildRoomBg();
+  cv.addEventListener('pointerdown', onRoomDown);
+  cv.addEventListener('pointermove', onRoomMove);
+  cv.addEventListener('pointerup', onRoomUp);
+  cv.addEventListener('pointercancel', onRoomUp);
+  cv.addEventListener('pointerleave', () => { appState.rt.rubbing = false; });
+  requestAnimationFrame(roomFrame);
+}
+
+function buildRoomBg() {
+  const c = document.createElement('canvas'); c.width = ROOM_W; c.height = ROOM_H;
+  const x = c.getContext('2d');
+  x.fillStyle = '#1d1838'; x.fillRect(0, 0, ROOM_W, ROOM_H);
+  x.fillStyle = '#231d44'; for (let i = 0; i < ROOM_W; i += 16) x.fillRect(i, 0, 8, 120); // wallpaper stripes
+  x.fillStyle = '#2d2552'; x.fillRect(0, 112, ROOM_W, 8);                                 // skirting
+  // window with stars
+  x.fillStyle = '#3a2f66'; x.fillRect(22, 18, 52, 44);
+  x.fillStyle = '#0b0b24'; x.fillRect(26, 22, 44, 36);
+  x.fillStyle = '#3a2f66'; x.fillRect(47, 22, 2, 36); x.fillRect(26, 39, 44, 2);
+  x.fillStyle = '#fff6b0'; [[31, 27], [58, 31], [37, 48], [64, 50], [53, 26]].forEach(([a, b]) => x.fillRect(a, b, 2, 2));
+  x.fillStyle = '#ffe680'; x.fillRect(60, 44, 6, 6); x.fillStyle = '#0b0b24'; x.fillRect(62, 43, 5, 5); // moon
+  // shelf with a trophy
+  x.fillStyle = '#4a3a7a'; x.fillRect(176, 52, 56, 4);
+  x.fillStyle = '#ffd700'; x.fillRect(190, 40, 8, 8); x.fillRect(193, 48, 2, 4);
+  x.fillStyle = '#ff3cac'; x.fillRect(210, 42, 10, 10); x.fillStyle = '#7b2fff'; x.fillRect(222, 46, 6, 6);
+  // floor planks
+  x.fillStyle = '#3b2a4e'; x.fillRect(0, 120, ROOM_W, ROOM_H - 120);
+  x.fillStyle = '#33243f'; for (let y = 128; y < ROOM_H; y += 10) x.fillRect(0, y, ROOM_W, 2);
+  // rug
+  x.fillStyle = '#5a2d6e';
+  for (let y = 0; y < 24; y++) { const w = Math.sqrt(1 - ((y - 12) / 12) ** 2) * 90; x.fillRect(128 - w, 148 + y, w * 2, 1); }
+  x.fillStyle = '#7b3f8f';
+  for (let y = 0; y < 16; y++) { const w = Math.sqrt(1 - ((y - 8) / 8) ** 2) * 66; x.fillRect(128 - w, 152 + y, w * 2, 1); }
+  return c;
+}
+
+// ---------- input ----------
+function roomPoint(e) {
+  const r = e.target.getBoundingClientRect();
+  return { x: (e.clientX - r.left) * ROOM_W / r.width, y: (e.clientY - r.top) * ROOM_H / r.height };
+}
+
+function petDrawPos() {
+  const rt = appState.rt, pet = activePet();
+  const hopY = rt.hop > 0 ? -Math.sin((rt.hop / 0.45) * Math.PI) * 12 : 0;
+  const shake = pet && pet.stage === 0 && rt.hop > 0 ? Math.sin(rt.hop * 60) * 3 : 0;
+  return { x: Math.round(rt.petX - 16 * SC + shake), y: Math.round(FLOOR - 31 * SC + hopY) };
+}
+
+function hitPet(pt) {
+  const pet = activePet(); if (!pet) return false;
+  const { x, y } = petDrawPos();
+  const grid = getSprite(pet.speciesId, pet.stage);
+  const sx0 = Math.floor((pt.x - x) / SC), sy = Math.floor((pt.y - y) / SC);
+  for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+    let sx = sx0 + dx; if (appState.rt.facing < 0) sx = SPR - 1 - sx;
+    const row = grid[sy + dy]; if (row && row[sx]) return true;
+  }
+  return false;
+}
+
+function onRoomDown(e) {
+  e.target.setPointerCapture?.(e.pointerId);
+  const p = roomPoint(e);
+  appState.rt.pointer = { ...p, sx: p.x, sy: p.y, t: performance.now(), moved: 0 };
+}
+
+function onRoomMove(e) {
+  const rt = appState.rt, ptr = rt.pointer;
+  if (!ptr) return;
+  const p = roomPoint(e), d = Math.hypot(p.x - ptr.x, p.y - ptr.y);
+  ptr.moved += d; ptr.x = p.x; ptr.y = p.y;
+  const pet = activePet();
+  if (!pet || pet.stage === 0 || ptr.moved < 6) return;
+  const m = MODES[rt.mode];
+  if (hitPet(p) && m && m.onRub) {
+    rt.rubbing = true; rt.rubDist += d;
+    if (rt.rubDist > 28) { rt.rubDist = 0; m.onRub(pet, p); }
+  } else rt.rubbing = false;
+}
+
+function onRoomUp(e) {
+  const rt = appState.rt, ptr = rt.pointer;
+  rt.pointer = null; rt.rubbing = false;
+  if (!ptr || ptr.moved > 8 || performance.now() - ptr.t > 400) return;
+  const pet = activePet(); if (!pet) return;
+  const p = { x: ptr.x, y: ptr.y }, m = MODES[rt.mode];
+  if (m && m.onTap) m.onTap(pet, p, hitPet(p));
+}
+
+// ---------- particles ----------
+function addParticle(type, x, y, opts = {}) {
+  appState.rt.particles.push(Object.assign({ type, x, y, vx: (Math.random() - 0.5) * 20, vy: -30, life: 1, max: 1, color: '#ff5c9a' }, opts));
+}
+
+function drawPattern(ctx, pat, x, y, s, color) {
+  ctx.fillStyle = color;
+  pat.forEach((row, j) => [...row].forEach((c, i) => { if (c === 'X') ctx.fillRect(Math.round(x + i * s), Math.round(y + j * s), s, s); }));
+}
+
+function updateParticles(dt) {
+  const ps = appState.rt.particles;
+  for (const p of ps) { p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt; if (p.grav) p.vy += p.grav * dt; }
+  appState.rt.particles = ps.filter(p => p.life > 0);
+}
+
+function drawParticles(ctx) {
+  for (const p of appState.rt.particles) {
+    ctx.globalAlpha = Math.min(1, p.life / p.max * 1.5);
+    if (p.type === 'heart') drawPattern(ctx, HEART, p.x, p.y, 2, p.color);
+    else if (p.type === 'spark') drawPattern(ctx, SPARK, p.x, p.y, 1, p.color);
+    else if (p.type === 'bubble') { ctx.strokeStyle = '#bff4ff'; ctx.lineWidth = 1; ctx.strokeRect(Math.round(p.x), Math.round(p.y), p.size || 5, p.size || 5); ctx.fillStyle = '#fff'; ctx.fillRect(Math.round(p.x) + 1, Math.round(p.y) + 1, 1, 1); }
+    else if (p.type === 'dot') { ctx.fillStyle = p.color; ctx.fillRect(Math.round(p.x), Math.round(p.y), 2, 2); }
+    else if (p.type === 'text') {
+      ctx.font = `${p.size || 8}px "Press Start 2P", monospace`; ctx.textAlign = 'center';
+      ctx.fillStyle = '#000'; ctx.fillText(p.text, Math.round(p.x) + 1, Math.round(p.y) + 1);
+      ctx.fillStyle = p.color; ctx.fillText(p.text, Math.round(p.x), Math.round(p.y));
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ---------- pet movement helpers (used by modes) ----------
+function moveToward(tx, speed, dt) {
+  const rt = appState.rt, d = tx - rt.petX;
+  if (Math.abs(d) < 1.5) { rt.petX = tx; rt.moving = false; return true; }
+  rt.facing = Math.sign(d); rt.moving = true;
+  rt.petX += Math.sign(d) * Math.min(Math.abs(d), speed * dt);
+  return false;
+}
+
+function hopPet() { appState.rt.hop = 0.45; }
+
+// Deterministic dirt specks on body pixels, more as the pet gets dirtier.
+const dirtCache = new Map();
+function dirtSpots(pet) {
+  const key = pet.id + pet.stage;
+  if (!dirtCache.has(key)) {
+    const g = getSprite(pet.speciesId, pet.stage), cells = [];
+    for (let y = 8; y < 28; y++) for (let x = 2; x < 30; x++) if (g[y][x] && g[y][x] !== 'o' && g[y][x] !== 'k') cells.push([x, y]);
+    let seed = [...pet.id].reduce((a, c) => a * 31 + c.charCodeAt(0), 7) >>> 0;
+    const rnd = () => ((seed = (seed * 1103515245 + 12345) >>> 0) / 4294967296);
+    const out = []; for (let i = 0; i < 12 && cells.length; i++) out.push(cells.splice(Math.floor(rnd() * cells.length), 1)[0]);
+    dirtCache.set(key, out);
+  }
+  return dirtCache.get(key);
+}
+
+// ---------- main loop ----------
+function roomFrame(ts) {
+  const dt = Math.min(0.1, (ts - (lastFrame || ts)) / 1000); lastFrame = ts;
+  try { updateRoom(dt); drawRoom(); } catch (e) { console.error(e); }
+  requestAnimationFrame(roomFrame);
+}
+
+function updateRoom(dt) {
+  const rt = appState.rt, pet = activePet();
+  rt.modeT += dt; rt.hop = Math.max(0, rt.hop - dt); rt.happyT = Math.max(0, rt.happyT - dt);
+  rt.petFatigue = Math.max(0, rt.petFatigue - dt * 0.05);
+  rt.blinkT -= dt; if (rt.blinkT < -0.15) rt.blinkT = 2 + Math.random() * 3;
+  if (rt.flash) rt.flash = Math.max(0, rt.flash - dt);
+  rt.moving = false;
+  if (pet) {
+    const m = MODES[rt.mode];
+    if (m && m.update) m.update(pet, dt);
+  }
+  if (rt.moving) { rt.walkT = (rt.walkT || 0) + dt; if (rt.walkT > 0.16) { rt.walkT = 0; rt.walkFrame ^= 1; } }
+  updateParticles(dt);
+}
+
+function petPose(pet) {
+  const rt = appState.rt;
+  if (rt.poseOverride) return rt.poseOverride;
+  if (rt.happyT > 0 || rt.rubbing) return 'happy';
+  if (rt.moving) return rt.walkFrame ? 'walk' : 'idle';
+  if (rt.blinkT < 0) return 'blink';
+  return moodScore(pet) < 25 && Math.floor(rt.modeT * 2) % 6 === 0 ? 'blink' : 'idle';
+}
+
+function drawRoom() {
+  const ctx = roomCtx, rt = appState.rt, pet = activePet();
+  const m = MODES[rt.mode];
+  if (m && m.drawBg) m.drawBg(ctx); else ctx.drawImage(roomBg, 0, 0);
+  if (!pet) { drawParticles(ctx); return; }
+  if (m && m.drawBehind) m.drawBehind(ctx, pet);
+  const pos = petDrawPos();
+  // shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  const sw = pet.stage === 0 ? 30 : 22 + pet.stage * 6;
+  ctx.fillRect(Math.round(rt.petX - sw), FLOOR + 2, sw * 2, 3);
+  // legend aura
+  if (pet.stage === 5) {
+    const r = 70 + Math.sin(performance.now() / 300) * 6;
+    const g = ctx.createRadialGradient(rt.petX, FLOOR - 60, 10, rt.petX, FLOOR - 60, r);
+    g.addColorStop(0, 'rgba(255,230,120,0.35)'); g.addColorStop(1, 'rgba(255,230,120,0)');
+    ctx.fillStyle = g; ctx.fillRect(rt.petX - r, FLOOR - 60 - r, r * 2, r * 2);
+  }
+  const breathe = !rt.moving && rt.hop === 0 && Math.floor(performance.now() / 600) % 2 ? 1 : 0;
+  const grid = getSprite(pet.speciesId, pet.stage, pet.stage === 0 ? 'idle' : petPose(pet));
+  const pal = petPalette(pet), flip = rt.facing < 0;
+  drawGrid(ctx, grid, pal, pos.x, pos.y + breathe, SC, flip);
+  if (pet.stage === 0) drawEggCracks(ctx, pet, pos);
+  else if (pet.needs.clean < 70) {
+    const n = Math.min(12, Math.floor((70 - pet.needs.clean) / 6) + 1);
+    ctx.fillStyle = '#5b3a1e';
+    dirtSpots(pet).slice(0, n).forEach(([x, y]) => ctx.fillRect(pos.x + (flip ? SPR - 1 - x : x) * SC, pos.y + breathe + y * SC, SC, SC));
+    if (pet.needs.clean < 25 && Math.random() < 0.05) addParticle('dot', rt.petX + (Math.random() - 0.5) * 40, pos.y + 40, { color: '#8a9a3a', vy: -15, life: 1 });
+  }
+  if (m && m.drawFront) m.drawFront(ctx, pet);
+  drawParticles(ctx);
+  if (rt.flash) { ctx.fillStyle = `rgba(255,255,255,${Math.min(1, rt.flash)})`; ctx.fillRect(0, 0, ROOM_W, ROOM_H); }
+}
+
+function drawEggCracks(ctx, pet, pos) {
+  const prog = pet.hatchClicks / registry.rule('hatchClicks');
+  const pts = [[16, 10], [14, 13], [17, 15], [13, 18], [16, 20], [12, 23], [15, 26]];
+  const n = Math.floor(prog * pts.length);
+  ctx.fillStyle = '#1a0a12';
+  for (let i = 0; i < n; i++) {
+    const [x, y] = pts[i];
+    ctx.fillRect(pos.x + x * SC, pos.y + y * SC, SC, SC); ctx.fillRect(pos.x + (x + 1) * SC, pos.y + (y + 1) * SC, SC, SC);
+  }
+}
+
+/* ===== js: care.js ===== */
+// Care actions and room modes (idle, eat, bath, sleep, fetch, walk).
+// Each mode: { update(pet, dt), onTap(pet, pt, onPet), onRub(pet, pt), drawBg/drawBehind/drawFront(ctx, pet) }.
+
+function setMode(mode, data = {}) {
+  const rt = appState.rt;
+  rt.mode = mode; rt.modeT = 0; rt.modeData = data; rt.poseOverride = null;
+  renderActions();
+}
+function endMode() { setMode('idle'); renderAll(); autosave(); }
+const busy = () => appState.rt.mode !== 'idle';
+
+function textPop(text, color = '#ffea00', x) {
+  addParticle('text', x ?? appState.rt.petX, FLOOR - 120, { text, color, vx: 0, vy: -18, life: 1.4, max: 1.4 });
+}
+
+const MODES = {
+  idle: {
+    update(pet, dt) {
+      const rt = appState.rt;
+      if (pet.stage === 0) { rt.petX = 128; return; }
+      if (rt.rubbing) return;
+      if (rt.callX != null) { if (moveToward(rt.callX, 70, dt)) { rt.callX = null; rt.happyT = 0.6; } return; }
+      rt.idleT = (rt.idleT ?? 2) - dt;
+      if (rt.idleT <= 0) {
+        rt.idleT = 2 + Math.random() * 4;
+        const energetic = pet.needs.energy > 30;
+        rt.targetX = energetic ? 50 + Math.random() * 156 : rt.petX;
+      }
+      moveToward(rt.targetX, pet.needs.energy > 30 ? 28 : 12, dt);
+      // grumpy beasts show it
+      if (moodScore(pet) < 30 && Math.random() < dt * 0.3) addParticle('text', rt.petX + 30, FLOOR - 110, { text: '💢', color: '#fff', vy: -8, vx: 0, life: 1.2, max: 1.2, size: 10 });
+    },
+    onTap(pet, pt, onPet) {
+      const rt = appState.rt;
+      if (pet.stage === 0) { if (onPet) hatchClick(pet); return; }
+      if (onPet) {
+        hopPet(); rt.happyT = 0.6; sfx('tap');
+        addParticle('heart', rt.petX - 4, FLOOR - 110, { life: 0.9, max: 0.9 });
+      } else { rt.callX = Math.max(40, Math.min(216, pt.x)); textPop('!', '#fff', rt.petX + 20); sfx('tap'); }
+    },
+    onRub(pet, pt) {
+      const rt = appState.rt, gain = 1 / (1 + rt.petFatigue);
+      addBond(pet, 0.5 * gain); changeNeeds(pet, { fun: 2 * gain });
+      rt.petFatigue += 0.12; rt.happyT = 0.5;
+      rt.facing = pt.x > rt.petX ? 1 : -1;
+      addParticle('heart', pt.x - 5, pt.y - 10, { vy: -40, life: 0.9, max: 0.9, color: gain > 0.5 ? '#ff5c9a' : '#c890a8' });
+      if (Math.random() < 0.5) sfx('pet');
+      renderLive();
+    },
+  },
+
+  eat: {
+    update(pet, dt) {
+      const rt = appState.rt, d = rt.modeData;
+      if (!d.arrived) { d.arrived = moveToward(d.spot, 40, dt); return; }
+      rt.facing = d.bowlX > rt.petX ? 1 : -1;
+      d.t = (d.t || 0) + dt;
+      rt.poseOverride = Math.floor(d.t * 5) % 2 ? 'blink' : 'happy';
+      if (Math.random() < dt * 8) addParticle('dot', d.bowlX + (Math.random() - 0.5) * 10, FLOOR - 8, { color: '#e8c070', vy: -30, grav: 120, life: 0.6 });
+      if (d.t > 0.15 && !d.sound) { d.sound = 1; sfx('eat'); }
+      if (d.t > 2) {
+        const f = d.food, fav = beastOf(pet).favoriteFood === f.id;
+        changeNeeds(pet, { hunger: f.hunger, fun: f.fun + (fav ? 8 : 0) });
+        addBond(pet, f.bond * (fav ? 3 : 1)); addXP(pet, 1);
+        textPop(fav ? 'YUM!! ♥' : 'Yum!', fav ? '#ff5c9a' : '#ffea00');
+        if (fav) { sfx('happy'); hopPet(); showNotif(`${f.icon} ${pet.name} LOVES ${f.name}!`, 'notif-win'); }
+        endMode();
+      }
+    },
+    drawFront(ctx) {
+      const d = appState.rt.modeData, x = Math.round(d.bowlX);
+      ctx.fillStyle = '#2a1a3a'; ctx.fillRect(x - 13, FLOOR - 9, 26, 11);
+      ctx.fillStyle = '#ff3cac'; ctx.fillRect(x - 12, FLOOR - 8, 24, 9);
+      ctx.fillStyle = '#ff8acb'; ctx.fillRect(x - 12, FLOOR - 8, 24, 2);
+      if ((d.t || 0) < 1.8) { ctx.fillStyle = '#e8c070'; ctx.fillRect(x - 9, FLOOR - 12, 18, 4); ctx.fillStyle = '#b8803a'; ctx.fillRect(x - 6, FLOOR - 13, 4, 2); ctx.fillRect(x + 2, FLOOR - 12, 4, 2); }
+    },
+  },
+
+  bath: {
+    update(pet, dt) {
+      const rt = appState.rt;
+      moveToward(128, 50, dt);
+      if (Math.random() < dt * 3) addParticle('bubble', 70 + Math.random() * 116, FLOOR - 4, { vy: -20, vx: 0, life: 1.2, max: 1.2, size: 3 });
+      if (pet.needs.clean >= 100 && !rt.modeData.done) {
+        rt.modeData.done = true;
+        addBond(pet, 2); addXP(pet, 2); changeNeeds(pet, { fun: 3 });
+        sfx('splash'); hopPet(); textPop('SPARKLY!', '#7ee8ff');
+        for (let i = 0; i < 8; i++) addParticle('spark', 90 + Math.random() * 76, FLOOR - 40 - Math.random() * 70, { color: '#fff', vy: -10, life: 0.9, max: 0.9 });
+        showNotif(`🛁 ${pet.name} is squeaky clean!`, 'notif-level');
+        setTimeout(() => { if (appState.rt.mode === 'bath') endMode(); }, 900);
+      }
+    },
+    onRub(pet, pt) {
+      changeNeeds(pet, { clean: 4 });
+      for (let i = 0; i < 3; i++) addParticle('bubble', pt.x + (Math.random() - 0.5) * 16, pt.y + (Math.random() - 0.5) * 10, { vy: -25 - Math.random() * 20, life: 0.9, max: 0.9, size: 3 + Math.floor(Math.random() * 4) });
+      if (Math.random() < 0.4) sfx('bubble');
+      renderLive();
+    },
+    onTap(pet, pt, onPet) { if (onPet) this.onRub(pet, pt); },
+    drawFront(ctx) {
+      ctx.fillStyle = 'rgba(126,232,255,0.45)'; ctx.fillRect(48, FLOOR - 14, 160, 22);
+      ctx.fillStyle = '#e8e8ff'; ctx.fillRect(44, FLOOR - 16, 168, 3); ctx.fillRect(44, FLOOR - 16, 4, 26); ctx.fillRect(208, FLOOR - 16, 4, 26);
+      ctx.fillStyle = '#bff4ff'; for (let i = 0; i < 9; i++) ctx.fillRect(56 + i * 17, FLOOR - 15 + (i % 2), 6, 2);
+    },
+  },
+
+  sleep: {
+    update(pet, dt) {
+      const rt = appState.rt;
+      rt.poseOverride = 'sleep';
+      changeNeeds(pet, { energy: 7 * dt });
+      rt.modeData.z = (rt.modeData.z || 0) + dt;
+      if (rt.modeData.z > 0.7) { rt.modeData.z = 0; addParticle('text', rt.petX + 30, FLOOR - 90, { text: 'z', color: '#bfb8ff', vx: 8, vy: -16, life: 1.6, max: 1.6 }); }
+      if (rt.modeT > registry.rule('napSeconds')) { showNotif(`😴 ${pet.name} feels rested!`, 'notif-level'); addBond(pet, 0.5); endMode(); }
+    },
+    onTap() { textPop('shh...', '#bfb8ff'); },
+    drawBehind(ctx) { ctx.fillStyle = 'rgba(5,5,25,0.55)'; ctx.fillRect(0, 0, ROOM_W, ROOM_H); },
+  },
+
+  fetch: {
+    update(pet, dt) {
+      const rt = appState.rt, d = rt.modeData;
+      const speed = Math.min(170, 60 + pet.stats.speed * 0.5);
+      if (d.phase === 'aim') {
+        moveToward(44, 60, dt); if (!rt.moving) rt.facing = 1;
+        d.needle += d.dir * dt * (1.1 + d.throws * 0.25);
+        if (d.needle > 1) { d.needle = 1; d.dir = -1; } if (d.needle < 0) { d.needle = 0; d.dir = 1; }
+      } else if (d.phase === 'fly') {
+        d.t += dt / 0.9;
+        const b = d.ball, k = Math.min(1, d.t);
+        b.x = b.x0 + (b.x1 - b.x0) * k; b.y = FLOOR - 40 - Math.sin(k * Math.PI) * 60 + k * 34;
+        const arrived = moveToward(b.x1 - 20, speed, dt);
+        if (d.perfect && arrived && k > 0.75 && !d.caught) { d.caught = true; hopPet(); rt.happyT = 0.8; }
+        if (k >= 1) {
+          if (d.perfect || d.caught) { d.caught = true; hopPet(); }
+          else sfx('tap');
+          d.phase = 'chase';
+        }
+      } else if (d.phase === 'chase') {
+        if (moveToward(d.ball.x1 - 20, speed, dt)) { d.caught = true; d.phase = 'return'; }
+      } else if (d.phase === 'return') {
+        if (moveToward(44, speed * 0.8, dt)) {
+          rt.facing = 1; d.throws++;
+          changeNeeds(pet, { energy: -registry.rule('fetchEnergy'), hunger: -2 });
+          if (d.perfect) {
+            changeNeeds(pet, { fun: 10 }); addBond(pet, 2); pet.stats.speed++; addXP(pet, 3);
+            appState.perfectCatches++; if (appState.perfectCatches >= 5) unlockTrophy('perfect5');
+            textPop('PERFECT! +1 SPD', '#7ee8ff'); sfx('happy');
+          } else { changeNeeds(pet, { fun: 6 }); addBond(pet, 0.8); addXP(pet, 2); textPop('Good catch!', '#ffea00'); sfx('coin'); }
+          renderLive();
+          if (d.throws >= 3 || pet.needs.energy < registry.rule('fetchEnergy')) { showNotif(`🎾 Fetch over! ${pet.name} had a blast.`, 'notif-level'); endMode(); return; }
+          Object.assign(d, newThrow(d.throws));
+        }
+      }
+    },
+    onTap(pet) { fetchThrow(pet); },
+    drawFront(ctx) {
+      const d = appState.rt.modeData, rt = appState.rt;
+      // power meter
+      const mx = 48, my = 10, mw = 160;
+      ctx.fillStyle = '#0a0a14'; ctx.fillRect(mx - 2, my - 2, mw + 4, 12);
+      ctx.fillStyle = '#2a2a4a'; ctx.fillRect(mx, my, mw, 8);
+      ctx.fillStyle = '#00ff88'; ctx.fillRect(mx + d.zone[0] * mw, my, (d.zone[1] - d.zone[0]) * mw, 8);
+      ctx.fillStyle = '#fff'; ctx.fillRect(mx + d.needle * mw - 1, my - 3, 3, 14);
+      ctx.font = '6px "Press Start 2P", monospace'; ctx.textAlign = 'left'; ctx.fillStyle = '#e8e8ff';
+      ctx.fillText(`THROW ${d.throws + 1}/3`, mx, my + 20);
+      // ball
+      let bx, by;
+      if (d.phase === 'aim') { bx = rt.petX + 22; by = FLOOR - 50; }
+      else if (d.caught) { bx = rt.petX + 30 * rt.facing; by = petDrawPos().y + 60; }
+      else { bx = d.ball.x; by = d.ball.y; }
+      ctx.fillStyle = '#1a3a00'; ctx.fillRect(bx - 4, by - 3, 8, 6); ctx.fillRect(bx - 3, by - 4, 6, 8);
+      ctx.fillStyle = '#c8ff3c'; ctx.fillRect(bx - 3, by - 2, 6, 4); ctx.fillRect(bx - 2, by - 3, 4, 6);
+      ctx.fillStyle = '#fff'; ctx.fillRect(bx - 2, by - 2, 1, 1);
+    },
+  },
+
+  walk: {
+    update(pet, dt) {
+      const rt = appState.rt, d = rt.modeData;
+      rt.petX = 100; rt.facing = 1; rt.moving = true;
+      d.scroll += dt * 40;
+      for (const ev of d.events) if (!ev.done && rt.modeT > ev.at) { ev.done = true; walkFind(pet); }
+      if (rt.modeT > 7) {
+        changeNeeds(pet, { fun: 20, hunger: -8, clean: -12 }); addBond(pet, 3); addXP(pet, 4);
+        showNotif(`🌳 Great walk! ${pet.name} got a little muddy.`, 'notif-level');
+        rt.petX = 128; endMode();
+      }
+    },
+    onTap(pet, pt, onPet) { if (onPet) { hopPet(); appState.rt.happyT = 0.5; } },
+    drawBg(ctx) {
+      const s = appState.rt.modeData.scroll;
+      ctx.fillStyle = '#ffb56b'; ctx.fillRect(0, 0, ROOM_W, ROOM_H);
+      ctx.fillStyle = '#ff8a6a'; ctx.fillRect(0, 50, ROOM_W, 40);
+      ctx.fillStyle = '#ffe680'; ctx.fillRect(196, 24, 18, 18);
+      ctx.fillStyle = '#7b4fa8';
+      for (let x = 0; x < ROOM_W; x += 2) { const h = 30 + Math.sin((x + s * 0.3) / 26) * 12; ctx.fillRect(x, 120 - h, 2, h); }
+      ctx.fillStyle = '#3f8f5a'; ctx.fillRect(0, 120, ROOM_W, 72);
+      ctx.fillStyle = '#2f7048';
+      for (let x = -((s) % 24); x < ROOM_W; x += 24) ctx.fillRect(x, 140, 10, 2);
+      for (let x = -((s * 1.2) % 90); x < ROOM_W + 30; x += 90) { // trees
+        ctx.fillStyle = '#5a3a1e'; ctx.fillRect(x + 10, 92, 6, 30);
+        ctx.fillStyle = '#2f7048'; ctx.fillRect(x, 72, 26, 24); ctx.fillStyle = '#3f8f5a'; ctx.fillRect(x + 3, 70, 16, 10);
+      }
+      ctx.fillStyle = '#c8a46a'; ctx.fillRect(0, FLOOR - 4, ROOM_W, 10);
+    },
+  },
+};
+
+// ---------- actions (buttons) ----------
+function hatchClick(pet) {
+  pet.hatchClicks++; hopPet(); sfx('tap');
+  for (let i = 0; i < 4; i++) addParticle('spark', 108 + Math.random() * 40, FLOOR - 60 - Math.random() * 40, { color: ['#ffea00', '#ff3cac', '#7b2fff'][i % 3], life: 0.7, max: 0.7 });
+  if (pet.hatchClicks >= registry.rule('hatchClicks')) { hatch(pet); appState.rt.flash = 1; }
+  renderAll(); autosave();
+}
+
+function feedPet(foodId) {
+  const pet = activePet(); if (!pet || pet.stage === 0 || busy()) return;
+  if (!(appState.inventory[foodId] > 0)) return showNotif('Out of that food! Visit the shop.', 'notif-lose');
+  if (pet.needs.hunger > 95) { textPop('Full!', '#fff'); return showNotif(`${pet.name} isn't hungry right now.`, ''); }
+  appState.inventory[foodId]--;
+  document.getElementById('foodTray').classList.remove('open');
+  const rt = appState.rt, side = rt.petX < 128 ? 1 : -1, bowlX = rt.petX + 60 * side;
+  setMode('eat', { food: registry.get('foods', foodId), bowlX, spot: bowlX - 34 * side });
+}
+
+function startBath() {
+  const pet = activePet(); if (!pet || pet.stage === 0) return;
+  if (appState.rt.mode === 'bath') return endMode();
+  if (busy()) return;
+  if (pet.needs.clean >= 100) return showNotif(`${pet.name} is already spotless!`, '');
+  setMode('bath'); showNotif('🛁 Rub your beast to scrub it clean!', 'notif-level');
+}
+
+function startNap() {
+  const pet = activePet(); if (!pet || pet.stage === 0 || busy()) return;
+  if (pet.needs.energy > 92) return showNotif(`${pet.name} isn't sleepy.`, '');
+  setMode('sleep');
+}
+
+function newThrow(throws) {
+  const w = Math.max(0.1, 0.2 - throws * 0.04), z = 0.15 + Math.random() * (0.8 - w);
+  return { phase: 'aim', needle: 0, dir: 1, zone: [z, z + w], perfect: false, caught: false, t: 0, ball: {} };
+}
+
+function startFetch() {
+  const pet = activePet(); if (!pet || pet.stage === 0 || busy()) return;
+  if (pet.needs.energy < registry.rule('fetchEnergy')) return showNotif(`${pet.name} is too tired. Try a nap!`, 'notif-lose');
+  setMode('fetch', Object.assign({ throws: 0 }, newThrow(0)));
+}
+
+function fetchThrow(pet) {
+  const d = appState.rt.modeData;
+  if (appState.rt.mode !== 'fetch' || d.phase !== 'aim') return;
+  d.perfect = d.needle >= d.zone[0] && d.needle <= d.zone[1];
+  d.phase = 'fly'; d.t = 0; sfx('throw');
+  d.ball = { x0: appState.rt.petX + 22, x1: 70 + d.needle * 170, x: 0, y: 0 };
+  void pet;
+}
+
+function startWalk() {
+  const pet = activePet(); if (!pet || pet.stage === 0 || busy()) return;
+  if (pet.needs.energy < registry.rule('walkEnergy')) return showNotif(`${pet.name} is too tired to walk.`, 'notif-lose');
+  changeNeeds(pet, { energy: -registry.rule('walkEnergy') });
+  setMode('walk', { scroll: 0, events: [{ at: 2.2 }, { at: 4.8 }] });
+}
+
+function walkFind(pet) {
+  const r = Math.random(), rt = appState.rt;
+  if (r < 0.5) {
+    const n = 3 + Math.floor(Math.random() * 6); addCoins(n); sfx('coin');
+    textPop(`+${n} 🪙`, '#ffd700', rt.petX + 40);
+  } else if (r < 0.8) {
+    const id = Math.random() < 0.5 ? beastOf(pet).favoriteFood : 'beast_bites', f = registry.get('foods', id);
+    appState.inventory[id] = (appState.inventory[id] || 0) + 1; sfx('coin');
+    textPop(`Found ${f.icon}!`, '#00ff88', rt.petX + 40);
+  } else {
+    changeNeeds(pet, { fun: 8 }); addBond(pet, 1); hopPet(); sfx('happy');
+    textPop('Made a friend!', '#ff5c9a', rt.petX + 40);
+  }
+  renderLive();
+}
+
+/* ===== js: training.js ===== */
+// Stat training. Costs energy; gains scale with level, species bias and mood.
+const STAT_COLORS = { power: '#ff6b35', speed: '#00f5ff', charm: '#ff3cac' };
+const STAT_SHORT = { power: 'POW', speed: 'SPD', charm: 'CHM' };
+
+function trainStat(stat) {
+  const pet = activePet(); if (!pet || pet.stage === 0 || busy()) return;
+  const cost = registry.rule('trainEnergy');
+  if (pet.needs.energy < cost) return showNotif(`${pet.name} is too tired to train. Nap first!`, 'notif-lose');
+  if (pet.needs.hunger < 10) return showNotif(`${pet.name} is too hungry to train!`, 'notif-lose');
+  const bias = beastOf(pet).bias[stat] || 0, mood = moodInfo(pet);
+  const gain = Math.max(1, Math.round((1 + Math.floor(pet.level / 3) + (bias >= 2 ? 1 : 0)) * mood.mult));
+  pet.stats[stat] += gain;
+  changeNeeds(pet, { energy: -cost, hunger: -4, fun: stat === 'charm' ? 2 : -1 });
+  addXP(pet, 3); addCoins(1);
+  hopPet(); sfx('tap');
+  textPop(`+${gain} ${STAT_SHORT[stat]}`, STAT_COLORS[stat]);
+  for (let i = 0; i < 5; i++) addParticle('spark', appState.rt.petX + (Math.random() - 0.5) * 60, FLOOR - 30 - Math.random() * 60, { color: STAT_COLORS[stat], life: 0.8, max: 0.8 });
+  renderAll(); autosave();
+}
+
+/* ===== js: contests.js ===== */
+// Contests against rival beasts, rendered with the same sprite engine.
+function rivalFor(pet) {
+  const rivals = registry.all('rivals'), r = rivals[Math.floor(Math.random() * rivals.length)];
+  const stage = Math.max(1, Math.min(5, pet.stage + Math.floor(Math.random() * 3) - 1));
+  const scale = 0.35 + pet.stage * 0.4 + Math.random() * 0.5;
+  return { name: r.name, species: r.species, stage, power: Math.floor(r.power * scale), speed: Math.floor(r.speed * scale), charm: Math.floor(r.charm * scale) };
+}
+
+function startContest(contestId) {
+  const pet = activePet(); if (!pet || pet.stage === 0 || busy()) return;
+  const contest = registry.get('contests', contestId);
+  if (pet.stage < contest.minStage) return;
+  const fee = registry.rule('contestEntry'), en = registry.rule('contestEnergy');
+  if (appState.coins < fee) return showNotif('🪙 Not enough coins! Train or walk to earn more.', 'notif-lose');
+  if (pet.needs.energy < en) return showNotif(`${pet.name} is too tired to compete.`, 'notif-lose');
+  addCoins(-fee); changeNeeds(pet, { energy: -en, hunger: -5 });
+
+  const opp = rivalFor(pet), mood = moodInfo(pet), log = [];
+  let myScore, oppScore;
+  if (contest.stat === 'all') {
+    myScore = statTotal(pet); oppScore = opp.power + opp.speed + opp.charm;
+    log.push(`📊 Combined stats: ${pet.name} <span class="hl">${myScore}</span> vs ${opp.name} <span class="hl-bad">${oppScore}</span>`);
+  } else {
+    myScore = pet.stats[contest.stat]; oppScore = opp[contest.stat];
+    log.push(`${contest.icon} ${contest.stat.toUpperCase()}: ${pet.name} <span class="hl">${myScore}</span> vs ${opp.name} <span class="hl-bad">${oppScore}</span>`);
+  }
+  if (contest.stat === 'charm' && pet.bond > 0) {
+    const b = Math.round(pet.bond * 0.3); myScore += b;
+    log.push(`💞 The judges adore your bond: <span class="hl-good">+${b}</span>`);
+  }
+  if (mood.mult !== 1) log.push(`${mood.emoji} ${pet.name} is ${mood.label.toLowerCase()}: rolls ×${mood.mult}`);
+  let myTotal = myScore, oppTotal = oppScore;
+  for (let r = 1; r <= 3; r++) {
+    const myRoll = (Math.random() * 20 + myScore * 0.15) * mood.mult, oppRoll = Math.random() * 20 + oppScore * 0.15;
+    myTotal += myRoll; oppTotal += oppRoll;
+    const w = myRoll > oppRoll ? `<span class="hl-good">${pet.name}</span>` : `<span class="hl-bad">${opp.name}</span>`;
+    log.push(`Round ${r}: ${pet.name} <span class="hl">${myRoll.toFixed(0)}</span> · ${opp.name} <span class="hl-bad">${oppRoll.toFixed(0)}</span> → ${w} takes it!`);
+  }
+  const draw = Math.abs(myTotal - oppTotal) < 5, won = !draw && myTotal > oppTotal;
+  const result = won ? 'win' : draw ? 'draw' : 'lose';
+  if (won) {
+    appState.wins++; pet.wins++; addCoins(contest.reward); addXP(pet, 10); addBond(pet, 2); changeNeeds(pet, { fun: 15 });
+    log.push(`🏆 <span class="hl-good">${pet.name} WINS!</span> +${contest.reward} coins`);
+    unlockTrophy('win_' + contest.id);
+    if (appState.wins >= 10) unlockTrophy('wins10');
+  } else if (draw) {
+    addCoins(3); addXP(pet, 5); log.push('🤝 A draw! +3 coins');
+  } else {
+    appState.losses++; addCoins(2); addXP(pet, 5); changeNeeds(pet, { fun: -5 });
+    log.push(`💔 <span class="hl-bad">${pet.name} lost...</span> +2 coins for trying`);
+  }
+  appState.history.unshift({ contest: contest.name, result, opp: opp.name, oppSpecies: opp.species, oppStage: opp.stage, pet: pet.name });
+  appState.history.length = Math.min(appState.history.length, 20);
+  openArena(contest, pet, opp, { my: myTotal, opp: oppTotal }, result, log);
+  renderAll(); autosave();
+}
+
+function openArena(contest, pet, opp, scores, result, log) {
+  document.getElementById('arenaTitle').textContent = `${contest.icon} ${contest.name}`;
+  const cls = (me) => result === 'draw' ? '' : (result === 'win') === me ? 'winner' : 'loser';
+  const oppPal = registry.get('beasts', opp.species);
+  const oppPalette = opp.stage === 5 ? Object.assign({}, oppPal.palette, oppPal.legendPalette) : oppPal.palette;
+  document.getElementById('arenaFighters').innerHTML = `
+    <div class="fighter-card ${cls(true)}">
+      <img class="fighter-sprite" src="${spriteURL(pet.speciesId, pet.stage, petPalette(pet), 3)}" alt="">
+      <div class="fighter-name">${esc(pet.name)}</div>
+      <div class="fighter-score">${scores.my.toFixed(0)}</div>
+    </div>
+    <div class="vs-label">VS</div>
+    <div class="fighter-card ${cls(false)}">
+      <img class="fighter-sprite flip" src="${spriteURL(opp.species, opp.stage, oppPalette, 3)}" alt="">
+      <div class="fighter-name">${esc(opp.name)}</div>
+      <div class="fighter-score">${scores.opp.toFixed(0)}</div>
+    </div>`;
+  const res = {
+    win: ['result-win', '🏆 VICTORY! 🏆', 'Your beast dominated the competition!'],
+    draw: ['result-draw', '🤝 DRAW!', 'An incredibly close contest!'],
+    lose: ['result-lose', '💔 DEFEAT', 'Train harder and try again!'],
+  }[result];
+  document.getElementById('arenaResult').innerHTML = `<div class="result-text ${res[0]}">${res[1]}</div><div class="result-desc">${res[2]}</div>`;
+  document.getElementById('arenaLog').innerHTML = log.map(l => `<div class="log-entry">${l}</div>`).join('');
+  closeMenu();
+  document.getElementById('arenaOverlay').classList.add('active');
+  if (result === 'win') { spawnConfetti(); sfx('win'); } else if (result === 'lose') sfx('sad');
+}
+
+function closeArena() { document.getElementById('arenaOverlay').classList.remove('active'); }
+
+/* ===== js: kennel.js ===== */
+// Kennel (multi-pet), egg chooser, shop and rename.
+function selectPet(id) {
+  if (busy()) return showNotif('Finish the current activity first!', '');
+  appState.activeId = id;
+  Object.assign(appState.rt, { petX: 128, targetX: 128, callX: null, particles: [] });
+  renderAll(); autosave();
+}
+
+// mode: 'start' (free, first beast) or 'buy' (costs eggPrice)
+function openEggChooser(mode) {
+  const price = registry.rule('eggPrice');
+  if (mode === 'buy') {
+    if (appState.pets.length >= registry.rule('kennelSize')) return showNotif('🏠 Your kennel is full!', 'notif-lose');
+    if (appState.coins < price) return showNotif(`🪙 An egg costs ${price} coins.`, 'notif-lose');
+  }
+  document.getElementById('eggTitle').textContent = mode === 'start' ? '✦ CHOOSE YOUR FIRST EGG ✦' : `✦ ADOPT AN EGG · 🪙 ${price} ✦`;
+  document.getElementById('eggCloseBtn').style.display = mode === 'start' ? 'none' : '';
+  document.getElementById('eggGrid').innerHTML = registry.all('beasts').map(b => `
+    <button class="egg-card" onclick="chooseEgg('${b.id}','${mode}')">
+      <img src="${spriteURL(b.id, 0, b.palette, 2)}" alt="">
+      <div class="egg-species">${b.species}</div>
+      <div class="egg-element">${b.element} · grows into ${b.stages[4]}</div>
+      <div class="egg-hint">"${b.eggHint}"</div>
+    </button>`).join('');
+  document.getElementById('eggOverlay').classList.add('active');
+}
+
+function closeEggChooser() { document.getElementById('eggOverlay').classList.remove('active'); }
+
+function chooseEgg(speciesId, mode) {
+  if (mode === 'buy') addCoins(-registry.rule('eggPrice'));
+  const pet = makePet(speciesId);
+  appState.pets.push(pet);
+  closeEggChooser(); sfx('coin');
+  showNotif(`🥚 A ${registry.get('beasts', speciesId).species} egg! Tap it to hatch.`, 'notif-level');
+  selectPet(pet.id);
+}
+
+function buyFood(id) {
+  const f = registry.get('foods', id);
+  if (appState.coins < f.price) return showNotif('🪙 Not enough coins!', 'notif-lose');
+  addCoins(-f.price); appState.inventory[id] = (appState.inventory[id] || 0) + 1;
+  sfx('coin'); renderAll(); autosave();
+}
+
+function renamePet() {
+  const pet = activePet(), inp = document.getElementById('nameInput'), val = inp.value.trim();
+  if (!pet || !val) return;
+  pet.name = val.slice(0, 15); pet.named = true; inp.value = '';
+  renderAll(); autosave();
+}
+
+function releasePet() {
+  const pet = activePet();
+  if (!pet || busy() || appState.pets.length < 2) return;
+  if (!confirm(`Release ${pet.name} into the wild? This can't be undone.`)) return;
+  appState.pets = appState.pets.filter(p => p.id !== pet.id);
+  showNotif(`🌄 ${pet.name} set off on its own adventure.`, '');
+  selectPet(appState.pets[0].id);
+}
+
+/* ===== js: ui.js ===== */
+// DOM rendering for every panel. renderAll() after actions; renderLive() every second (cheap).
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const urlCache = new Map();
+const SILHOUETTE = new Proxy({}, { get: () => '#5a4a8a' });
+function spriteURL(speciesId, stage, pal, scale = 2) {
+  const key = `${speciesId}|${stage}|${scale}|${pal.b}|${pal.a}`;
+  if (!urlCache.has(key)) {
+    const c = document.createElement('canvas'); c.width = c.height = SPR * scale;
+    drawGrid(c.getContext('2d'), getSprite(speciesId, stage), pal, 0, 0, scale);
+    urlCache.set(key, c.toDataURL());
+  }
+  return urlCache.get(key);
+}
+
+function bar(label, cls, val, max, right) {
+  return `<div class="stat-row ${cls}"><div class="stat-label"><span>${label}</span><span>${right ?? Math.floor(val)}</span></div>
+    <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${Math.min(100, (val / max) * 100)}%"></div></div></div>`;
+}
+
+function renderAll() {
+  renderHeader(); renderKennel(); renderActions(); renderContests(); renderShop();
+  renderTrophies(); renderHistory(); renderLeaderboard(); renderLive();
+}
+
+function renderLive() { renderNeeds(); renderStats(); renderEvo(); $('coinDisplay').textContent = appState.coins; $('sideCoins').textContent = appState.coins; renderKennelMoods(); }
+
+function renderHeader() {
+  const pet = activePet();
+  $('petNameDisplay').textContent = !pet ? '—' : pet.stage === 0 ? '???' : pet.name;
+  $('petStageBadge').textContent = !pet ? 'NO BEAST' : `${STAGE_LABELS[pet.stage]} · ${stageName(pet)}`;
+  const egg = !pet || pet.stage === 0;
+  $('hatchSection').style.display = egg ? 'block' : 'none';
+  $('petControls').style.display = egg ? 'none' : 'block';
+  if (pet && egg) {
+    const need = registry.rule('hatchClicks');
+    $('hatchProgress').textContent = `TAPS: ${pet.hatchClicks} / ${need}`;
+    $('hatchBar').style.width = `${(pet.hatchClicks / need) * 100}%`;
+    $('hatchHint').textContent = beastOf(pet).eggHint;
+  }
+}
+
+function renderKennel() {
+  const size = registry.rule('kennelSize'), slots = [];
+  for (const p of appState.pets) {
+    const pal = petPalette(p);
+    slots.push(`<button class="kennel-slot ${p.id === appState.activeId ? 'active' : ''}" onclick="selectPet('${p.id}')" title="${esc(p.name)}">
+      <img src="${spriteURL(p.speciesId, p.stage, pal, 2)}" alt="">
+      <span class="kennel-name">${esc(p.stage === 0 ? 'Egg' : p.name)}</span>
+      <span class="kennel-mood" data-pet="${p.id}"></span></button>`);
+  }
+  if (appState.pets.length < size) slots.push(`<button class="kennel-slot empty" onclick="openEggChooser('buy')" title="Adopt an egg"><span class="kennel-plus">＋</span><span class="kennel-name">🪙 ${registry.rule('eggPrice')}</span></button>`);
+  $('kennelList').innerHTML = slots.join('');
+  $('kennelCount').textContent = `${appState.pets.length}/${size}`;
+}
+
+function renderKennelMoods() {
+  document.querySelectorAll('.kennel-mood').forEach(el => {
+    const p = appState.pets.find(x => x.id === el.dataset.pet);
+    el.textContent = p && p.stage > 0 ? moodInfo(p).emoji : '🥚';
+  });
+}
+
+function renderNeeds() {
+  const pet = activePet(), el = $('needsPanel');
+  if (!pet || pet.stage === 0) { el.innerHTML = '<div class="dim-note">Hatch your egg to start caring for it!</div>'; return; }
+  const m = moodInfo(pet), n = pet.needs;
+  el.innerHTML = `
+    <div class="mood-line"><span class="mood-emoji">${m.emoji}</span><span>${m.label}</span><span class="mood-mult">train ×${m.mult}</span></div>
+    ${bar('🍖 Fullness', 'need need-hunger' + (n.hunger < 20 ? ' low' : ''), n.hunger, 100)}
+    ${bar('🫧 Clean', 'need need-clean' + (n.clean < 20 ? ' low' : ''), n.clean, 100)}
+    ${bar('⚡ Energy', 'need need-energy' + (n.energy < 15 ? ' low' : ''), n.energy, 100)}
+    ${bar('🎈 Fun', 'need need-fun' + (n.fun < 20 ? ' low' : ''), n.fun, 100)}
+    ${bar('💞 Bond', 'need need-bond', pet.bond, 100, `${Math.floor(pet.bond)}/100`)}`;
+}
+
+function renderStats() {
+  const pet = activePet(), el = $('statsSection');
+  if (!pet || pet.stage === 0) { el.innerHTML = '<div class="dim-note">No stats yet.</div>'; return; }
+  const max = registry.rule('statBarMax'), need = pet.level * 20;
+  el.innerHTML = `${bar('⚡ Power', 'stat-power', pet.stats.power, max)}${bar('💨 Speed', 'stat-speed', pet.stats.speed, max)}${bar('✨ Charm', 'stat-charm', pet.stats.charm, max)}
+    <div class="xp-section"><div class="xp-label"><span>Lv.${pet.level} XP</span><span>${pet.xp} / ${need}</span></div>
+    <div class="xp-bar-track"><div class="xp-bar-fill" style="width:${(pet.xp / need) * 100}%"></div></div></div>`;
+}
+
+function renderEvo() {
+  const pet = activePet(), el = $('evoPanel');
+  if (!pet || pet.stage === 0) { el.innerHTML = ''; return; }
+  if (pet.stage === 5) { el.innerHTML = `<div class="evo-box legend">🔥 ${esc(pet.name)} has reached its LEGEND form! 🔥</div>`; return; }
+  const r = evoRequirements(pet), next = beastOf(pet).stages[pet.stage];
+  const row = (ok, label, have, need) => `<div class="evo-req ${ok ? 'ok' : ''}"><span>${ok ? '✔' : '✘'} ${label}</span><span>${have} / ${need}</span></div>`;
+  el.innerHTML = `<div class="evo-box ${r.ready ? 'ready' : ''}">
+    <div class="evo-title">NEXT: <img class="evo-silhouette" src="${spriteURL(pet.speciesId, pet.stage + 1, SILHOUETTE, 1)}" alt=""> ${r.ready ? next.toUpperCase() : '???'}</div>
+    ${row(r.stats.ok, '📊 Total stats', r.stats.have, r.stats.need)}
+    ${row(r.bond.ok, '💞 Bond', r.bond.have, r.bond.need)}
+    ${row(r.mood.ok, '😊 Mood', r.mood.have, r.mood.need)}
+    ${r.ready ? `<button class="btn btn-primary btn-full evo-btn" onclick="doEvolve()">💫 EVOLVE!</button>` : ''}</div>`;
+}
+
+function doEvolve() { const pet = activePet(); if (pet && !busy() && evolve(pet)) { renderAll(); autosave(); } }
+
+function renderActions() {
+  const pet = activePet(), rt = appState.rt, mode = rt.mode, idle = mode === 'idle';
+  const set = (id, dis) => { const b = $(id); if (b) b.disabled = dis; };
+  ['btnFeed', 'btnFetch', 'btnWalk', 'btnNap', 'btnPower', 'btnSpeed', 'btnCharm', 'btnRelease'].forEach(id => set(id, !idle));
+  set('btnBath', !(idle || mode === 'bath'));
+  set('btnRelease', !idle || appState.pets.length < 2);
+  $('btnBath').innerHTML = mode === 'bath' ? '✅ DONE' : '🛁 BATHE';
+  const hints = {
+    idle: pet && pet.stage === 0 ? 'Tap the egg to warm it up!' : 'Rub to pet · Tap to play · Tap the floor to call',
+    eat: 'Munch munch...', bath: 'Rub your beast to scrub away the dirt!', sleep: 'Sweet dreams...',
+    fetch: 'Tap when the needle is in the GREEN zone!', walk: 'Out for a walk... keep an eye out for treasure!',
+  };
+  $('roomHint').textContent = hints[mode] || '';
+  $('throwBtn').style.display = mode === 'fetch' ? '' : 'none';
+  if (!idle) $('foodTray').classList.remove('open');
+  renderFoodTray();
+  if (pet) {
+    const cost = registry.rule('trainEnergy');
+    ['power', 'speed', 'charm'].forEach(s => { const b = $('btn' + s[0].toUpperCase() + s.slice(1)); if (b) b.title = `Costs ${cost} energy`; });
+  }
+}
+
+function toggleFoodTray() { if (!busy()) { $('foodTray').classList.toggle('open'); renderFoodTray(); } }
+
+function renderFoodTray() {
+  const pet = activePet(), fav = pet ? beastOf(pet).favoriteFood : null;
+  const owned = registry.all('foods').filter(f => appState.inventory[f.id] > 0);
+  $('foodTray').innerHTML = owned.length ? owned.map(f => `
+    <button class="food-btn ${f.id === fav ? 'fav' : ''}" onclick="feedPet('${f.id}')" title="${f.name}${f.id === fav ? ' (favorite!)' : ''}">
+      <span class="food-icon">${f.icon}</span><span class="food-count">×${appState.inventory[f.id]}</span></button>`).join('')
+    : '<div class="dim-note">No food! <button class="link-btn" onclick="openMenu(\'shop\')">Visit the shop →</button></div>';
+}
+
+function renderContests() {
+  const pet = activePet(), sec = $('contestSection');
+  if (!pet || pet.stage === 0) { sec.innerHTML = '<div class="dim-note">Hatch your beast first!</div>'; return; }
+  const fee = registry.rule('contestEntry'), en = registry.rule('contestEnergy');
+  sec.innerHTML = registry.all('contests').map(c => {
+    const locked = pet.stage < c.minStage;
+    return `<div class="contest-card ${locked ? 'locked' : ''}" ${locked ? '' : `onclick="startContest('${c.id}')"`} role="button" tabindex="${locked ? -1 : 0}">
+      <div class="contest-name">${c.icon} ${c.name}</div>
+      <div class="contest-desc">${c.desc}</div>
+      <div class="contest-meta">
+        <span class="contest-tag ${c.tag}">${c.stat === 'all' ? 'ALL STATS' : c.stat.toUpperCase()}</span>
+        <span class="contest-tag tag-gold">🪙${fee} ⚡${en}</span>
+        <span class="contest-tag tag-win">WIN ${c.reward}</span>
+        ${locked ? `<span class="contest-tag tag-lock">${STAGE_LABELS[c.minStage]}+</span>` : ''}
+      </div></div>`;
+  }).join('');
+}
+
+function renderShop() {
+  const pet = activePet(), fav = pet && pet.stage > 0 ? beastOf(pet).favoriteFood : null;
+  $('shopList').innerHTML = registry.all('foods').map(f => `
+    <div class="shop-row ${f.id === fav ? 'fav' : ''}">
+      <span class="shop-icon">${f.icon}</span>
+      <span class="shop-name">${f.name}${f.id === fav ? ' <em>♥ fav</em>' : ''}<small>+${f.hunger} full${f.fun ? ` · +${f.fun} fun` : ''}</small></span>
+      <span class="shop-own">×${appState.inventory[f.id] || 0}</span>
+      <button class="btn btn-gold shop-buy" onclick="buyFood('${f.id}')" ${appState.coins < f.price ? 'disabled' : ''}>🪙${f.price}</button>
+    </div>`).join('');
+}
+
+function renderTrophies() {
+  $('trophyRow').innerHTML = registry.all('trophies').map(t =>
+    `<div class="trophy-item ${appState.trophies[t.id] ? '' : 'dim'}" title="${t.title}">${t.icon}</div>`).join('');
+}
+
+function renderHistory() {
+  const list = $('historyList');
+  if (!appState.history.length) { list.innerHTML = '<div class="dim-note">No contests yet...</div>'; return; }
+  list.innerHTML = appState.history.map(h => {
+    const b = registry.all('beasts').find(x => x.id === h.oppSpecies);
+    return `<div class="history-entry">
+      ${b ? `<img class="mini-sprite" src="${spriteURL(b.id, h.oppStage || 1, b.palette, 1)}" alt="">` : ''}
+      <span style="flex:1">${esc(h.pet || '')} · ${h.contest} vs ${esc(h.opp)}</span>
+      <span class="history-result hr-${h.result}">${h.result.toUpperCase()}</span></div>`;
+  }).join('');
+}
+
+function renderLeaderboard() {
+  const fixed = [['Zephyr', 'griffin', 5, 620, 24], ['Aurora', 'kitsune', 4, 470, 17], ['Titan', 'griffin', 4, 360, 12], ['Lumis', 'phoenix', 3, 240, 7], ['Blaze', 'dragon', 2, 120, 3]];
+  const entries = fixed.map(([name, sp, st, score, wins]) => ({ name, sp, st, score, wins, pal: registry.get('beasts', sp).palette }));
+  for (const p of appState.pets.filter(p => p.stage > 0))
+    entries.push({ name: p.name, sp: p.speciesId, st: p.stage, score: statTotal(p) + p.wins * 10 + Math.floor(p.bond), wins: p.wins, pal: petPalette(p), mine: true });
+  entries.sort((a, b) => b.score - a.score);
+  $('leaderboard').innerHTML = entries.slice(0, 7).map((e, i) => `
+    <div class="lb-row ${e.mine ? 'mine' : ''}">
+      <span class="lb-rank r${i}">${i + 1}</span>
+      <img class="mini-sprite" src="${spriteURL(e.sp, e.st, e.pal, 1)}" alt="">
+      <span class="lb-name">${esc(e.name)}${e.mine ? ' ◀' : ''}</span>
+      <span>⚔️${e.wins}</span><span class="lb-score">${e.score}</span></div>`).join('');
+}
+
+// ---------- sidebar menu ----------
+let menuPage = 'kennel';
+function openMenu(page) {
+  if (page) menuPage = page;
+  showPage(menuPage);
+  $('sideMenu').classList.add('open'); $('sideScrim').classList.add('open');
+  $('sideMenu').setAttribute('aria-hidden', 'false'); $('menuBtn').setAttribute('aria-expanded', 'true');
+  document.querySelector(`.side-tab[data-page="${menuPage}"]`).focus();
+}
+function closeMenu() {
+  $('sideMenu').classList.remove('open'); $('sideScrim').classList.remove('open');
+  $('sideMenu').setAttribute('aria-hidden', 'true'); $('menuBtn').setAttribute('aria-expanded', 'false');
+}
+function showPage(page) {
+  menuPage = page;
+  document.querySelectorAll('.side-tab').forEach(t => { const on = t.dataset.page === page; t.classList.toggle('active', on); t.setAttribute('aria-selected', on); });
+  document.querySelectorAll('.side-page').forEach(p => p.classList.toggle('active', p.id === 'page-' + page));
+}
+
+/* ===== js: main.js ===== */
+// Boot: validate data, load autosave, wire controls, start loops.
+function newGame() {
+  if (appState.pets.length && !confirm('Start a brand-new kennel? Your current beasts will be lost (export a save first if you want to keep them).')) return;
+  newGameState(); autosave(); renderAll(); openEggChooser('start'); setStatus('🔄 New kennel started');
+}
+
+function toggleMute() {
+  appState.muted = !appState.muted;
+  $('muteBtn').textContent = appState.muted ? '🔇' : '🔊';
+  autosave();
+}
+
+function boot() {
+  registry.validate();
+  resetRuntime();
+  const loaded = loadAutosave();
+  if (!loaded) newGameState();
+  catchUpOffline();
+  $('muteBtn').textContent = appState.muted ? '🔇' : '🔊';
+  $('nameInput').addEventListener('keydown', e => { if (e.key === 'Enter') renamePet(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeMenu(); closeArena(); if (appState.pets.length) closeEggChooser(); }
+    if (e.key === ' ' && appState.rt.mode === 'fetch' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); fetchThrow(activePet()); }
+  });
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList?.contains('contest-card')) { e.preventDefault(); e.target.click(); }
+  });
+  initRoom();
+  renderAll();
+  if (!appState.pets.length) openEggChooser('start');
+  setStatus(loaded ? '✓ Welcome back! Autosave is on' : '✓ Autosave is on');
+  // real-time needs
+  setInterval(() => {
+    const now = Date.now(), dt = (now - appState.lastTick) / 1000;
+    appState.lastTick = now;
+    tickPets(dt);
+    renderLive();
+  }, 1000);
+  setInterval(autosave, 5000);
+  window.addEventListener('beforeunload', autosave);
+}
+
+boot();
+</script>
+</body>
+</html>

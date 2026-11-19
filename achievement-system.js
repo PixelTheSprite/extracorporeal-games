@@ -226,91 +226,86 @@ const AchievementSystem = (() => {
 
     if (!achievement) return;
 
-    // Create notification element
+    // Create notification element: a small Win95-style window, matching the hub
     const notification = document.createElement('div');
     notification.className = 'achievement-notification';
+    notification.setAttribute('role', 'status');
     notification.innerHTML = `
-      <div class="achievement-notification-content">
-        <span class="achievement-icon">${achievement.icon}</span>
-        <div class="achievement-info">
-          <div class="achievement-unlocked-text">Achievement Unlocked!</div>
-          <div class="achievement-name">${achievement.name}</div>
-          <div class="achievement-description">${achievement.description}</div>
+      <div class="ach-toast-title">Achievement Unlocked!</div>
+      <div class="ach-toast-body">
+        <span class="ach-toast-icon">${achievement.icon}</span>
+        <div>
+          <div class="ach-toast-name">${achievement.name}</div>
+          <div class="ach-toast-description">${achievement.description}</div>
         </div>
       </div>
     `;
 
-    // Add styles
+    // Add styles (scoped to the toast so they don't clash with a game's own styles)
     const styles = `
       .achievement-notification {
         position: fixed;
         bottom: 20px;
         right: 20px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 20px 25px;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        animation: slideIn 0.4s ease-out, slideOut 0.4s ease-in 3.6s forwards;
         z-index: 10000;
-        max-width: 400px;
+        width: min(360px, calc(100vw - 40px));
+        box-sizing: border-box;
+        padding: 3px;
+        background: #c0c0c0;
+        color: #000;
+        font-family: Tahoma, Verdana, "Segoe UI", sans-serif;
+        box-shadow:
+          inset -1px -1px #0a0a0a, inset 1px 1px #fff,
+          inset -2px -2px #808080, inset 2px 2px #dfdfdf,
+          4px 4px 0 rgba(0, 0, 0, 0.35);
+        animation: achToastIn 0.25s steps(5), achToastOut 0.25s steps(5) 3.75s forwards;
       }
 
-      .achievement-notification-content {
+      .achievement-notification .ach-toast-title {
+        padding: 3px 6px;
+        background: linear-gradient(90deg, #000080, #1084d0);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .achievement-notification .ach-toast-body {
         display: flex;
-        gap: 15px;
+        gap: 12px;
         align-items: flex-start;
+        padding: 12px 10px 10px;
       }
 
-      .achievement-icon {
-        font-size: 2.5em;
+      .achievement-notification .ach-toast-icon {
         flex-shrink: 0;
+        font-size: 32px;
+        line-height: 1;
       }
 
-      .achievement-info {
-        flex: 1;
+      .achievement-notification .ach-toast-name {
+        margin-bottom: 2px;
+        color: #000080;
+        font-size: 15px;
+        font-weight: 700;
       }
 
-      .achievement-unlocked-text {
-        font-size: 0.85em;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        opacity: 0.9;
+      .achievement-notification .ach-toast-description {
+        font-size: 13px;
+        line-height: 1.35;
       }
 
-      .achievement-name {
-        font-size: 1.2em;
-        font-weight: bold;
-        margin: 5px 0;
+      @keyframes achToastIn {
+        from { transform: translateY(140%); }
+        to { transform: translateY(0); }
       }
 
-      .achievement-description {
-        font-size: 0.85em;
-        opacity: 0.85;
-        margin-top: 3px;
+      @keyframes achToastOut {
+        from { transform: translateY(0); }
+        to { transform: translateY(140%); }
       }
 
-      @keyframes slideIn {
-        from {
-          transform: translateX(400px);
-          opacity: 0;
-        }
-        to {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
-
-      @keyframes slideOut {
-        from {
-          transform: translateX(0);
-          opacity: 1;
-        }
-        to {
-          transform: translateX(400px);
-          opacity: 0;
-        }
+      @media (prefers-reduced-motion: reduce) {
+        .achievement-notification { animation: none; }
       }
     `;
 

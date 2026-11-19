@@ -3,572 +3,1020 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Floralis — Mendelian Flower Garden</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Floralis — A Mendelian Garden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Federo&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+/* ══════════════════════════════════════════
+   ART NOUVEAU THEME
+   ══════════════════════════════════════════ */
 :root {
-  --soil:       #3D2B1A;
-  --bark:       #5C3D22;
-  --moss:       #4A7C3F;
-  --moss-d:     #2E5226;
-  --leaf:       #6B9B56;
-  --sage:       #8EAF7A;
-  --meadow:     #C8DDB0;
-  --parchment:  #F5F0E2;
-  --cream:      #FDFAF2;
-  --dew:        #E8F2E0;
-  --petal-pink: #D4847A;
-  --gold:       #C8960A;
-  --muted:      #7A6A54;
-  --border:     #C8BB9A;
-  --shadow:     rgba(61,43,26,0.14);
-  --glow:       rgba(74,124,63,0.22);
-  --text:       #2A1F0F;
+  --ink:      #2A2318;
+  --ink-2:    #3B3424;
+  --olive:    #5A6531;
+  --olive-d:  #353D1C;
+  --olive-dd: #232914;
+  --sage:     #8C9A6A;
+  --sage-l:   #CBD3AE;
+  --vellum:   #EFE4C8;
+  --paper:    #FBF6EA;
+  --cream:    #F6EEDA;
+  --gold:     #B8892E;
+  --gold-l:   #DDBE6E;
+  --gold-xl:  #F1DFA6;
+  --rose:     #B5634F;
+  --rose-l:   #E7BFAF;
+  --teal:     #3E6B66;
+  --muted:    #75694F;
+  --line:     #CFBC8C;
+  --shadow:   rgba(42,35,24,0.16);
+
+  --f-display: 'Federo', 'Cormorant Garamond', serif;
+  --f-serif:   'Cormorant Garamond', Georgia, serif;
+  --f-body:    'EB Garamond', Georgia, serif;
+  --f-mono:    'DM Mono', ui-monospace, monospace;
+
+  /* ornaments (gold line-work) */
+  --orn-flourish: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 30' fill='none' stroke='%23B8892E' stroke-width='1.3' stroke-linecap='round'%3E%3Cpath d='M118 15 C92 15 82 4 64 6 C48 8 47 24 61 24 C71 24 71 13 63 13'/%3E%3Cpath d='M118 15 C96 15 70 28 42 22 C26 19 15 11 3 15'/%3E%3Cpath d='M40 22 C34 14 26 12 20 14'/%3E%3Ccircle cx='3' cy='15' r='2' fill='%23B8892E' stroke='none'/%3E%3C/svg%3E");
+  --orn-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23B8892E' stroke-width='1.3' stroke-linecap='round'%3E%3Cpath d='M6 60 V22 C6 12 12 6 22 6 H60'/%3E%3Cpath d='M12 52 C12 30 22 14 46 12'/%3E%3Cpath d='M12 36 C18 22 31 19 35 26 C38 31 32 36 28 31'/%3E%3Cpath d='M24 12 C28 16 28 21 23 23'/%3E%3Ccircle cx='60' cy='6' r='2' fill='%23B8892E' stroke='none'/%3E%3Ccircle cx='6' cy='60' r='2' fill='%23B8892E' stroke='none'/%3E%3Ccircle cx='28' cy='31' r='1.6' fill='%23B8892E' stroke='none'/%3E%3C/svg%3E");
+  --orn-ribbon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='14' viewBox='0 0 48 14'%3E%3Cpath d='M0 7 C8 0 16 0 24 7 S40 14 48 7' fill='none' stroke='%23DDBE6E' stroke-width='1.2'/%3E%3Ccircle cx='24' cy='7' r='1.7' fill='%23DDBE6E'/%3E%3C/svg%3E");
+  --orn-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%23B8892E' stroke-opacity='.12' stroke-width='1.1' stroke-linecap='round'%3E%3Cpath d='M10 132 C10 88 58 86 58 50 C58 28 34 26 34 44 C34 54 46 54 46 46'/%3E%3Cpath d='M58 50 C66 38 78 36 84 42'/%3E%3Cpath d='M80 8 C80 44 128 46 128 82 C128 104 104 106 104 88 C104 78 116 78 116 86'/%3E%3Cpath d='M128 82 C120 94 110 98 102 96'/%3E%3C/g%3E%3Cg fill='%23B8892E' fill-opacity='.10'%3E%3Cellipse cx='84' cy='42' rx='5' ry='3' transform='rotate(-30 84 42)'/%3E%3Cellipse cx='102' cy='96' rx='5' ry='3' transform='rotate(20 102 96)'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Nunito', sans-serif;
-  background: var(--parchment);
-  color: var(--text);
+  font-family: var(--f-body);
+  font-size: 1rem;
+  background-color: var(--vellum);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% 0%, rgba(251,246,234,0.85) 0%, transparent 60%),
+    radial-gradient(ellipse 140% 100% at 50% 100%, rgba(90,101,49,0.12) 0%, transparent 70%),
+    var(--orn-pattern);
+  color: var(--ink);
   min-height: 100vh;
-  position: relative;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 600px 400px at 10% 15%, rgba(107,155,86,0.10) 0%, transparent 70%),
-    radial-gradient(ellipse 500px 600px at 90% 80%, rgba(74,124,63,0.08) 0%, transparent 70%),
-    radial-gradient(ellipse 300px 300px at 50% 50%, rgba(200,221,176,0.12) 0%, transparent 70%),
-    repeating-linear-gradient(135deg, transparent, transparent 40px, rgba(107,155,86,0.025) 40px, rgba(107,155,86,0.025) 41px);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* HEADER */
+/* ── HEADER ─────────────────────────────── */
 header {
-  background: linear-gradient(135deg, var(--soil) 0%, var(--bark) 100%);
-  color: var(--parchment);
   position: relative;
-  z-index: 10;
-  border-bottom: 3px solid var(--moss);
-}
-.header-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 14px 24px;
-}
-header::after {
-  content: '🌿  ❀  🌱  ❀  🌿  ❀  🌱  ❀  🌿  ❀  🌱  ❀  🌿';
-  display: block;
-  font-size: 0.65rem;
-  letter-spacing: 0.1em;
-  text-align: center;
-  padding: 3px 0;
-  background: var(--moss-d);
-  color: rgba(197,221,176,0.6);
   overflow: hidden;
-  white-space: nowrap;
+  background:
+    radial-gradient(ellipse 60% 140% at 50% 120%, rgba(221,190,110,0.18) 0%, transparent 60%),
+    linear-gradient(180deg, var(--olive-d) 0%, var(--olive-dd) 100%);
+  color: var(--paper);
+  border-bottom: 1px solid var(--gold);
 }
-.logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(1.4rem, 3vw, 2rem);
-  font-style: italic;
-  font-weight: 600;
-  color: var(--meadow);
-  letter-spacing: 0.03em;
-  line-height: 1;
+.halo {
+  position: absolute; left: 50%; top: 50%;
+  width: 360px; height: 360px; transform: translate(-50%,-50%);
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(221,190,110,0.13) 0 2.5deg, transparent 2.5deg 10deg);
+  -webkit-mask: radial-gradient(circle, transparent 0 34%, #000 35% 70%, transparent 71%);
+          mask: radial-gradient(circle, transparent 0 34%, #000 35% 70%, transparent 71%);
+  pointer-events: none;
+}
+.halo::before, .halo::after {
+  content: ''; position: absolute; border-radius: 50%;
+  border: 1px solid rgba(221,190,110,0.35);
+}
+.halo::before { inset: 22%; }
+.halo::after  { inset: 31%; border-style: dashed; border-color: rgba(221,190,110,0.25); }
+
+.header-inner {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px 16px;
+  max-width: 1240px; margin: 0 auto;
+}
+.header-left  { justify-self: start; }
+.header-right { justify-self: end; display: flex; gap: 10px; }
+.icon-btn {
+  width: 46px; height: 46px; flex-shrink: 0; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(35,41,20,0.45); color: var(--gold-xl);
+  border: 1px solid rgba(221,190,110,0.65);
+  box-shadow: inset 0 0 0 3px var(--olive-dd), inset 0 0 0 4px rgba(221,190,110,0.35);
+  font-family: var(--f-serif); font-size: 1.4rem; font-weight: 700; font-style: italic; line-height: 1;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+.icon-btn:hover { background: rgba(221,190,110,0.18); transform: translateY(-1px); }
+.icon-btn:focus-visible { outline: 2px solid var(--gold-l); outline-offset: 3px; }
+.icon-btn.light {
+  background: var(--paper); color: var(--olive-d); border-color: var(--gold);
+  box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4px rgba(184,137,46,0.4);
+  font-style: normal; font-size: 1rem;
+}
+.icon-btn.light:hover { background: var(--cream); }
+.hamburger span, .hamburger span::before, .hamburger span::after {
+  display: block; width: 18px; height: 1.6px; border-radius: 2px; background: var(--gold-xl);
+}
+.hamburger span { position: relative; }
+.hamburger span::before, .hamburger span::after { content: ''; position: absolute; left: 0; }
+.hamburger span::before { top: -6px; }
+.hamburger span::after  { top: 6px; width: 12px; left: 3px; }
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-flourish {
+  width: 84px; height: 22px; display: block;
+  background: var(--orn-flourish) center/contain no-repeat;
+  filter: brightness(1.45) saturate(0.9);
+}
+.brand-flourish.right { transform: scaleX(-1); }
+.logo { text-align: center; line-height: 1; }
+.logo-word {
+  font-family: var(--f-display);
+  font-size: clamp(2rem, 4.4vw, 3rem);
+  letter-spacing: 0.16em;
+  padding-left: 0.16em;
+  background: linear-gradient(180deg, var(--gold-xl) 0%, var(--gold-l) 45%, var(--gold) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.12);
 }
 .logo-sub {
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.6rem;
-  font-weight: 500;
-  font-style: normal;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--sage);
-  display: block;
-  margin-top: 2px;
+  display: block; margin-top: 6px;
+  font-family: var(--f-serif); font-style: italic; font-weight: 500;
+  font-size: 1rem; color: var(--sage-l); letter-spacing: 0.06em;
 }
-.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.ribbon {
+  height: 16px;
+  background: var(--orn-ribbon) center/48px 14px repeat-x, var(--olive-d);
+  border-bottom: 1px solid var(--gold);
+}
 .status-bar {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.7rem;
-  color: rgba(197,221,176,0.55);
-  padding: 3px 24px;
-  background: rgba(0,0,0,0.25);
-  letter-spacing: 0.04em;
+  text-align: center;
+  font-family: var(--f-serif); font-style: italic; font-size: 0.98rem;
+  color: var(--muted);
+  padding: 8px 20px;
+  background: linear-gradient(180deg, rgba(221,190,110,0.18), transparent);
 }
+.status-bar::before, .status-bar::after { content: ' ❧ '; color: var(--gold); font-style: normal; }
+.status-bar::before { display: inline-block; transform: scaleX(-1); }
 
-/* BUTTONS */
+/* ── BUTTONS ────────────────────────────── */
 .btn {
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.88rem;
-  font-weight: 600;
-  padding: 7px 15px;
-  border-radius: 20px;
-  border: none;
+  font-family: var(--f-display);
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--gold);
   cursor: pointer;
-  transition: all 0.18s ease;
-  min-height: 36px;
-  letter-spacing: 0.02em;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
+  position: relative;
 }
-.btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
-.btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px var(--shadow); }
-.btn:active { transform: translateY(0); }
-.btn-primary       { background: var(--moss); color: #fff; }
-.btn-primary:hover { background: var(--moss-d); }
-.btn-breed         { background: linear-gradient(135deg, var(--petal-pink), #B8604A); color: #fff; }
-.btn-breed:hover   { background: linear-gradient(135deg, #c4746a, #a05040); }
-.btn-outline       { background: transparent; color: var(--parchment); border: 1.5px solid rgba(197,221,176,0.4); }
-.btn-outline:hover { background: rgba(255,255,255,0.08); border-color: var(--sage); }
-.btn-ghost         { background: rgba(255,255,255,0.7); color: var(--muted); border: 1.5px solid var(--border); }
-.btn-ghost:hover   { border-color: var(--moss); color: var(--moss); background: var(--dew); }
-.btn-sm            { padding: 4px 12px; font-size: 0.8rem; min-height: 28px; }
+.btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 16px var(--shadow); }
+.btn:active:not(:disabled) { transform: translateY(0); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary {
+  background: linear-gradient(180deg, var(--olive) 0%, var(--olive-d) 100%);
+  color: var(--gold-xl);
+  box-shadow: inset 0 0 0 3px var(--olive-d), inset 0 0 0 4px rgba(221,190,110,0.45);
+}
+.btn-breed {
+  background: linear-gradient(180deg, #C27360 0%, #8E4636 100%);
+  color: #FBEBD8;
+  box-shadow: inset 0 0 0 3px #8E4636, inset 0 0 0 4px rgba(241,223,166,0.5);
+  padding: 12px 30px; font-size: 0.9rem;
+}
+.btn-outline {
+  background: rgba(35,41,20,0.4);
+  color: var(--gold-xl);
+  border-color: rgba(221,190,110,0.6);
+}
+.btn-outline:hover { background: rgba(221,190,110,0.14); border-color: var(--gold-l); }
+.btn-ghost {
+  background: var(--paper); color: var(--muted); border-color: var(--line);
+}
+.btn-ghost:hover { color: var(--olive-d); border-color: var(--gold); background: var(--cream); }
+.btn-sm { padding: 8px 16px; font-size: 0.74rem; }
 
-/* MAIN LAYOUT */
+/* ── LAYOUT ─────────────────────────────── */
 main {
-  max-width: 1240px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 28px 18px 60px;
-  position: relative;
-  z-index: 1;
-}
-.page-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-}
-@media (min-width: 900px) {
-  .page-grid {
-    grid-template-columns: 1fr 360px;
-  }
-  .garden-panel  { grid-column: 1; grid-row: 1; }
-  .breed-panel   { grid-column: 1; grid-row: 2; }
-  .sidebar       { grid-column: 2; grid-row: 1 / span 2; }
-  .allele-panel  { grid-column: 1 / -1; grid-row: 3; }
+  padding: 26px 18px 64px;
 }
 
-/* PANELS */
+/* ── PANELS: arched, double-ruled, corner flourishes ── */
 .panel {
-  background: var(--cream);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 22px;
-  box-shadow: 0 3px 12px var(--shadow);
   position: relative;
-  overflow: hidden;
+  background: linear-gradient(180deg, var(--paper) 0%, var(--cream) 100%);
+  border: 1px solid var(--gold);
+  border-radius: 34px 34px 6px 6px;
+  padding: 30px 26px 26px;
+  box-shadow:
+    inset 0 0 0 5px var(--paper),
+    inset 0 0 0 6px rgba(184,137,46,0.45),
+    0 10px 26px var(--shadow);
 }
-.panel::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 Q32 30 30 60' stroke='%236B9B56' stroke-width='0.3' fill='none' opacity='0.15'/%3E%3C/svg%3E");
-  pointer-events: none;
-  opacity: 0.4;
+.panel::before, .panel::after {
+  content: ''; position: absolute; width: 58px; height: 58px;
+  background: var(--orn-corner) center/contain no-repeat;
+  pointer-events: none; opacity: 0.9;
 }
-.section-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.15rem;
-  font-weight: 600;
-  font-style: italic;
-  color: var(--bark);
-  border-bottom: 1.5px solid var(--border);
-  padding-bottom: 10px;
-  margin-bottom: 18px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  position: relative;
-}
-.section-title .icon { font-size: 1rem; }
+.panel::before { top: 10px; left: 10px; }
+.panel::after  { bottom: 10px; right: 10px; transform: rotate(180deg); }
 
-/* FLOWER GRID */
-.flower-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
-  gap: 12px;
-  min-height: 90px;
+.section-title {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  font-family: var(--f-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--olive-d);
+  margin: 0 auto 20px;
+  text-align: center;
 }
+.section-title::before, .section-title::after {
+  content: ''; flex: 0 0 72px; height: 20px;
+  background: var(--orn-flourish) center/contain no-repeat;
+}
+.section-title::after { transform: scaleX(-1); }
+.section-title.small { font-size: 0.86rem; margin-bottom: 14px; }
+.section-title.small::before, .section-title.small::after { flex-basis: 52px; }
+
+/* ── GARDEN ─────────────────────────────── */
 .garden-toolbar {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-bottom: 16px;
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center;
+  margin-bottom: 20px;
 }
 .garden-count {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.75rem;
+  font-family: var(--f-serif); font-style: italic; font-size: 0.98rem;
   color: var(--muted);
-  margin-left: auto;
-  background: var(--dew);
-  padding: 3px 10px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
 }
 
-.flower-card {
-  background: linear-gradient(160deg, var(--dew) 0%, var(--cream) 100%);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 8px 10px;
-  cursor: pointer;
-  transition: all 0.22s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 7px;
-  animation: sprout 0.35s cubic-bezier(0.22,1,0.36,1) forwards;
-  opacity: 0;
+/* meadow reel */
+.reel {
+  position: relative; max-width: 780px; margin: 0 auto 8px;
+  padding: 10px 18px;
+  border: 1px solid var(--gold); border-radius: 70px;
+  background: linear-gradient(180deg, #F6EEDA 0%, #E9E9CC 68%, #D3D9B2 100%);
+  box-shadow: inset 0 0 0 5px var(--paper), inset 0 0 0 6px rgba(184,137,46,0.45), 0 6px 16px var(--shadow);
+}
+.reel-window {
+  position: relative; overflow: hidden; height: 108px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16%, #000 84%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 16%, #000 84%, transparent 100%);
+}
+.reel-strip { display: flex; gap: 10px; height: 100%; align-items: flex-end; will-change: transform; }
+.reel-tile {
+  flex: 0 0 76px; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  padding-bottom: 8px;
+}
+.reel-tile .pixel-flower { width: 48px; height: 72px; }
+.reel-marker {
+  position: absolute; left: 50%; top: 4px; bottom: 0; width: 84px;
+  transform: translateX(-50%);
+  border: 1.5px solid var(--gold); border-bottom: none;
+  border-radius: 42px 42px 0 0;
+  box-shadow: inset 0 0 16px rgba(241,223,166,0.75);
+  pointer-events: none;
+}
+.reel-marker::before {
+  content: '✦'; position: absolute; top: -2px; left: 50%; transform: translate(-50%,-30%);
+  color: var(--gold); font-size: 0.8rem; line-height: 1;
+}
+.reel.spinning .reel-marker { border-color: var(--gold-l); }
+.reel.landed .reel-marker { animation: markerGlow 0.9s ease 2; }
+@keyframes markerGlow {
+  50% { box-shadow: inset 0 0 26px rgba(241,223,166,1), 0 0 0 4px rgba(221,190,110,0.45); }
+}
+.reel-caption {
+  text-align: center; min-height: 1.5em; margin: 8px 0 14px;
+  font-family: var(--f-serif); font-style: italic; font-size: 1.05rem; color: var(--muted);
+}
+.reel-caption em { color: var(--ink-2); font-weight: 600; }
+
+/* flower bed: grid rows sit on continuous soil bands */
+.flower-bed {
+  --row-h: 132px; --soil-h: 30px;
   position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  grid-auto-rows: var(--row-h);
+  padding: 6px 14px 4px;
+  border: 7px solid #6B4A2B;
+  border-radius: 12px;
+  background-color: #ECEAD0;
+  background-image:
+    linear-gradient(180deg,
+      transparent 0 calc(100% - var(--soil-h)),
+      #9A6B43 calc(100% - var(--soil-h)) calc(100% - var(--soil-h) + 3px),
+      #7A5233 calc(100% - var(--soil-h) + 3px),
+      #5E3D24 calc(100% - 9px),
+      #4A2F1B 100%),
+    linear-gradient(180deg, #F3EEDA 0%, #E3E6C6 100%);
+  background-size: 100% var(--row-h), 100% 100%;
+  background-repeat: repeat-y, no-repeat;
+  background-origin: content-box, border-box;
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,0.25),
+    inset 0 6px 10px rgba(42,35,24,0.18),
+    0 0 0 1px var(--gold),
+    0 0 0 5px var(--paper),
+    0 0 0 6px rgba(184,137,46,0.5),
+    0 10px 22px var(--shadow);
 }
-@keyframes sprout {
-  from { opacity:0; transform:translateY(10px) scale(0.94); }
-  to   { opacity:1; transform:translateY(0) scale(1); }
+.plot {
+  position: relative;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 0 0 calc(var(--soil-h) - 12px);
+  background: none; border: none; font: inherit; color: inherit;
+  cursor: pointer;
 }
-.flower-card:hover {
-  border-color: var(--moss);
-  box-shadow: 0 6px 20px var(--glow);
-  transform: translateY(-3px);
-  background: linear-gradient(160deg, #d8f0cc 0%, var(--dew) 100%);
+.plot::before {           /* tilled mound */
+  content: ''; position: absolute; left: 50%; bottom: calc(var(--soil-h) - 20px);
+  width: 48px; height: 13px; transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #3B2414 0%, #533420 55%, transparent 72%);
 }
-.flower-card.parent-a {
-  border-color: var(--moss); border-width: 2px;
-  box-shadow: 0 0 0 3px rgba(74,124,63,0.22);
-  background: linear-gradient(160deg, #d0eccc 0%, var(--dew) 100%);
+.plot.empty { cursor: default; }
+.plot.empty::after {      /* seed holes */
+  content: ''; position: absolute; left: 50%; bottom: calc(var(--soil-h) - 15px);
+  width: 5px; height: 5px; transform: translateX(-50%);
+  border-radius: 50%; background: #2C1B0E;
+  box-shadow: -11px 1px 0 -1px #2C1B0E, 11px 1px 0 -1px #2C1B0E;
+  opacity: 0.7;
 }
-.flower-card.parent-b {
-  border-color: var(--petal-pink); border-width: 2px;
-  box-shadow: 0 0 0 3px rgba(212,132,122,0.25);
-  background: linear-gradient(160deg, #f5e4e2 0%, var(--cream) 100%);
+.plot .pixel-flower { width: 64px; height: 96px; position: relative; z-index: 1; }
+.plot:hover .pixel-flower, .plot:focus-visible .pixel-flower { animation: sway 1.6s ease-in-out infinite; }
+.plot:hover .pixel-flower, .plot:focus-visible .pixel-flower, .plot.pinned .pixel-flower {
+  filter: drop-shadow(2px 0 0 #F1DFA6) drop-shadow(-2px 0 0 #F1DFA6) drop-shadow(0 -2px 0 #F1DFA6);
+}
+.plot.parent-a .pixel-flower {
+  filter: drop-shadow(2px 0 0 #B9C48F) drop-shadow(-2px 0 0 #B9C48F) drop-shadow(0 -2px 0 #B9C48F) drop-shadow(0 0 6px rgba(90,101,49,0.7));
+}
+.plot.parent-b .pixel-flower {
+  filter: drop-shadow(2px 0 0 #EBC1B2) drop-shadow(-2px 0 0 #EBC1B2) drop-shadow(0 -2px 0 #EBC1B2) drop-shadow(0 0 6px rgba(181,99,79,0.7));
+}
+.plot:focus-visible { outline: none; }
+.plot:focus-visible::before { box-shadow: 0 0 0 2px var(--gold-l); }
+.plot.sprouting .pixel-flower { animation: growIn 0.7s cubic-bezier(0.22,1,0.36,1); }
+@keyframes growIn {
+  from { transform: scaleY(0.15); opacity: 0.2; }
+  60%  { transform: scaleY(1.06); opacity: 1; }
+  to   { transform: none; }
+}
+@keyframes sway {
+  0%,100% { transform: rotate(0deg); }
+  30%     { transform: rotate(-2.5deg); }
+  70%     { transform: rotate(2.5deg); }
+}
+.plot .parent-tag { top: 4px; z-index: 2; }
+.bed-note {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: center; pointer-events: none;
+}
+.bed-note span {
+  font-family: var(--f-serif); font-style: italic; font-size: 1.15rem; color: var(--ink-2);
+  background: rgba(251,246,234,0.92); padding: 10px 22px; border-radius: 999px;
+  border: 1px solid var(--gold); box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4px rgba(184,137,46,0.4);
 }
 
-.flower-visual {
-  display: flex; flex-direction: column; gap: 3px; width: 38px;
-  filter: drop-shadow(0 2px 4px rgba(61,43,26,0.2));
+/* shared flower bits */
+.pixel-flower {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  transform-origin: 50% 100%;
 }
-.flower-part { border-radius: 4px; }
-.flower-part.pistil { height: 14px; border-radius: 50% 50% 4px 4px; width: 38px; }
-.flower-part.petals { height: 22px; width: 38px; }
-.flower-part.stem   { height: 18px; border-radius: 4px 4px 50% 50%; width: 38px; }
-
+.flower-plinth {
+  width: 70%; max-width: 96px; height: 6px; margin-top: -2px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(59,52,36,0.28) 0%, transparent 70%);
+}
 .flower-name {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 0.74rem; font-style: italic; color: var(--bark);
-  text-align: center; line-height: 1.25;
+  font-family: var(--f-serif); font-style: italic; font-weight: 600;
+  font-size: 0.98rem; line-height: 1.15; color: var(--ink-2); margin-top: 4px;
 }
-.flower-genotype {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.58rem; color: var(--sage); text-align: center; letter-spacing: 0.02em;
+.flower-species {
+  font-family: var(--f-display); font-size: 0.6rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--gold);
 }
+.flower-species i { font-family: var(--f-serif); text-transform: none; letter-spacing: 0; font-size: 0.8rem; color: var(--muted); }
+.flower-genotype { font-family: var(--f-mono); font-size: 0.64rem; color: var(--muted); letter-spacing: 0.02em; }
+.parent-tag {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  font-family: var(--f-display); font-size: 0.64rem; letter-spacing: 0.12em; white-space: nowrap;
+  padding: 2px 9px; border-radius: 999px; color: var(--paper);
+}
+.tag-a { background: var(--olive); }
+.tag-b { background: var(--rose); }
 .gen-badge {
-  font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--gold);
-  background: rgba(200,150,10,0.12); padding: 1px 5px;
-  border-radius: 8px; border: 1px solid rgba(200,150,10,0.3);
+  position: absolute; top: 14px; left: 14px;
+  font-family: var(--f-display); font-size: 0.6rem; letter-spacing: 0.08em;
+  color: var(--olive-d); background: var(--gold-xl);
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--gold);
+  box-shadow: inset 0 0 0 2px var(--gold-xl), inset 0 0 0 3px rgba(184,137,46,0.5);
 }
-.delete-btn {
-  position: absolute; top: 5px; right: 5px;
-  background: none; border: none; color: var(--border);
-  cursor: pointer; font-size: 0.72rem; line-height: 1;
-  padding: 2px 4px; border-radius: 4px; opacity: 0;
-  transition: opacity 0.15s, color 0.15s;
-}
-.flower-card:hover .delete-btn { opacity: 1; }
-.delete-btn:hover { color: var(--petal-pink); }
 
-.empty-state {
-  grid-column: 1 / -1; text-align: center;
-  color: var(--sage); font-style: italic; padding: 30px 16px;
-  font-size: 0.95rem; line-height: 1.7;
+/* flower tooltip card */
+.flower-tip {
+  position: absolute; z-index: 300; width: 220px;
+  display: flex; flex-direction: column; align-items: center; gap: 3px; text-align: center;
+  padding: 20px 14px 14px;
+  border: 1px solid var(--gold);
+  border-radius: 80px 80px 6px 6px;
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 26%, rgba(241,223,166,0.75) 0%, transparent 70%),
+    linear-gradient(180deg, #F3EAD2 0%, var(--paper) 60%);
+  box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px rgba(184,137,46,0.5), 0 14px 32px rgba(42,35,24,0.28);
+  pointer-events: none;
+  animation: tipIn 0.18s ease;
 }
-.empty-state .big-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+.flower-tip[hidden] { display: none; }
+.flower-tip.pinned { pointer-events: auto; }
+@keyframes tipIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.tip-traits {
+  display: grid; grid-template-columns: auto 1fr; column-gap: 8px; row-gap: 1px;
+  margin-top: 8px; text-align: left; font-size: 0.86rem; color: var(--ink-2); width: 100%;
+}
+.tip-traits .lbl { font-family: var(--f-display); font-size: 0.56rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--olive); align-self: center; }
+.tip-traits .rec { color: var(--rose); font-style: italic; }
+.tip-hint { margin-top: 8px; font-family: var(--f-serif); font-style: italic; font-size: 0.88rem; color: var(--gold); }
+.tip-actions { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; width: 100%; }
 
 .legend {
-  display: flex; flex-wrap: wrap; gap: 10px;
-  font-size: 0.8rem; color: var(--muted); margin-top: 10px;
+  display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;
+  font-family: var(--f-serif); font-size: 0.95rem; color: var(--muted); margin-top: 20px;
 }
-.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-swatch { width: 14px; height: 18px; border-radius: 7px 7px 2px 2px; display: inline-block; }
 
-/* BREED PANEL */
-.breed-area { display: flex; flex-direction: column; gap: 16px; }
+/* ── BREEDING ───────────────────────────── */
+.breed-area { display: flex; flex-direction: column; gap: 18px; }
 .parent-slots {
-  display: grid; grid-template-columns: 1fr 40px 1fr;
-  gap: 10px; align-items: center;
+  display: grid; grid-template-columns: 1fr 56px 1fr;
+  gap: 12px; align-items: center;
 }
 .parent-slot {
-  border: 2px dashed var(--border); border-radius: 12px;
-  min-height: 110px; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; padding: 12px;
-  gap: 8px; transition: all 0.22s; color: var(--muted);
-  font-style: italic; font-family: 'Cormorant Garamond', serif;
-  font-size: 0.95rem; text-align: center;
+  min-height: 190px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; padding: 18px 12px 14px;
+  border: 1px dashed var(--line);
+  border-radius: 80px 80px 6px 6px;
+  font-family: var(--f-serif); font-style: italic; font-size: 1.05rem;
+  color: var(--muted); text-align: center;
+  background: rgba(251,246,234,0.6);
+  transition: all 0.22s;
 }
-.parent-slot.has-parent { border-style: solid; color: var(--text); font-style: normal; }
-.parent-slot.slot-a { border-color: var(--moss); background: rgba(74,124,63,0.04); }
-.parent-slot.slot-b { border-color: var(--petal-pink); background: rgba(212,132,122,0.04); }
-.parent-slot .slot-label {
-  font-family: 'DM Mono', monospace; font-size: 0.62rem;
-  letter-spacing: 0.1em; text-transform: uppercase; color: var(--border); margin-bottom: -2px;
+.parent-slot.has-parent { border-style: solid; font-style: normal; color: var(--ink); }
+.parent-slot.slot-a.has-parent {
+  border-color: var(--olive);
+  background: radial-gradient(ellipse 70% 50% at 50% 35%, rgba(203,211,174,0.7), transparent 70%), var(--paper);
 }
-.slot-a .slot-label { color: var(--moss); }
-.slot-b .slot-label { color: var(--petal-pink); }
-.cross-sym { font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:var(--gold); text-align:center; line-height:1; font-weight:700; }
+.parent-slot.slot-b.has-parent {
+  border-color: var(--rose);
+  background: radial-gradient(ellipse 70% 50% at 50% 35%, rgba(231,191,175,0.7), transparent 70%), var(--paper);
+}
+.slot-label {
+  font-family: var(--f-display); font-style: normal; font-size: 0.68rem;
+  letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 4px;
+}
+.slot-a .slot-label { color: var(--olive); }
+.slot-b .slot-label { color: var(--rose); }
+.slot-glyph { font-size: 1.8rem; color: var(--gold); font-style: normal; line-height: 1; }
+.cross-sym {
+  width: 52px; height: 52px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  font-family: var(--f-display); font-size: 1.3rem; color: var(--gold);
+  border: 1px solid var(--gold);
+  box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px rgba(184,137,46,0.45);
+  background: var(--paper);
+}
 
-.punnett-container { background:var(--dew); border:1px solid var(--border); border-radius:10px; padding:14px; display:none; }
-.punnett-container.visible { display:block; }
-.punnett-title { font-family:'Cormorant Garamond',serif; font-size:0.88rem; font-style:italic; color:var(--muted); margin-bottom:12px; }
-.punnett-trait { margin-bottom:12px; }
-.punnett-trait-name { font-family:'DM Mono',monospace; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--moss); margin-bottom:6px; }
-.punnett-grid { display:inline-grid; grid-template-columns:22px repeat(2,30px); grid-template-rows:22px repeat(2,30px); gap:2px; font-family:'DM Mono',monospace; font-size:0.76rem; }
-.punnett-cell { display:flex; align-items:center; justify-content:center; border-radius:4px; }
-.punnett-header { color:var(--muted); font-size:0.68rem; }
-.punnett-result { border:1px solid var(--border); background:var(--cream); }
-.punnett-result.dominant  { color:var(--moss-d); font-weight:600; }
-.punnett-result.recessive { color:var(--petal-pink); }
+.punnett-container {
+  display: none;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(239,228,200,0.45);
+}
+.punnett-container.visible { display: block; }
+.punnett-title {
+  font-family: var(--f-serif); font-style: italic; font-size: 1.05rem;
+  color: var(--muted); text-align: center; margin-bottom: 14px;
+}
+.punnett-wrap { display: flex; flex-wrap: wrap; gap: 26px; justify-content: center; }
+.punnett-trait { text-align: center; }
+.punnett-trait-name {
+  font-family: var(--f-display); font-size: 0.68rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--olive); margin-bottom: 8px;
+}
+.punnett-grid {
+  display: inline-grid;
+  grid-template-columns: 24px repeat(2, 38px);
+  grid-template-rows: 24px repeat(2, 38px);
+  gap: 3px;
+  font-family: var(--f-mono); font-size: 0.82rem;
+}
+.punnett-cell { display: flex; align-items: center; justify-content: center; }
+.punnett-header { color: var(--gold); font-family: var(--f-display); font-size: 0.85rem; }
+.punnett-result {
+  border: 1px solid var(--gold);
+  border-radius: 10px 10px 3px 3px;
+  box-shadow: inset 0 0 0 2px rgba(251,246,234,0.7);
+}
+.punnett-result.dominant  { background: linear-gradient(180deg, #DCE2C2, #C3CDA1); color: var(--olive-d); font-weight: 500; }
+.punnett-result.recessive { background: linear-gradient(180deg, #F3DCD1, #E5BFAF); color: #7E3B2C; }
 
 .offspring-preview {
-  display:flex; flex-direction:column; align-items:center; gap:10px;
-  padding:20px; background:linear-gradient(135deg,rgba(74,124,63,0.08),rgba(200,150,10,0.06));
-  border-radius:12px; border:1.5px solid var(--border);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 26px 20px 20px;
+  border: 1px solid var(--gold);
+  border-radius: 120px 120px 6px 6px;
+  position: relative; overflow: hidden;
+  background:
+    repeating-conic-gradient(from 0deg at 50% 38%, rgba(221,190,110,0.22) 0 4deg, transparent 4deg 12deg),
+    radial-gradient(ellipse at 50% 38%, var(--gold-xl) 0%, var(--cream) 70%);
+  box-shadow: inset 0 0 0 5px var(--paper), inset 0 0 0 6px rgba(184,137,46,0.45);
+  animation: bloomIn 0.6s cubic-bezier(0.22,1,0.36,1);
 }
-.offspring-preview .flower-visual { width:52px; filter:drop-shadow(0 3px 6px rgba(61,43,26,0.25)); }
-.offspring-preview .flower-visual .flower-part { width:52px; }
-.offspring-preview .flower-visual .flower-part.pistil { height:20px; }
-.offspring-preview .flower-visual .flower-part.petals { height:30px; }
-.offspring-preview .flower-visual .flower-part.stem   { height:24px; }
-
-/* SIDEBAR */
-.sidebar { display:flex; flex-direction:column; gap:20px; }
-
-/* ACHIEVEMENTS */
-.ach-grid {
-  display:flex; flex-direction:column; gap:8px;
-  max-height:480px; overflow-y:auto; padding-right:4px;
+@keyframes bloomIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
+.offspring-name {
+  font-family: var(--f-serif); font-style: italic; font-weight: 700;
+  font-size: 1.4rem; color: var(--ink-2); margin-top: 6px;
 }
-.ach-grid::-webkit-scrollbar { width:5px; }
-.ach-grid::-webkit-scrollbar-track { background:var(--dew); border-radius:10px; }
-.ach-grid::-webkit-scrollbar-thumb { background:var(--border); border-radius:10px; }
+.offspring-traits {
+  margin-top: 10px; font-size: 0.98rem; color: var(--ink-2); line-height: 1.7;
+  display: grid; grid-template-columns: auto 1fr; column-gap: 12px; text-align: left;
+}
+.offspring-traits .lbl { font-family: var(--f-display); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--olive); align-self: center; }
+.tag-dom { font-family: var(--f-serif); font-style: italic; color: var(--muted); font-size: 0.9rem; }
+.tag-rec { font-family: var(--f-serif); font-style: italic; color: var(--rose); font-size: 0.9rem; }
 
+/* ── ACHIEVEMENTS ───────────────────────── */
+.ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
 .ach-item {
-  display:flex; align-items:center; gap:12px;
-  padding:10px 12px; border-radius:10px;
-  border:1px solid var(--border); background:var(--dew);
-  transition:all 0.3s ease; position:relative; overflow:hidden;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; position: relative; overflow: hidden;
+  border: 1px solid var(--line);
+  flex-shrink: 0;
+  border-radius: 26px 6px 26px 6px;
+  background: rgba(251,246,234,0.7);
+  transition: all 0.3s ease;
 }
-.ach-item.locked { opacity:0.45; filter:grayscale(0.5); }
 .ach-item.unlocked {
-  background:linear-gradient(135deg,rgba(74,124,63,0.1) 0%,rgba(200,150,10,0.07) 100%);
-  border-color:var(--sage);
+  border-color: var(--gold);
+  background: linear-gradient(120deg, rgba(241,223,166,0.55) 0%, rgba(251,246,234,0.9) 60%);
 }
-.ach-item.newly-unlocked { animation:achievePop 0.6s cubic-bezier(0.22,1,0.36,1); }
+.ach-item.locked { opacity: 0.6; }
+.ach-item.newly-unlocked { animation: achievePop 0.7s cubic-bezier(0.22,1,0.36,1); }
 @keyframes achievePop {
-  0%   { transform:scale(1); }
-  40%  { transform:scale(1.04); box-shadow:0 0 0 4px rgba(200,150,10,0.3); }
-  100% { transform:scale(1); box-shadow:none; }
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.04); box-shadow: 0 0 0 4px rgba(184,137,46,0.3); }
+  100% { transform: scale(1); box-shadow: none; }
 }
-.ach-icon { font-size:1.4rem; flex-shrink:0; width:32px; text-align:center; filter:drop-shadow(0 1px 2px rgba(0,0,0,0.2)); }
-.ach-item.locked .ach-icon { filter:grayscale(1) opacity(0.4); }
-.ach-text { flex:1; min-width:0; }
-.ach-name { font-family:'Cormorant Garamond',serif; font-size:0.88rem; font-weight:700; color:var(--bark); line-height:1.2; }
-.ach-desc { font-size:0.73rem; color:var(--muted); line-height:1.35; margin-top:2px; }
+.ach-icon {
+  width: 42px; height: 42px; flex-shrink: 0; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
+  border: 1px solid var(--gold);
+  background: radial-gradient(circle, var(--paper) 55%, var(--gold-xl) 100%);
+  box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4px rgba(184,137,46,0.45);
+}
+.ach-icon span { filter: sepia(0.3) saturate(0.85); }
+.ach-item.locked .ach-icon { border-color: var(--line); background: var(--cream); }
+.ach-item.locked .ach-icon span { filter: grayscale(1) opacity(0.45); }
+.ach-text { flex: 1; min-width: 0; }
+.ach-name { font-family: var(--f-serif); font-weight: 700; font-size: 1.02rem; color: var(--ink-2); line-height: 1.15; }
+.ach-desc { font-size: 0.86rem; color: var(--muted); line-height: 1.3; margin-top: 2px; }
 .ach-badge {
-  font-family:'DM Mono',monospace; font-size:0.6rem; padding:2px 7px;
-  border-radius:8px; flex-shrink:0;
+  width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
 }
-.ach-badge.done   { background:rgba(74,124,63,0.18); color:var(--moss-d); border:1px solid rgba(74,124,63,0.35); }
-.ach-badge.locked { background:rgba(122,106,84,0.12); color:var(--muted); border:1px solid var(--border); filter:none; opacity:1; }
-.ach-progress-bar-wrap { position:absolute; bottom:0; left:0; right:0; height:3px; background:rgba(122,106,84,0.15); }
-.ach-progress-bar { height:100%; background:linear-gradient(90deg,var(--moss),var(--gold)); transition:width 0.5s ease; border-radius:0 2px 2px 0; }
-.ach-summary { font-family:'DM Mono',monospace; font-size:0.72rem; color:var(--muted); text-align:center; padding:8px; border-top:1px solid var(--border); margin-top:8px; }
+.ach-badge.done   { background: var(--olive); color: var(--gold-xl); }
+.ach-badge.locked { border: 1px solid var(--line); color: var(--line); }
+.ach-progress-bar-wrap { position: absolute; bottom: 0; left: 18px; right: 18px; height: 2px; background: rgba(207,188,140,0.35); }
+.ach-progress-bar { height: 100%; background: linear-gradient(90deg, var(--olive), var(--gold)); transition: width 0.5s ease; }
+.ach-summary { font-family: var(--f-serif); font-style: italic; font-size: 1.1rem; color: var(--muted); text-align: center; }
 
-/* ALLELE REF */
-.info-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; }
-.info-card { background:var(--dew); border:1px solid var(--border); border-radius:8px; padding:10px; display:flex; align-items:center; gap:10px; }
-.allele-swatch { width:20px; height:44px; border-radius:4px; flex-shrink:0; box-shadow:0 2px 4px rgba(0,0,0,0.15); }
-.allele-name { font-family:'Cormorant Garamond',serif; font-size:0.88rem; font-weight:700; color:var(--bark); margin-bottom:2px; }
-.allele-meta { font-family:'DM Mono',monospace; font-size:0.62rem; color:var(--muted); line-height:1.5; }
+/* ── ALLELE REFERENCE ───────────────────── */
+.ref-block + .ref-block { margin-top: 26px; }
+.forms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+.forms-grid + .forms-grid { margin-top: 14px; }
+.form-card {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center;
+  padding: 16px 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 60px 60px 6px 6px;
+  background: radial-gradient(ellipse 70% 45% at 50% 32%, rgba(241,223,166,0.5), transparent 70%), var(--paper);
+}
+.form-name { font-family: var(--f-serif); font-weight: 700; font-size: 1.08rem; color: var(--ink-2); margin-top: 4px; }
+.form-latin { font-family: var(--f-serif); font-style: italic; color: var(--muted); font-size: 0.92rem; }
+.form-locus { font-family: var(--f-mono); font-size: 0.68rem; color: var(--gold); margin-top: 2px; }
+.ref-note { font-family: var(--f-serif); font-style: italic; font-size: 1rem; color: var(--muted); text-align: center; margin: -6px auto 16px; max-width: 640px; }
+.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.info-card {
+  display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+  border: 1px solid var(--line); border-radius: 6px;
+  background: rgba(251,246,234,0.75);
+}
+.allele-swatch {
+  width: 22px; height: 40px; flex-shrink: 0;
+  border-radius: 11px 11px 3px 3px;
+  box-shadow: 0 0 0 1px var(--gold), inset 0 0 0 2px rgba(255,255,255,0.35);
+}
+.allele-name { font-family: var(--f-serif); font-weight: 700; font-size: 1rem; color: var(--ink-2); }
+.allele-meta { font-family: var(--f-mono); font-size: 0.66rem; color: var(--muted); line-height: 1.55; }
 
-/* ACHIEVEMENT TOAST */
+/* ── TOASTS ─────────────────────────────── */
 .ach-toast {
-  position:fixed; bottom:80px; right:24px;
-  background:linear-gradient(135deg,var(--bark),var(--soil));
-  color:var(--parchment); padding:14px 18px; border-radius:12px;
-  font-size:0.88rem; box-shadow:0 6px 28px rgba(61,43,26,0.4);
-  transform:translateX(120%); opacity:0;
-  transition:all 0.35s cubic-bezier(0.22,1,0.36,1);
-  pointer-events:none; z-index:200;
-  border-left:4px solid var(--gold); max-width:280px;
+  position: fixed; bottom: 86px; right: 24px; z-index: 200;
+  max-width: 300px; padding: 16px 20px;
+  background: linear-gradient(180deg, var(--olive-d), var(--olive-dd));
+  color: var(--paper);
+  border: 1px solid var(--gold);
+  border-radius: 28px 6px 28px 6px;
+  box-shadow: inset 0 0 0 4px var(--olive-dd), inset 0 0 0 5px rgba(221,190,110,0.5), 0 10px 30px rgba(42,35,24,0.4);
+  transform: translateX(130%); opacity: 0;
+  transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+  pointer-events: none;
 }
-.ach-toast.show { transform:translateX(0); opacity:1; }
-.ach-toast-header { font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); margin-bottom:4px; }
-.ach-toast-name { font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:700; font-style:italic; color:var(--meadow); }
-.ach-toast-desc { font-size:0.78rem; color:rgba(245,240,226,0.75); margin-top:2px; }
+.ach-toast.show { transform: none; opacity: 1; }
+.ach-toast-header { font-family: var(--f-display); font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-l); margin-bottom: 4px; }
+.ach-toast-name { font-family: var(--f-serif); font-size: 1.2rem; font-weight: 700; font-style: italic; color: var(--gold-xl); }
+.ach-toast-desc { font-size: 0.9rem; color: rgba(251,246,234,0.8); margin-top: 2px; }
 
-/* GENERAL TOAST */
 .toast {
-  position:fixed; bottom:24px; right:24px;
-  background:var(--bark); color:var(--parchment);
-  padding:10px 18px; border-radius:20px; font-size:0.88rem;
-  box-shadow:0 4px 20px rgba(61,43,26,0.35);
-  transform:translateY(60px); opacity:0;
-  transition:all 0.25s ease; pointer-events:none; z-index:100;
-  border-left:3px solid var(--moss);
+  position: fixed; bottom: 24px; right: 24px; z-index: 100;
+  padding: 11px 22px;
+  background: var(--ink-2); color: var(--gold-xl);
+  font-family: var(--f-serif); font-style: italic; font-size: 1.02rem;
+  border: 1px solid var(--gold); border-radius: 999px;
+  box-shadow: inset 0 0 0 3px var(--ink-2), inset 0 0 0 4px rgba(221,190,110,0.4), 0 6px 20px rgba(42,35,24,0.35);
+  transform: translateY(70px); opacity: 0;
+  transition: all 0.28s ease; pointer-events: none;
 }
-.toast.show { transform:translateY(0); opacity:1; }
+.toast.show { transform: none; opacity: 1; }
 
-@media (max-width:480px) {
-  .header-inner { padding:10px 14px; }
-  main { padding:14px 10px 40px; }
-  .panel { padding:15px; }
-  .parent-slots { grid-template-columns:1fr; }
-  .cross-sym { display:none; }
-  .flower-grid { grid-template-columns:repeat(auto-fill,minmax(92px,1fr)); gap:8px; }
+/* ── PAGES ──────────────────────────────── */
+.page { display: none; }
+.page.active { display: block; animation: pageIn 0.4s ease; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.page-stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: 26px; }
+.page > .panel, .reel { min-width: 0; }
+.page-lede {
+  text-align: center; font-family: var(--f-serif); font-style: italic;
+  color: var(--muted); font-size: 1.08rem; margin: -6px auto 22px; max-width: 620px;
 }
-    #portfolio-toolbar {
-        background-color: #f8fafc !important;
-        border-bottom: 1px solid #e2e8f0 !important;
-        padding: 0 24px !important;
-        display: flex !important;
-        align-items: center !important;
-        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
-        z-index: 1000000 !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        height: 56px !important;
-        box-sizing: border-box !important;
-    }
-    .portfolio-back-btn {
-        display: inline-flex !important;
-        align-items: center !important;
-        padding: 8px 16px !important;
-        background-color: #6366f1 !important;
-        color: #ffffff !important;
-        text-decoration: none !important;
-        border-radius: 8px !important;
-        font-size: 14px !important;
-        font-weight: 600 !important;
-        transition: all 0.2s ease !important;
-        line-height: 1 !important;
-        border: none !important;
-        cursor: pointer !important;
-    }
-    .portfolio-back-btn:hover {
-        background-color: #4f46e5 !important;
-        transform: translateY(-1px) !important;
-    }
+.laurel-progress { max-width: 520px; margin: 0 auto 26px; text-align: center; }
+.laurel-progress .bar {
+  height: 10px; margin-top: 10px; border-radius: 999px; overflow: hidden;
+  border: 1px solid var(--gold); background: var(--paper);
+  box-shadow: inset 0 0 0 2px var(--paper);
+}
+.laurel-progress .bar > div { height: 100%; background: linear-gradient(90deg, var(--olive), var(--gold)); transition: width 0.6s ease; }
+
+/* ── DRAWER ─────────────────────────────── */
+.scrim {
+  position: fixed; inset: 56px 0 0 0; z-index: 400;
+  background: rgba(35,41,20,0.45); backdrop-filter: blur(2px);
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.scrim.show { opacity: 1; pointer-events: auto; }
+.drawer {
+  position: fixed; top: 56px; bottom: 0; left: 0; z-index: 450;
+  width: min(320px, 86vw);
+  display: flex; flex-direction: column;
+  padding: 22px 20px 20px; overflow-y: auto;
+  background:
+    radial-gradient(ellipse 120% 40% at 0% 100%, rgba(221,190,110,0.14), transparent 70%),
+    linear-gradient(180deg, var(--olive-d) 0%, var(--olive-dd) 100%);
+  color: var(--paper);
+  border-right: 1px solid var(--gold);
+  box-shadow: inset -5px 0 0 var(--olive-dd), inset -6px 0 0 rgba(221,190,110,0.4), 12px 0 30px rgba(0,0,0,0.3);
+  transform: translateX(-105%); visibility: hidden;
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), visibility 0s linear 0.35s;
+}
+.drawer.open { transform: none; visibility: visible; transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), visibility 0s; }
+.drawer-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.drawer-title {
+  font-family: var(--f-display); font-size: 1.5rem; letter-spacing: 0.16em;
+  background: linear-gradient(180deg, var(--gold-xl), var(--gold));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.drawer-label {
+  display: flex; align-items: center; gap: 10px;
+  margin: 22px 4px 10px;
+  font-family: var(--f-display); font-size: 0.66rem; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--gold-l);
+}
+.drawer-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(221,190,110,0.6), transparent); }
+.nav-link {
+  display: flex; align-items: center; gap: 14px; width: 100%;
+  min-height: 52px; padding: 10px 14px; margin-bottom: 6px;
+  background: none; border: 1px solid transparent; border-radius: 26px 6px 26px 6px;
+  color: var(--gold-xl); cursor: pointer; text-align: left;
+  font-family: var(--f-display); font-size: 0.86rem; letter-spacing: 0.16em; text-transform: uppercase;
+  transition: background 0.18s, border-color 0.18s;
+}
+.nav-link:hover { background: rgba(221,190,110,0.1); border-color: rgba(221,190,110,0.35); }
+.nav-link.active { background: rgba(221,190,110,0.17); border-color: var(--gold-l); }
+.nav-link:focus-visible { outline: 2px solid var(--gold-l); outline-offset: 2px; }
+.nav-glyph {
+  width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(221,190,110,0.6);
+  font-family: var(--f-serif); font-size: 1.05rem; letter-spacing: 0;
+}
+.nav-meta { margin-left: auto; font-family: var(--f-serif); font-style: italic; text-transform: none; letter-spacing: 0; font-size: 0.95rem; color: var(--sage-l); }
+.drawer-actions { display: flex; flex-direction: column; gap: 10px; }
+.drawer-actions .btn { width: 100%; }
+.drawer-foot {
+  margin-top: auto; padding-top: 26px; text-align: center;
+  font-family: var(--f-serif); font-style: italic; font-size: 0.95rem; color: rgba(241,223,166,0.55);
+}
+
+/* ── MODALS ─────────────────────────────── */
+.modal-scrim {
+  position: fixed; inset: 56px 0 0 0; z-index: 600;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 4vh 16px 6vh; overflow-y: auto;
+  background: rgba(35,41,20,0.55); backdrop-filter: blur(3px);
+  opacity: 0; pointer-events: none; visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0s linear 0.25s;
+}
+.modal-scrim.show { opacity: 1; pointer-events: auto; visibility: visible; transition: opacity 0.25s ease, visibility 0s; }
+.modal { position: relative; width: min(720px, 100%); margin: auto 0; }
+.modal.wide { width: min(1080px, 100%); }
+.modal-scrim.show .modal { animation: modalIn 0.35s cubic-bezier(0.22,1,0.36,1); }
+@keyframes modalIn { from { opacity: 0; transform: translateY(14px) scale(0.98); } to { opacity: 1; transform: none; } }
+.modal-close { position: absolute; top: 16px; right: 16px; z-index: 3; }
+
+.howto { display: grid; gap: 18px; }
+.howto-step { display: grid; grid-template-columns: 46px 1fr; gap: 16px; align-items: start; }
+.howto-num {
+  width: 46px; height: 46px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--f-display); font-size: 0.95rem; color: var(--olive-d);
+  border: 1px solid var(--gold);
+  background: radial-gradient(circle, var(--paper) 55%, var(--gold-xl) 100%);
+  box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4px rgba(184,137,46,0.45);
+}
+.howto h4 { font-family: var(--f-serif); font-weight: 700; font-size: 1.2rem; color: var(--ink-2); line-height: 1.2; margin-bottom: 3px; }
+.howto p { color: var(--ink-2); line-height: 1.5; font-size: 1.02rem; }
+.howto code { font-family: var(--f-mono); font-size: 0.8rem; background: rgba(239,228,200,0.8); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--line); }
+.howto-foot { text-align: center; margin-top: 22px; font-family: var(--f-serif); font-style: italic; color: var(--muted); }
+
+/* ── RESPONSIVE ─────────────────────────── */
+@media (max-width: 680px) {
+  .header-inner { padding: 14px 12px 12px; gap: 8px; }
+  .brand-flourish { display: none; }
+  .logo-word { font-size: 1.65rem; letter-spacing: 0.12em; padding-left: 0.12em; }
+  .logo-sub { font-size: 0.82rem; margin-top: 4px; }
+  .header-right { gap: 6px; }
+  .halo { width: 240px; height: 240px; }
+}
+@media (max-width: 480px) {
+  main { padding: 16px 10px 44px; }
+  .header-inner { padding: 12px 8px 10px; gap: 4px; }
+  .icon-btn { width: 40px; height: 40px; font-size: 1.2rem; }
+  .header-right { gap: 4px; }
+  .logo-word { font-size: 1.3rem; letter-spacing: 0.1em; padding-left: 0.1em; }
+  .logo-sub { font-size: 0.74rem; }
+  .panel { padding: 26px 14px 18px; border-radius: 26px 26px 6px 6px; }
+  .panel::before, .panel::after { width: 40px; height: 40px; }
+  .section-title { font-size: 0.9rem; letter-spacing: 0.16em; }
+  .section-title::before, .section-title::after { flex-basis: 40px; }
+  .parent-slots { grid-template-columns: 1fr 1fr; }
+  .cross-sym { display: none; }
+  .parent-slot { min-height: 170px; }
+  .reel { padding: 8px 8px; border-radius: 56px; }
+  .flower-bed { --row-h: 106px; --soil-h: 24px; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); padding: 4px 6px 2px; border-width: 5px; }
+  .plot .pixel-flower { width: 48px; height: 72px; }
+  .plot::before { width: 38px; }
+  .flower-tip { width: 200px; }
+  .ach-grid { grid-template-columns: 1fr; }
+  .howto-step { grid-template-columns: 38px 1fr; gap: 12px; }
+  .howto-num { width: 38px; height: 38px; font-size: 0.8rem; }
+  .toast, .ach-toast { right: 12px; left: 12px; max-width: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
 </style>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+<link rel="stylesheet" href="../../portfolio-toolbar.css">
+<style id="portfolio-toolbar-theme">
+/* Back-to-portfolio bar, themed to match this game (gilded botanical) */
+#portfolio-toolbar {
+    --pt-bar-bg: linear-gradient(180deg, #353D1C 0%, #232914 100%);
+    --pt-bar-border: 1px solid #B8892E;
+    --pt-bar-shadow: 0 2px 10px rgba(42, 35, 24, 0.3);
+    --pt-font: 'Federo', 'Cormorant Garamond', serif;
+    --pt-size: 13px;
+    --pt-weight: 400;
+    --pt-spacing: 0.14em;
+    --pt-transform: uppercase;
+    --pt-btn-pad: 20px;
+    --pt-btn-bg: linear-gradient(180deg, #5A6531 0%, #353D1C 100%);
+    --pt-btn-border: 1px solid #B8892E;
+    --pt-btn-radius: 999px;
+    --pt-btn-shadow: inset 0 0 0 3px #353D1C, inset 0 0 0 4px rgba(221, 190, 110, 0.45);
+    --pt-btn-color: #F1DFA6;
+    --pt-hover-bg: linear-gradient(180deg, #6B783B 0%, #424A22 100%);
+    --pt-hover-border-color: #DDBE6E;
+    --pt-focus: #DDBE6E;
+}
+</style>
+<script src="../../game-versions.js" defer></script>
+<script src="../../portfolio-toolbar.js" defer></script>
 </head>
 <body style="padding-top: 56px !important;">
     <div id="portfolio-toolbar">
-        <a href="../../index.html" class="portfolio-back-btn">← Back to Portfolio</a>
+        <a href="../../index.html" class="portfolio-back-btn"><span class="portfolio-back-arrow" aria-hidden="true">←</span>Back<span class="portfolio-back-extra"> to Portfolio</span></a>
     </div>
 
 <header>
+  <div class="halo" aria-hidden="true"></div>
   <div class="header-inner">
-    <div class="logo">
-      Floralis
-      <span class="logo-sub">Mendelian Garden</span>
+    <div class="header-left">
+      <button class="icon-btn hamburger" id="menuBtn" onclick="toggleDrawer()" aria-label="Open menu" aria-controls="drawer" aria-expanded="false"><span></span></button>
     </div>
-    <div class="toolbar">
-      <button class="btn btn-outline btn-sm" onclick="loadFromFile()">📂 Load</button>
-      <button class="btn btn-outline btn-sm" onclick="saveToFile()">💾 Save</button>
-      <button class="btn btn-outline btn-sm" onclick="newGarden()">🌱 New Garden</button>
+    <div class="brand">
+      <span class="brand-flourish left" aria-hidden="true"></span>
+      <h1 class="logo"><span class="logo-word">FLORALIS</span><span class="logo-sub">A Mendelian Garden</span></h1>
+      <span class="brand-flourish right" aria-hidden="true"></span>
+    </div>
+    <div class="header-right">
+      <button class="icon-btn" onclick="openModal('helpModal')" aria-label="How to play" title="How to play">?</button>
+      <button class="icon-btn" onclick="openModal('herbModal')" aria-label="Open the Herbarium" title="Herbarium">i</button>
     </div>
   </div>
 </header>
-<div class="status-bar" id="statusBar">Welcome to your garden — pick some wildflowers to begin</div>
+<div class="ribbon" aria-hidden="true"></div>
+<div class="status-bar" id="statusBar" role="status">Welcome to your garden — gather some wildflowers to begin</div>
 
 <main>
-<div class="page-grid">
 
-  <!-- GARDEN -->
-  <div class="panel garden-panel">
-    <div class="section-title"><span class="icon">🌻</span> Your Garden</div>
-    <div class="garden-toolbar">
-      <button class="btn btn-primary" onclick="pickWildflower()">🌼 Pick Wildflower</button>
-      <button class="btn btn-ghost btn-sm" onclick="clearSelection()" id="clearSelBtn" style="display:none">✕ Clear Selection</button>
-      <div class="garden-count" id="gardenCount">0 / 24 flowers</div>
-    </div>
-    <div class="flower-grid" id="gardenGrid">
-      <div class="empty-state"><span class="big-icon">🌱</span>Your garden is empty.<br>Pick some wildflowers to start!</div>
-    </div>
-    <div class="legend">
-      <div class="legend-item"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:var(--moss);border:2px solid var(--moss-d)"></span> Parent A</div>
-      <div class="legend-item"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:var(--petal-pink);border:2px solid #b0605a"></span> Parent B</div>
-      <div class="legend-item" style="color:var(--muted);font-style:italic">Click flowers to select parents</div>
+  <!-- PAGE · GARDEN -->
+  <div class="page" data-page="garden">
+    <div class="page-stack">
+      <section class="panel garden-panel">
+        <h2 class="section-title">Your Garden</h2>
+        <div class="reel" id="reel">
+          <div class="reel-window">
+            <div class="reel-strip" id="reelStrip"></div>
+            <div class="reel-marker" aria-hidden="true"></div>
+          </div>
+        </div>
+        <div class="reel-caption" id="reelCaption" aria-live="polite">The meadow sways, waiting for a gardener</div>
+        <div class="garden-toolbar">
+          <button class="btn btn-primary" id="gatherBtn" onclick="pickWildflower()">❀ Gather Wildflower</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearSelection()" id="clearSelBtn" style="display:none">Clear Selection</button>
+          <div class="garden-count" id="gardenCount">0 / 24 flowers</div>
+        </div>
+        <div class="flower-bed" id="gardenGrid" aria-label="Flower bed"></div>
+        <div class="legend">
+          <div class="legend-item"><span class="legend-swatch" style="background:var(--olive)"></span> Parent A</div>
+          <div class="legend-item"><span class="legend-swatch" style="background:var(--rose)"></span> Parent B</div>
+          <div class="legend-item" style="font-style:italic">Hover a flower to inspect it · click to tend it</div>
+        </div>
+      </section>
+
+      <section class="panel breed-panel">
+        <h2 class="section-title">The Crossing Bench</h2>
+        <div class="breed-area">
+          <div class="parent-slots">
+            <div class="parent-slot slot-a" id="slotA"></div>
+            <div class="cross-sym" aria-hidden="true">✕</div>
+            <div class="parent-slot slot-b" id="slotB"></div>
+          </div>
+          <div style="text-align:center">
+            <button class="btn btn-breed" onclick="crossbreed()" id="breedBtn" disabled>✦ Crossbreed ✦</button>
+          </div>
+          <div class="punnett-container" id="punnettContainer">
+            <div class="punnett-title">Punnett squares — the four equal chances for each trait</div>
+            <div class="punnett-wrap" id="punnettGrids"></div>
+          </div>
+          <div id="offspringArea" style="display:none">
+            <h3 class="section-title small" style="margin-top:6px">A New Seedling</h3>
+            <div class="offspring-preview" id="offspringPreview"></div>
+            <div style="text-align:center;margin-top:16px">
+              <button class="btn btn-primary" onclick="keepOffspring()">Plant in Garden</button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="panel">
-      <div class="section-title"><span class="icon">🏅</span> Achievements</div>
+  <!-- PAGE · LAURELS -->
+  <div class="page" data-page="laurels">
+    <section class="panel">
+      <h2 class="section-title">Laurels</h2>
+      <p class="page-lede">Honours bestowed upon a diligent gardener — for gathering, crossing, lineage and colour.</p>
+      <div class="laurel-progress">
+        <div class="ach-summary" id="achSummary"></div>
+        <div class="bar"><div id="achBar" style="width:0%"></div></div>
+      </div>
       <div class="ach-grid" id="achGrid"></div>
-      <div class="ach-summary" id="achSummary">0 / 0 unlocked</div>
-    </div>
+    </section>
   </div>
 
-  <!-- CROSSBREEDING -->
-  <div class="panel breed-panel">
-    <div class="section-title"><span class="icon">🔬</span> Crossbreeding Lab</div>
-    <div class="breed-area">
-      <div class="parent-slots">
-        <div class="parent-slot slot-a" id="slotA">
-          <div class="slot-label">Parent A</div>
-          <div style="font-size:1.8rem">🌿</div>
-          <div>Select a flower<br>from your garden</div>
-        </div>
-        <div class="cross-sym">✕</div>
-        <div class="parent-slot slot-b" id="slotB">
-          <div class="slot-label">Parent B</div>
-          <div style="font-size:1.8rem">🌸</div>
-          <div>Select a flower<br>from your garden</div>
-        </div>
-      </div>
-      <div style="text-align:center">
-        <button class="btn btn-breed" onclick="crossbreed()" id="breedBtn" disabled>✦ Crossbreed</button>
-      </div>
-      <div class="punnett-container" id="punnettContainer">
-        <div class="punnett-title">Punnett Square — predicted outcomes</div>
-        <div id="punnettGrids" style="display:flex;flex-wrap:wrap;gap:20px"></div>
-      </div>
-      <div id="offspringArea" style="display:none">
-        <div class="section-title" style="margin-top:4px"><span class="icon">🌺</span> New Offspring</div>
-        <div class="offspring-preview" id="offspringPreview"></div>
-        <div style="text-align:center;margin-top:14px">
-          <button class="btn btn-primary" onclick="keepOffspring()">+ Add to Garden</button>
-        </div>
-      </div>
-    </div>
+  <!-- PAGE · HERBARIUM -->
+  <div class="page" data-page="herbarium">
+    <section class="panel allele-panel">
+      <h2 class="section-title">Herbarium</h2>
+      <div class="herbarium-body"></div>
+    </section>
   </div>
 
-  <!-- ALLELE REFERENCE -->
-  <div class="panel allele-panel">
-    <div class="section-title"><span class="icon">🧬</span> Allele Reference</div>
-    <div class="info-grid" id="alleleRef"></div>
-  </div>
-
-</div>
 </main>
 
-<div class="ach-toast" id="achToast">
-  <div class="ach-toast-header">🏅 Achievement Unlocked</div>
+<!-- DRAWER -->
+<div class="scrim" id="scrim" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer" aria-label="Main menu" inert>
+  <div class="drawer-head">
+    <div class="drawer-title">FLORALIS</div>
+    <button class="icon-btn" onclick="closeDrawer()" aria-label="Close menu">✕</button>
+  </div>
+  <div class="drawer-label">Pages</div>
+  <button class="nav-link" data-nav="garden" onclick="goTo('garden')"><span class="nav-glyph">❀</span>Garden</button>
+  <button class="nav-link" data-nav="laurels" onclick="goTo('laurels')"><span class="nav-glyph">✦</span>Laurels<span class="nav-meta" id="navLaurelCount"></span></button>
+  <button class="nav-link" data-nav="herbarium" onclick="goTo('herbarium')"><span class="nav-glyph">❦</span>Herbarium</button>
+  <div class="drawer-label">Garden Ledger</div>
+  <div class="drawer-actions">
+    <button class="btn btn-outline" onclick="closeDrawer();loadFromFile()">Load Garden</button>
+    <button class="btn btn-outline" onclick="closeDrawer();saveToFile()">Save Garden</button>
+    <button class="btn btn-outline" onclick="closeDrawer();newGarden()">New Garden</button>
+  </div>
+  <div class="drawer-foot">❧ Cultivated after the laws of Mendel</div>
+</nav>
+
+<!-- MODAL · HOW TO PLAY -->
+<div class="modal-scrim" id="helpModal" onclick="if(event.target===this)closeModal()" inert>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <section class="panel">
+      <button class="icon-btn light modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+      <h2 class="section-title" id="helpTitle">How to Play</h2>
+      <div class="howto">
+        <div class="howto-step"><div class="howto-num">I</div><div>
+          <h4>Gather wildflowers</h4>
+          <p>Press <em>Gather Wildflower</em>. The meadow reel spins and settles on the bloom you collect, which is planted in your bed. The bed holds 24 flowers.</p>
+        </div></div>
+        <div class="howto-step"><div class="howto-num">II</div><div>
+          <h4>Tend your bed</h4>
+          <p>Hover over a flower to see its card. Click (or tap) it to pin the card, then choose it for crossing or uproot it.</p>
+        </div></div>
+        <div class="howto-step"><div class="howto-num">III</div><div>
+          <h4>Cross two flowers</h4>
+          <p>Choose two parents. The Crossing Bench shows a Punnett square for each trait (stem, petals and pistil). Press <em>Crossbreed</em> to sprout a seedling, then plant it if you'd like to keep it.</p>
+        </div></div>
+        <div class="howto-step"><div class="howto-num">IV</div><div>
+          <h4>Read the genes</h4>
+          <p>Every trait carries two alleles. Uppercase is dominant, lowercase recessive. One dominant allele is enough to show its colour (<code>Pp</code> blooms crimson). A recessive colour appears only when both alleles are recessive (<code>pp</code> blooms blush pink). Genotypes read stem · petals · pistil.</p>
+        </div></div>
+        <div class="howto-step"><div class="howto-num">V</div><div>
+          <h4>Know your forms</h4>
+          <p>The expressed petal allele decides the species (rose, iris, tulip or poppy). The stem allele decides how the leaves grow. The Herbarium (the <em>i</em> button) lists every allele.</p>
+        </div></div>
+        <div class="howto-step"><div class="howto-num">VI</div><div>
+          <h4>Earn laurels</h4>
+          <p>Milestones in gathering, breeding, lineage and colour earn laurels, announced the moment you earn them. See them all on the Laurels page in the ☰ menu, where you can also save, load or start a new garden.</p>
+        </div></div>
+      </div>
+      <p class="howto-foot">❧ Your garden is also kept in this browser between visits.</p>
+    </section>
+  </div>
+</div>
+
+<!-- MODAL · HERBARIUM -->
+<div class="modal-scrim" id="herbModal" onclick="if(event.target===this)closeModal()" inert>
+  <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="herbTitle">
+    <section class="panel">
+      <button class="icon-btn light modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+      <h2 class="section-title" id="herbTitle">Herbarium</h2>
+      <div class="herbarium-body"></div>
+    </section>
+  </div>
+</div>
+
+<div class="flower-tip" id="flowerTip" hidden></div>
+
+<div class="ach-toast" id="achToast" role="status">
+  <div class="ach-toast-header">✦ Laurel Earned ✦</div>
   <div class="ach-toast-name" id="achToastName"></div>
   <div class="ach-toast-desc" id="achToastDesc"></div>
 </div>
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status"></div>
 
 <script>
 // ══════════════════════════════════════════
@@ -610,58 +1058,240 @@ function randomPair(pairs) {
   return [pair[1], pair[1]];
 }
 
+function expressedAllele(g) {
+  if (ALLELES[g.a1].dom === 'D') return g.a1;
+  if (ALLELES[g.a2].dom === 'D') return g.a2;
+  return g.a1;
+}
+
 function expressedColor(a1sym, a2sym) {
-  const a1 = ALLELES[a1sym], a2 = ALLELES[a2sym];
-  if (a1.dom === 'D') return a1.color;
-  if (a2.dom === 'D') return a2.color;
-  return a1.color;
+  return ALLELES[expressedAllele({a1:a1sym, a2:a2sym})].color;
 }
 
 function rgbStr(rgb) { return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`; }
 
 function generateWildflower() {
   const sp = randomPair(STEM_PAIRS), pp = randomPair(PETAL_PAIRS), vp = randomPair(PISTIL_PAIRS);
-  return {
+  const f = {
     id: String(Date.now()) + String(Math.random()),
     stem:   {a1:sp[0], a2:sp[1]},
     petals: {a1:pp[0], a2:pp[1]},
     pistil: {a1:vp[0], a2:vp[1]},
-    name: generateFlowerName(),
     generation: 0,
   };
+  f.name = generateFlowerName(f);
+  return f;
 }
 
 function punnett(p1, p2) {
   return [[p1.a1,p2.a1],[p1.a1,p2.a2],[p1.a2,p2.a1],[p1.a2,p2.a2]];
 }
 
+function domFirst(a, b) { return (ALLELES[a].dom==='D'?0:1) - (ALLELES[b].dom==='D'?0:1); }
+
 function punnettOffspring(p1, p2) {
   const outcomes = punnett(p1, p2);
   const chosen = outcomes[Math.floor(Math.random() * 4)];
-  const sorted = [...chosen].sort((a,b)=>(ALLELES[a].dom==='D'?0:1)-(ALLELES[b].dom==='D'?0:1));
+  const sorted = [...chosen].sort(domFirst);
   return {a1:sorted[0], a2:sorted[1]};
 }
 
 function breedFlowers(pa, pb) {
-  return {
+  const f = {
     id: String(Date.now()) + String(Math.random()),
     stem:   punnettOffspring(pa.stem,   pb.stem),
     petals: punnettOffspring(pa.petals, pb.petals),
     pistil: punnettOffspring(pa.pistil, pb.pistil),
-    name: generateFlowerName(),
     generation: Math.max(pa.generation||0, pb.generation||0) + 1,
   };
+  f.name = generateFlowerName(f);
+  return f;
 }
 
-const ADJ  = ['Moonlit','Velvet','Crimson','Dewdrop','Twilight','Golden','Misty','Starfall','Ember','Frost','Amber','Silken','Russet','Willowed','Briar','Verdant'];
-const NOUN = ['Bloom','Petal','Blossom','Morn','Rose','Lace','Drift','Veil','Crown','Bell','Wisp','Flame','Sprig','Bower','Fern','Glen'];
-function generateFlowerName() {
-  return ADJ[Math.floor(Math.random()*ADJ.length)]+' '+NOUN[Math.floor(Math.random()*NOUN.length)];
+const ADJ = ['Moonlit','Velvet','Crimson','Dewdrop','Twilight','Golden','Misty','Starfall','Ember','Frost','Amber','Silken','Russet','Willowed','Briar','Verdant'];
+function generateFlowerName(flower) {
+  const nouns = formOf(flower).nouns;
+  return ADJ[Math.floor(Math.random()*ADJ.length)] + ' ' + nouns[Math.floor(Math.random()*nouns.length)];
 }
 
 function isHomoRec(g)  { return ALLELES[g.a1].dom==='R' && ALLELES[g.a2].dom==='R'; }
 function isHomoDom(g)  { return ALLELES[g.a1].dom==='D' && ALLELES[g.a2].dom==='D'; }
 function isHetero(g)   { return ALLELES[g.a1].dom !== ALLELES[g.a2].dom; }
+
+// ══════════════════════════════════════════
+//  PIXEL FLORA — sprite data
+//  16×24 sprites: a 12-row bloom on top of a 12-row stem/leaf habit.
+//  O outline · P petal · D petal shade · H petal light · C pistil · c pistil shade
+//  G stem · g stem shade · L leaf · l leaf shade · K leaf/stem outline · . empty
+// ══════════════════════════════════════════
+
+const FLOWER_FORMS = {
+  P: { key:'rose', name:'Rose', latin:'Rosa gallica',
+       nouns:['Rose','Damask','Eglantine','Briar Rose'],
+       rows:[
+        '......OOOO......',
+        '...OOOHHPPOOO...',
+        '..OHHPPDDPPPPO..',
+        '.OHPPDDCCDDPPPO.',
+        '.OHPDCCccCDPPPO.',
+        '.OPPDCcDDcCDPDO.',
+        '.OPPDDCCCCDDPDO.',
+        '..OPPDDDDDDPDO..',
+        '..OOPPPPPPPDOO..',
+        '...OOPPPPPDOO...',
+        '....KLOOOOLK....',
+        '.....KLGgLK.....',
+       ]},
+  Q: { key:'iris', name:'Iris', latin:'Iris germanica',
+       nouns:['Iris','Flag','Fleur','Orris'],
+       rows:[
+        '.......OO.......',
+        '......OHPO......',
+        '.OO...OHPO...OO.',
+        'OHPO..OHPDO.OPDO',
+        'OHPPO.OHPDOOPPDO',
+        '.OHPPOOPPDOPPDO.',
+        '..OHPPCCCCPPDO..',
+        '.OHPPDCccCDPPDO.',
+        'OHPPDDOCCODDPPDO',
+        'OHPDO.OGgO.ODPDO',
+        '.OOO...Gg...OOO.',
+        '.......Gg.......',
+       ]},
+  R: { key:'tulip', name:'Tulip', latin:'Tulipa gesneriana',
+       nouns:['Tulip','Chalice','Goblet','Cup'],
+       rows:[
+        '...O...OO...O...',
+        '..OHOCOHPOCOPO..',
+        '..OHPOHPPDOPDO..',
+        '..OHPPHPPDPPDO..',
+        '..OHPPPPPDPPDO..',
+        '..OHPPPPPDPPDO..',
+        '..OHHPPPPDPDDO..',
+        '...OHPPPPDPDO...',
+        '...OHPPPPPDDO...',
+        '....OOPPPDDO....',
+        '......OOOO......',
+        '.......Gg.......',
+       ]},
+  W: { key:'poppy', name:'Poppy', latin:'Meconopsis',
+       nouns:['Poppy','Blue Poppy','Corn Poppy','Slumber'],
+       rows:[
+        '...OOOO..OOOO...',
+        '..OHHPPOOPPPPO..',
+        '.OHHPPPPPPPPPDO.',
+        'OHHPPPccccPPPPDO',
+        'OHPPPcCCCCcPPPDO',
+        'OHPPcCCcCCcPPPDO',
+        'OPPPPcCCCCcPPDDO',
+        'OPPPPPccccPPPDDO',
+        '.OPPPPPPPPPPDDO.',
+        '..ODPPPOOPPDDO..',
+        '...OOOOGgOOOO...',
+        '.......Gg.......',
+       ]},
+};
+
+const LEAF_HABITS = {
+  S: { key:'paired', name:'Paired leaves',
+       rows:[
+        '.......Gg.......',
+        '.......Gg.......',
+        '.KKK...Gg.......',
+        'KLLLKK.Gg.......',
+        'KLLLLlKGg.......',
+        '.KLLllKGg..KKK..',
+        '..KKKK.GgKKLLLK.',
+        '.......GgKlLLLLK',
+        '.......GgKllLLK.',
+        '.......Gg.KKKK..',
+        '.......Gg.......',
+        '......KGgK......',
+       ]},
+  T: { key:'blade', name:'Blade leaves',
+       rows:[
+        '.......Gg.......',
+        '.......Gg.......',
+        '.K.....Gg.......',
+        '.KL....Gg.....K.',
+        '..KL...Gg....LK.',
+        '..KLl..Gg...LlK.',
+        '...KLl.Gg..lLK..',
+        '...KLlKGgKlLK...',
+        '....KLLGgLLK....',
+        '....KLlGglLK....',
+        '.....KLGgLK.....',
+        '.....KKGgKK.....',
+       ]},
+  U: { key:'alternate', name:'Alternate leaflets',
+       rows:[
+        '.......Gg.......',
+        '.....KKGg.......',
+        '....KLlGg.......',
+        '.....KKGgKK.....',
+        '.......GglLK....',
+        '....KK.GgKK.....',
+        '...KLLlGg.......',
+        '....KKKGgKKK....',
+        '.......GgLLLK...',
+        '.......GglKK....',
+        '.......Gg.......',
+        '......KGgK......',
+       ]},
+};
+
+const SPRITE_W = 16, SPRITE_H = 24;
+
+(function validateSprites() {
+  const check = (label, rows, n) => {
+    if (rows.length !== n) throw new Error(`Sprite ${label}: expected ${n} rows, got ${rows.length}`);
+    rows.forEach((r,i) => { if (r.length !== SPRITE_W) throw new Error(`Sprite ${label} row ${i}: length ${r.length}`); });
+  };
+  Object.values(FLOWER_FORMS).forEach(f => check(f.key, f.rows, 12));
+  Object.values(LEAF_HABITS).forEach(h => check(h.key, h.rows, 12));
+})();
+
+function formOf(flower)  { return FLOWER_FORMS[expressedAllele(flower.petals).toUpperCase()] || FLOWER_FORMS.P; }
+function habitOf(flower) { return LEAF_HABITS[expressedAllele(flower.stem).toUpperCase()]   || LEAF_HABITS.S; }
+
+// colour helpers
+const INK = [42,35,24];
+const mix   = (a,b,t) => a.map((v,i) => Math.round(v + (b[i]-v)*t));
+const shade = (c,f)   => c.map(v => Math.round(v*f));
+const tint  = (c,t)   => mix(c, [255,255,255], t);
+
+const spriteCache = new Map();
+function spriteURL(flower) {
+  const pc = expressedColor(flower.petals.a1, flower.petals.a2);
+  const sc = expressedColor(flower.stem.a1,   flower.stem.a2);
+  const vc = expressedColor(flower.pistil.a1, flower.pistil.a2);
+  const form = formOf(flower), habit = habitOf(flower);
+  const key = [form.key, habit.key, pc, sc, vc].join('|');
+  if (spriteCache.has(key)) return spriteCache.get(key);
+
+  const pal = {
+    O: mix(pc, INK, 0.62), P: pc, D: shade(pc, 0.78), H: tint(pc, 0.42),
+    C: vc, c: mix(vc, INK, 0.5),
+    G: sc, g: shade(sc, 0.72), L: tint(sc, 0.12), l: shade(sc, 0.78), K: mix(sc, INK, 0.62),
+  };
+  const canvas = document.createElement('canvas');
+  canvas.width = SPRITE_W; canvas.height = SPRITE_H;
+  const ctx = canvas.getContext('2d');
+  const img = ctx.createImageData(SPRITE_W, SPRITE_H);
+  const rows = [...form.rows, ...habit.rows];
+  rows.forEach((row, y) => {
+    for (let x = 0; x < SPRITE_W; x++) {
+      const col = pal[row[x]];
+      if (!col) continue;
+      const i = (y*SPRITE_W + x) * 4;
+      img.data[i] = col[0]; img.data[i+1] = col[1]; img.data[i+2] = col[2]; img.data[i+3] = 255;
+    }
+  });
+  ctx.putImageData(img, 0, 0);
+  const url = canvas.toDataURL();
+  spriteCache.set(key, url);
+  return url;
+}
 
 // ══════════════════════════════════════════
 //  ACHIEVEMENTS
@@ -710,7 +1340,7 @@ const ACHIEVEMENTS = [
   { id:'gen5', icon:'🌳', name:'Ancient Lineage',     desc:'Achieve a G5 flower through five generations of selective breeding.',
     check: s => s.stats.maxGeneration >= 5 },
   // Color variety
-  { id:'all_petal_types',icon:'🌈', name:'Rainbow Garden',    desc:'Express all 4 dominant petal colors in your garden.',
+  { id:'all_petal_types',icon:'🌈', name:'Rainbow Garden',    desc:'Express all 4 dominant petal colors (rose, iris, tulip and poppy).',
     check: s => s.stats.dominantPetalsSeen.size >= 4,
     progress: s => [s.stats.dominantPetalsSeen.size,4] },
   { id:'all_stem_types', icon:'🎋', name:'Stem Collector',    desc:'Grow flowers expressing all 3 dominant stem colors.',
@@ -744,6 +1374,7 @@ let appState = {
   garden: [], selectedA: null, selectedB: null,
   pendingOffspring: null, _breedParents: null,
   achievements: {}, stats: freshStats(),
+  view: 'garden', justPlanted: null,
 };
 
 let fileHandle = null;
@@ -777,9 +1408,9 @@ function updateStatsFromFlower(flower, isBred) {
   }
   if (isHomoRec(flower.stem)) appState.stats.sawRecessiveStem = true;
 
-  if (isHomoRec(flower.stem)   && isHomoRec(flower.petals)   && isHomoRec(flower.pistil))   appState.stats.foundAllRecessive = true;
-  if (isHomoDom(flower.stem)   && isHomoDom(flower.petals)   && isHomoDom(flower.pistil))   appState.stats.foundAllDominant = true;
-  if (isHetero(flower.stem)    && isHetero(flower.petals)    && isHetero(flower.pistil))    appState.stats.foundAllHetero = true;
+  if (isHomoRec(flower.stem) && isHomoRec(flower.petals) && isHomoRec(flower.pistil)) appState.stats.foundAllRecessive = true;
+  if (isHomoDom(flower.stem) && isHomoDom(flower.petals) && isHomoDom(flower.pistil)) appState.stats.foundAllDominant = true;
+  if (isHetero(flower.stem)  && isHetero(flower.petals)  && isHetero(flower.pistil))  appState.stats.foundAllHetero = true;
 }
 
 function checkTwinPetals(pa, pb) {
@@ -803,44 +1434,139 @@ function checkAchievements() {
 //  RENDERING
 // ══════════════════════════════════════════
 
-function flowerVisualHTML(flower, scale=1) {
-  const sc = rgbStr(expressedColor(flower.stem.a1,   flower.stem.a2));
-  const pc = rgbStr(expressedColor(flower.petals.a1, flower.petals.a2));
-  const vc = rgbStr(expressedColor(flower.pistil.a1, flower.pistil.a2));
-  const w  = Math.round(38*scale);
-  return `<div class="flower-visual" style="width:${w}px">
-    <div class="flower-part pistil" style="width:${w}px;height:${Math.round(14*scale)}px;background:${vc}"></div>
-    <div class="flower-part petals" style="width:${w}px;height:${Math.round(22*scale)}px;background:${pc}"></div>
-    <div class="flower-part stem"   style="width:${w}px;height:${Math.round(18*scale)}px;background:${sc}"></div>
-  </div>`;
+function flowerVisualHTML(flower, px = 4) {
+  const form = formOf(flower);
+  return `<img class="pixel-flower" src="${spriteURL(flower)}" width="${SPRITE_W*px}" height="${SPRITE_H*px}" alt="${form.name}"><div class="flower-plinth"></div>`;
 }
 
 function genotypeLabel(f) {
   return `${f.stem.a1}${f.stem.a2} · ${f.petals.a1}${f.petals.a2} · ${f.pistil.a1}${f.pistil.a2}`;
 }
 
-function renderGarden() {
-  const grid = document.getElementById('gardenGrid');
-  document.getElementById('gardenCount').textContent =
-    appState.garden.length+' / 24 flower'+(appState.garden.length!==1?'s':'');
+const GARDEN_CAP = 24;
 
-  if (appState.garden.length===0) {
-    grid.innerHTML = `<div class="empty-state"><span class="big-icon">🌱</span>Your garden is empty.<br>Pick some wildflowers to start!</div>`;
-    return;
+function renderGarden() {
+  const bed = document.getElementById('gardenGrid');
+  document.getElementById('gardenCount').textContent =
+    appState.garden.length+' / '+GARDEN_CAP+' flower'+(appState.garden.length!==1?'s':'');
+
+  let html = '';
+  for (let i = 0; i < GARDEN_CAP; i++) {
+    const f = appState.garden[i];
+    if (!f) { html += '<div class="plot empty" aria-hidden="true"></div>'; continue; }
+    let cls = 'plot', tag = '', role = '';
+    if (f.id===appState.selectedA)      { cls+=' parent-a'; tag='<span class="parent-tag tag-a">A</span>'; role=', Parent A'; }
+    else if (f.id===appState.selectedB) { cls+=' parent-b'; tag='<span class="parent-tag tag-b">B</span>'; role=', Parent B'; }
+    if (f.id===appState.justPlanted) cls+=' sprouting';
+    if (tipState.pinned && tipState.id===f.id) cls+=' pinned';
+    html += `<button class="${cls}" data-id="${f.id}" aria-label="${f.name}, ${formOf(f).name}${role}">${tag}<img class="pixel-flower" src="${spriteURL(f)}" alt=""></button>`;
   }
-  grid.innerHTML = appState.garden.map((f,i) => {
-    let cls = 'flower-card';
-    if (f.id===appState.selectedA) cls+=' parent-a';
-    else if (f.id===appState.selectedB) cls+=' parent-b';
-    const genBadge = f.generation>0 ? `<div class="gen-badge">G${f.generation}</div>` : '';
-    return `<div class="${cls}" onclick="selectFlower('${f.id}')" style="animation-delay:${i*35}ms">
-      <button class="delete-btn" onclick="event.stopPropagation();deleteFlower('${f.id}')" title="Remove">✕</button>
-      ${flowerVisualHTML(f)}
-      <div class="flower-name">${f.name}</div>
-      ${genBadge}
-      <div class="flower-genotype">${genotypeLabel(f)}</div>
-    </div>`;
-  }).join('');
+  if (appState.garden.length===0) {
+    html += '<div class="bed-note"><span>❦ The bed lies fallow — gather a wildflower</span></div>';
+  }
+  bed.innerHTML = html;
+  appState.justPlanted = null;
+
+  // keep an open card in step with the redrawn bed
+  if (tipState.id) {
+    const el = bed.querySelector(`.plot[data-id="${tipState.id}"]`);
+    if (el) showTip(tipState.id, el, tipState.pinned); else hideTip(true);
+  }
+}
+
+// ── Flower tooltip cards ──────────────────
+const tipState = { id: null, pinned: false };
+
+function tipHTML(f, pinned) {
+  const form = formOf(f), habit = habitOf(f);
+  const role = f.id===appState.selectedA ? 'A' : f.id===appState.selectedB ? 'B' : null;
+  const trait = (label, g) => {
+    const al = ALLELES[expressedAllele(g)];
+    return `<span class="lbl">${label}</span><span class="${al.dom==='R'?'rec':''}">${al.name}</span>`;
+  };
+  const actions = pinned
+    ? `<div class="tip-actions">
+         <button class="btn btn-primary btn-sm" onclick="tipChoose('${f.id}')">${role ? 'Release Parent '+role : 'Choose for Crossing'}</button>
+         <button class="btn btn-ghost btn-sm" onclick="tipUproot('${f.id}')">Uproot</button>
+       </div>`
+    : '<div class="tip-hint">Click to tend</div>';
+  return `${role ? `<span class="parent-tag tag-${role.toLowerCase()}">Parent ${role}</span>` : ''}
+    ${f.generation>0 ? `<div class="gen-badge" title="Generation ${f.generation}">G${f.generation}</div>` : ''}
+    ${flowerVisualHTML(f, 4)}
+    <div class="flower-name">${f.name}</div>
+    <div class="flower-species">${form.name} · <i>${form.latin}</i></div>
+    <div class="flower-genotype">${genotypeLabel(f)}</div>
+    <div class="tip-traits">
+      ${trait('Stem', f.stem)}${trait('Petals', f.petals)}${trait('Pistil', f.pistil)}
+      <span class="lbl">Habit</span><span>${habit.name}</span>
+    </div>
+    ${actions}`;
+}
+
+function showTip(id, anchor, pinned) {
+  const f = appState.garden.find(x => x.id===id);
+  const tip = document.getElementById('flowerTip');
+  if (!f) { hideTip(true); return; }
+  tipState.id = id; tipState.pinned = pinned;
+  tip.innerHTML = tipHTML(f, pinned);
+  tip.classList.toggle('pinned', pinned);
+  tip.hidden = false;
+  positionTip(anchor);
+  markPinned();
+}
+
+function positionTip(anchor) {
+  const tip = document.getElementById('flowerTip');
+  const r = anchor.getBoundingClientRect();
+  const tw = tip.offsetWidth, th = tip.offsetHeight, gap = 8;
+  let left = r.left + r.width/2 - tw/2;
+  left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+  let top = r.top - th - gap;
+  if (top < 64) top = r.bottom + gap;          // flip below when it would hide under the top bar
+  tip.style.left = (left + window.scrollX) + 'px';
+  tip.style.top  = (top  + window.scrollY) + 'px';
+}
+
+function hideTip(force) {
+  if (tipState.pinned && !force) return;
+  document.getElementById('flowerTip').hidden = true;
+  tipState.id = null; tipState.pinned = false;
+  markPinned();
+}
+
+function markPinned() {
+  document.querySelectorAll('.plot.pinned').forEach(p => p.classList.remove('pinned'));
+  if (tipState.pinned && tipState.id) {
+    const el = document.querySelector(`.plot[data-id="${tipState.id}"]`);
+    if (el) el.classList.add('pinned');
+  }
+}
+
+function tipChoose(id) { selectFlower(id); }
+function tipUproot(id) { hideTip(true); deleteFlower(id); }
+
+function initBedEvents() {
+  const bed = document.getElementById('gardenGrid');
+  const plotOf = e => e.target.closest('.plot[data-id]');
+  bed.addEventListener('mouseover', e => { const p = plotOf(e); if (p && !tipState.pinned) showTip(p.dataset.id, p, false); });
+  bed.addEventListener('mouseout',  e => { const p = plotOf(e); if (p && !p.contains(e.relatedTarget)) hideTip(false); });
+  bed.addEventListener('focusin',   e => { const p = plotOf(e); if (p && !tipState.pinned) showTip(p.dataset.id, p, false); });
+  bed.addEventListener('focusout',  () => hideTip(false));
+  bed.addEventListener('click', e => {
+    const p = plotOf(e); if (!p) return;
+    if (tipState.pinned && tipState.id===p.dataset.id) { hideTip(true); return; }
+    showTip(p.dataset.id, p, true);
+  });
+  document.addEventListener('click', e => {
+    if (!tipState.pinned || !e.target.isConnected) return;   // detached = card re-rendered by its own button
+    if (e.target.closest('#flowerTip') || e.target.closest('.plot[data-id]')) return;
+    hideTip(true);
+  });
+  window.addEventListener('resize', () => hideTip(true));
+}
+
+function emptySlotHTML(label, glyph) {
+  return `<div class="slot-label">${label}</div><div class="slot-glyph">${glyph}</div><div>Select a flower<br>from your garden</div>`;
 }
 
 function renderBreedPanel() {
@@ -854,17 +1580,17 @@ function renderBreedPanel() {
   const pb = appState.garden.find(f=>f.id===appState.selectedB);
 
   if (pa) {
-    slotA.innerHTML=`<div class="slot-label">Parent A</div>${flowerVisualHTML(pa)}<div class="flower-name">${pa.name}</div>`;
+    slotA.innerHTML=`<div class="slot-label">Parent A</div>${flowerVisualHTML(pa,4)}<div class="flower-name">${pa.name}</div><div class="flower-genotype">${genotypeLabel(pa)}</div>`;
     slotA.classList.add('has-parent');
   } else {
-    slotA.innerHTML=`<div class="slot-label">Parent A</div><div style="font-size:1.8rem">🌿</div><div>Select a flower<br>from your garden</div>`;
+    slotA.innerHTML=emptySlotHTML('Parent A','❧');
     slotA.classList.remove('has-parent');
   }
   if (pb) {
-    slotB.innerHTML=`<div class="slot-label">Parent B</div>${flowerVisualHTML(pb)}<div class="flower-name">${pb.name}</div>`;
+    slotB.innerHTML=`<div class="slot-label">Parent B</div>${flowerVisualHTML(pb,4)}<div class="flower-name">${pb.name}</div><div class="flower-genotype">${genotypeLabel(pb)}</div>`;
     slotB.classList.add('has-parent');
   } else {
-    slotB.innerHTML=`<div class="slot-label">Parent B</div><div style="font-size:1.8rem">🌸</div><div>Select a flower<br>from your garden</div>`;
+    slotB.innerHTML=emptySlotHTML('Parent B','❦');
     slotB.classList.remove('has-parent');
   }
 
@@ -879,10 +1605,9 @@ function renderBreedPanel() {
       {label:'Stem',gene:'stem'},{label:'Petals',gene:'petals'},{label:'Pistil',gene:'pistil'}
     ].map(({label,gene}) => {
       const p1=pa[gene], p2=pb[gene];
-      const outcomes=punnett(p1,p2);
-      const cells=outcomes.map(([a1,a2])=>{
+      const cells=punnett(p1,p2).map(([a1,a2])=>{
         const isDom=ALLELES[a1].dom==='D'||ALLELES[a2].dom==='D';
-        const d=[a1,a2].sort((a,b)=>(ALLELES[a].dom==='D'?0:1)-(ALLELES[b].dom==='D'?0:1));
+        const d=[a1,a2].sort(domFirst);
         return `<div class="punnett-cell punnett-result ${isDom?'dominant':'recessive'}">${d[0]}${d[1]}</div>`;
       });
       return `<div class="punnett-trait">
@@ -905,60 +1630,103 @@ function renderBreedPanel() {
 }
 
 function expressionLabel(g) {
-  const a1=ALLELES[g.a1], a2=ALLELES[g.a2];
-  if (a1.dom==='D') return `<strong>${a1.name}</strong> <span style="font-family:'DM Mono';font-size:0.65rem;opacity:0.6">(dominant)</span>`;
-  if (a2.dom==='D') return `<strong>${a2.name}</strong> <span style="font-family:'DM Mono';font-size:0.65rem;opacity:0.6">(dominant)</span>`;
-  return `<strong>${a1.name}</strong> <span style="font-family:'DM Mono';font-size:0.65rem;color:var(--petal-pink)">(recessive)</span>`;
+  const sym = expressedAllele(g), al = ALLELES[sym];
+  const tag = al.dom==='D' ? '<span class="tag-dom">dominant</span>' : '<span class="tag-rec">recessive</span>';
+  return `<span><strong>${al.name}</strong> ${tag}</span>`;
 }
 
 function renderOffspring(flower) {
+  const form = formOf(flower), habit = habitOf(flower);
   document.getElementById('offspringArea').style.display='';
   document.getElementById('offspringPreview').innerHTML=`
-    ${flowerVisualHTML(flower,1.4)}
-    <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-style:italic;font-weight:600;margin-top:4px;color:var(--bark)">${flower.name}</div>
-    <div style="font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--sage)">${genotypeLabel(flower)}</div>
-    <div style="font-size:0.8rem;color:var(--muted);margin-top:6px;line-height:1.7;text-align:left;max-width:100%">
-      <span style="color:var(--moss);font-weight:700">Stem: </span>${expressionLabel(flower.stem)}<br>
-      <span style="color:var(--moss);font-weight:700">Petals: </span>${expressionLabel(flower.petals)}<br>
-      <span style="color:var(--moss);font-weight:700">Pistil: </span>${expressionLabel(flower.pistil)}
+    ${flowerVisualHTML(flower,6)}
+    <div class="offspring-name">${flower.name}</div>
+    <div class="flower-species">${form.name} · <i style="text-transform:none;font-family:var(--f-serif);letter-spacing:0">${form.latin}</i></div>
+    <div class="flower-genotype" style="font-size:0.72rem">${genotypeLabel(flower)} · G${flower.generation}</div>
+    <div class="offspring-traits">
+      <span class="lbl">Stem</span>${expressionLabel(flower.stem)}
+      <span class="lbl">Petals</span>${expressionLabel(flower.petals)}
+      <span class="lbl">Pistil</span>${expressionLabel(flower.pistil)}
+      <span class="lbl">Habit</span><span>${habit.name}</span>
     </div>`;
 }
 
 function renderAchievements() {
   const unlocked = ACHIEVEMENTS.filter(a=>appState.achievements[a.id]).length;
-  document.getElementById('achSummary').textContent=`${unlocked} / ${ACHIEVEMENTS.length} unlocked`;
+  document.getElementById('achSummary').textContent = `${unlocked} of ${ACHIEVEMENTS.length} laurels earned`;
+  document.getElementById('achBar').style.width = Math.round(unlocked/ACHIEVEMENTS.length*100)+'%';
+  document.getElementById('navLaurelCount').textContent = `${unlocked}/${ACHIEVEMENTS.length}`;
   document.getElementById('achGrid').innerHTML = ACHIEVEMENTS.map(ach => {
     const done = !!appState.achievements[ach.id];
     let progressHTML='';
     if (!done && ach.progress) {
       const [cur,max]=ach.progress(appState);
-      const pct=Math.round((cur/max)*100);
+      const pct=Math.min(100, Math.round((cur/max)*100));
       progressHTML=`<div class="ach-progress-bar-wrap"><div class="ach-progress-bar" style="width:${pct}%"></div></div>`;
     }
     return `<div class="ach-item ${done?'unlocked':'locked'}" id="ach-${ach.id}">
-      <div class="ach-icon">${ach.icon}</div>
+      <div class="ach-icon"><span>${ach.icon}</span></div>
       <div class="ach-text">
         <div class="ach-name">${ach.name}</div>
         <div class="ach-desc">${ach.desc}</div>
       </div>
-      <div class="ach-badge ${done?'done':'locked'}">${done?'✓':'—'}</div>
+      <div class="ach-badge ${done?'done':'locked'}">${done?'✓':'·'}</div>
       ${progressHTML}
     </div>`;
   }).join('');
 }
 
-function renderAlleleRef() {
-  document.getElementById('alleleRef').innerHTML =
-    [...STEM_PAIRS,...PETAL_PAIRS,...PISTIL_PAIRS].flatMap(([d,r])=>[d,r]).map(sym=>{
-      const al=ALLELES[sym];
-      return `<div class="info-card">
-        <div class="allele-swatch" style="background:${rgbStr(al.color)}"></div>
-        <div>
-          <div class="allele-name">${al.name}</div>
-          <div class="allele-meta">Symbol: <strong>${sym}</strong><br>Trait: ${al.trait}<br>${al.dom==='D'?'⬆ Dominant':'⬇ Recessive'}</div>
-        </div>
-      </div>`;
-    }).join('');
+function herbariumHTML() {
+  const forms = PETAL_PAIRS.map(([d,r]) => {
+    const form = FLOWER_FORMS[d];
+    const specimen = { stem:{a1:'S',a2:'s'}, petals:{a1:d,a2:r}, pistil:{a1:'A',a2:'a'} };
+    return `<div class="form-card">
+      ${flowerVisualHTML(specimen, 4)}
+      <div class="form-name">${form.name}</div>
+      <div class="form-latin">${form.latin}</div>
+      <div class="form-locus">${d} / ${r} · ${ALLELES[d].name} · ${ALLELES[r].name}</div>
+    </div>`;
+  }).join('');
+  const habits = STEM_PAIRS.map(([d,r]) => {
+    const habit = LEAF_HABITS[d];
+    const specimen = { stem:{a1:d,a2:r}, petals:{a1:'R',a2:'r'}, pistil:{a1:'A',a2:'a'} };
+    return `<div class="form-card">
+      ${flowerVisualHTML(specimen, 4)}
+      <div class="form-name">${habit.name}</div>
+      <div class="form-latin">stem habit</div>
+      <div class="form-locus">${d} / ${r} · ${ALLELES[d].name} · ${ALLELES[r].name}</div>
+    </div>`;
+  }).join('');
+
+  const alleles = [...STEM_PAIRS,...PETAL_PAIRS,...PISTIL_PAIRS].flatMap(([d,r])=>[d,r]).map(sym=>{
+    const al=ALLELES[sym];
+    let extra = '';
+    if (al.trait==='petals') extra = `<br>Form: ${FLOWER_FORMS[sym.toUpperCase()].name}`;
+    if (al.trait==='stem')   extra = `<br>Habit: ${LEAF_HABITS[sym.toUpperCase()].name}`;
+    return `<div class="info-card">
+      <div class="allele-swatch" style="background:${rgbStr(al.color)}"></div>
+      <div>
+        <div class="allele-name">${al.name}</div>
+        <div class="allele-meta">Symbol <strong>${sym}</strong> · ${al.trait}<br>${al.dom==='D'?'Dominant':'Recessive'}${extra}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="ref-block">
+      <h3 class="section-title small">Flower Forms</h3>
+      <p class="ref-note">The expressed petal allele decides both the bloom's colour and its form. The stem allele decides how its leaves grow.</p>
+      <div class="forms-grid">${forms}</div>
+      <div class="forms-grid">${habits}</div>
+    </div>
+    <div class="ref-block">
+      <h3 class="section-title small">Alleles</h3>
+      <div class="info-grid">${alleles}</div>
+    </div>`;
+}
+
+function renderHerbarium() {
+  const html = herbariumHTML();
+  document.querySelectorAll('.herbarium-body').forEach(el => el.innerHTML = html);
 }
 
 // ══════════════════════════════════════════
@@ -968,10 +1736,10 @@ function renderAlleleRef() {
 function selectFlower(id) {
   if      (appState.selectedA===id) { appState.selectedA=null; }
   else if (appState.selectedB===id) { appState.selectedB=null; }
-  else if (!appState.selectedA)     { appState.selectedA=id; showToast('🌿 Parent A selected — pick Parent B'); }
+  else if (!appState.selectedA)     { appState.selectedA=id; showToast('Parent A chosen — now choose Parent B'); }
   else if (!appState.selectedB)     {
     if (id===appState.selectedA) { showToast('Pick a different flower for Parent B'); return; }
-    appState.selectedB=id; showToast('🌸 Both parents ready — crossbreed when you like!');
+    appState.selectedB=id; showToast('Both parents ready — cross them when you like');
   } else {
     appState.selectedA=appState.selectedB; appState.selectedB=id;
   }
@@ -986,22 +1754,87 @@ function clearSelection() {
   renderGarden(); renderBreedPanel();
 }
 
+// ── Meadow reel ───────────────────────────
+const REEL_TILE = 76, REEL_GAP = 10, REEL_STEP = REEL_TILE + REEL_GAP, REEL_MS = 2800;
+const reel = { items: [], center: 0, spinning: false };
+
+function reelTileHTML(f) {
+  return `<div class="reel-tile"><img class="pixel-flower" src="${spriteURL(f)}" alt=""><div class="flower-plinth"></div></div>`;
+}
+
+function setReelOffset(index, ms) {
+  const strip = document.getElementById('reelStrip');
+  const win = strip.parentElement.clientWidth;
+  const x = win/2 - (index*REEL_STEP + REEL_TILE/2);
+  strip.style.transition = ms ? `transform ${ms}ms cubic-bezier(0.1, 0.65, 0.12, 1)` : 'none';
+  strip.style.transform = `translateX(${x}px)`;
+}
+
+function buildReel(items, center) {
+  reel.items = items; reel.center = center;
+  document.getElementById('reelStrip').innerHTML = items.map(reelTileHTML).join('');
+  setReelOffset(center, 0);
+}
+
+function idleReel() {
+  buildReel(Array.from({length: 17}, generateWildflower), 8);
+}
+
+function spinReel(winner, onLanded) {
+  const reelEl = document.getElementById('reel');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // keep the flowers currently in view so the spin starts seamlessly
+  const keep = reel.items.slice(Math.max(0, reel.center-5), reel.center+6);
+  const start = Math.min(5, reel.center);
+  const items = [...keep, ...Array.from({length: 30}, generateWildflower)];
+  const target = items.length;
+  items.push(winner, ...Array.from({length: 6}, generateWildflower));
+
+  reel.spinning = true;
+  reelEl.classList.remove('landed');
+  reelEl.classList.add('spinning');
+  buildReel(items, start);
+  void document.getElementById('reelStrip').offsetWidth;   // commit start position before animating
+  const ms = reduced ? 0 : REEL_MS;
+  setReelOffset(target, ms);
+  setTimeout(() => {
+    reel.center = target; reel.spinning = false;
+    reelEl.classList.remove('spinning');
+    reelEl.classList.add('landed');
+    setTimeout(() => reelEl.classList.remove('landed'), 2000);
+    onLanded();
+  }, ms + 80);
+}
+
 function pickWildflower() {
-  if (appState.garden.length>=24) { showToast('Garden is full! Remove some flowers first.'); return; }
-  const flower=generateWildflower();
-  appState.garden.push(flower);
-  updateStatsFromFlower(flower, false);
-  const unlocked=checkAchievements();
-  renderGarden(); renderAchievements();
-  showToast('🌼 '+flower.name+' added to your garden!');
-  setStatus('Picked wildflower: '+flower.name);
-  unlocked.forEach((a,i)=>setTimeout(()=>showAchievementToast(a), i*1200));
+  if (reel.spinning) return;
+  if (appState.garden.length>=GARDEN_CAP) { showToast('The garden is full — uproot some flowers first'); return; }
+  const btn = document.getElementById('gatherBtn');
+  const flower = generateWildflower();
+  btn.disabled = true;
+  document.getElementById('reelCaption').textContent = 'The meadow turns…';
+  setStatus('Wandering the meadow…');
+  spinReel(flower, () => {
+    btn.disabled = false;
+    if (appState.garden.length>=GARDEN_CAP) { showToast('The garden is full — uproot some flowers first'); return; }
+    appState.garden.push(flower);
+    appState.justPlanted = flower.id;
+    updateStatsFromFlower(flower, false);
+    const unlocked=checkAchievements();
+    renderGarden(); renderAchievements();
+    const form = formOf(flower).name.toLowerCase();
+    document.getElementById('reelCaption').innerHTML = `You gathered <em>${flower.name}</em>, a wild ${form}`;
+    showToast('❀ '+flower.name+' joins your garden');
+    setStatus('Gathered a wild '+form+': '+flower.name);
+    unlocked.forEach((a,i)=>setTimeout(()=>showAchievementToast(a), 300+i*1200));
+  });
 }
 
 function deleteFlower(id) {
   appState.garden=appState.garden.filter(f=>f.id!==id);
   if (appState.selectedA===id) appState.selectedA=null;
   if (appState.selectedB===id) appState.selectedB=null;
+  if (tipState.id===id) hideTip(true);
   renderGarden(); renderBreedPanel(); renderAchievements();
 }
 
@@ -1013,14 +1846,15 @@ function crossbreed() {
   appState.pendingOffspring=offspring;
   appState._breedParents={pa,pb};
   renderOffspring(offspring);
-  showToast('✦ '+offspring.name+' was born! Add it to your garden.');
+  showToast('✦ '+offspring.name+' has sprouted');
 }
 
 function keepOffspring() {
   if (!appState.pendingOffspring) return;
-  if (appState.garden.length>=24) { showToast('Garden is full! Remove some flowers first.'); return; }
+  if (appState.garden.length>=GARDEN_CAP) { showToast('The garden is full — uproot some flowers first'); return; }
   const flower=appState.pendingOffspring;
   appState.garden.push(flower);
+  appState.justPlanted = flower.id;
   if (appState._breedParents) {
     checkTwinPetals(appState._breedParents.pa, appState._breedParents.pb);
     appState._breedParents=null;
@@ -1031,8 +1865,8 @@ function keepOffspring() {
   appState.pendingOffspring=null;
   document.getElementById('offspringArea').style.display='none';
   renderGarden(); renderAchievements();
-  showToast('🌸 '+name+' added to your garden!');
-  setStatus('Added offspring: '+name+' (G'+flower.generation+')');
+  showToast('❀ '+name+' planted in your garden');
+  setStatus('Planted offspring: '+name+' (G'+flower.generation+')');
   unlocked.forEach((a,i)=>setTimeout(()=>showAchievementToast(a), 400+i*1200));
 }
 
@@ -1086,12 +1920,14 @@ async function saveToFile() {
     await w.write(JSON.stringify(data,null,2));
     await w.close();
     setStatus('Garden saved · '+appState.garden.length+' flowers');
-    showToast('💾 Garden saved!');
+    showToast('Garden saved');
   } catch(e) {
     if (e.name!=='AbortError') {
-      localStorage.setItem('floralis_data',JSON.stringify(data));
-      setStatus('Saved to browser storage · '+appState.garden.length+' flowers');
-      showToast('Saved to browser storage');
+      try {
+        localStorage.setItem('floralis_data',JSON.stringify(data));
+        setStatus('Saved to browser storage · '+appState.garden.length+' flowers');
+        showToast('Saved to browser storage');
+      } catch(_) { showToast('Could not save the garden'); }
     }
   }
 }
@@ -1106,26 +1942,30 @@ async function loadFromFile() {
     appState.selectedA=null; appState.selectedB=null; appState.pendingOffspring=null;
     renderAll();
     setStatus('Loaded · '+appState.garden.length+' flowers');
-    showToast('Garden loaded!');
+    showToast('Garden loaded');
   } catch(e) {
     if (e.name!=='AbortError') {
-      const raw=localStorage.getItem('floralis_data');
-      if (raw) { deserializeState(JSON.parse(raw)); appState.selectedA=null; appState.selectedB=null; appState.pendingOffspring=null; renderAll(); setStatus('Loaded from browser storage'); showToast('Loaded from browser storage'); }
+      try {
+        const raw=localStorage.getItem('floralis_data');
+        if (raw) { deserializeState(JSON.parse(raw)); appState.selectedA=null; appState.selectedB=null; appState.pendingOffspring=null; renderAll(); setStatus('Loaded from browser storage'); showToast('Loaded from browser storage'); }
+      } catch(_) { showToast('Could not load the garden'); }
     }
   }
 }
 
 function newGarden() {
-  if (!confirm('Start a new garden? This will clear all flowers and achievements.')) return;
+  if (!confirm('Start a new garden? This will clear all flowers and laurels.')) return;
   appState={
     garden:[], selectedA:null, selectedB:null,
     pendingOffspring:null, _breedParents:null,
     achievements:{}, stats:freshStats(),
+    view: appState.view, justPlanted:null,
   };
   fileHandle=null;
+  hideTip(true);
   document.getElementById('offspringArea').style.display='none';
   renderAll();
-  setStatus('New garden started — good luck!');
+  setStatus('A fresh plot, newly turned — good luck');
 }
 
 // ══════════════════════════════════════════
@@ -1159,25 +1999,107 @@ function showAchievementToast(ach) {
 function setStatus(msg) { document.getElementById('statusBar').textContent=msg; }
 
 // ══════════════════════════════════════════
+//  NAVIGATION · DRAWER · MODALS
+// ══════════════════════════════════════════
+
+const PAGES = ['garden','laurels','herbarium'];
+let lastFocus = null, openModalId = null;
+
+function goTo(page) {
+  closeDrawer(false);
+  if (location.hash !== '#'+page) location.hash = page; else showPage(page);
+}
+
+function showPage(page) {
+  if (!PAGES.includes(page)) page = 'garden';
+  appState.view = page;
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.dataset.page===page));
+  document.querySelectorAll('.nav-link').forEach(n => {
+    const on = n.dataset.nav===page;
+    n.classList.toggle('active', on);
+    if (on) n.setAttribute('aria-current','page'); else n.removeAttribute('aria-current');
+  });
+  hideTip(true);
+  window.scrollTo(0, 0);
+}
+
+function isDrawerOpen() { return document.getElementById('drawer').classList.contains('open'); }
+
+function openDrawer() {
+  const d = document.getElementById('drawer');
+  lastFocus = document.activeElement;
+  hideTip(true);
+  d.inert = false; d.classList.add('open');
+  document.getElementById('scrim').classList.add('show');
+  document.getElementById('menuBtn').setAttribute('aria-expanded','true');
+  setTimeout(() => (d.querySelector('.nav-link.active') || d.querySelector('.nav-link')).focus(), 60);
+}
+
+function closeDrawer(restoreFocus = true) {
+  if (!isDrawerOpen()) return;
+  const d = document.getElementById('drawer');
+  d.classList.remove('open'); d.inert = true;
+  document.getElementById('scrim').classList.remove('show');
+  document.getElementById('menuBtn').setAttribute('aria-expanded','false');
+  if (restoreFocus && lastFocus) lastFocus.focus();
+}
+
+function toggleDrawer() { isDrawerOpen() ? closeDrawer() : openDrawer(); }
+
+function openModal(id) {
+  closeDrawer(false);
+  hideTip(true);
+  if (openModalId) closeModal();
+  lastFocus = document.activeElement;
+  const m = document.getElementById(id);
+  m.inert = false; m.classList.add('show');
+  openModalId = id;
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => m.querySelector('.modal-close').focus(), 60);
+}
+
+function closeModal() {
+  if (!openModalId) return;
+  const m = document.getElementById(openModalId);
+  m.classList.remove('show'); m.inert = true;
+  openModalId = null;
+  document.body.style.overflow = '';
+  if (lastFocus) lastFocus.focus();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (openModalId) closeModal();
+  else if (isDrawerOpen()) closeDrawer();
+  else hideTip(true);
+});
+window.addEventListener('hashchange', () => showPage(location.hash.slice(1)));
+window.addEventListener('resize', () => { if (!reel.spinning) setReelOffset(reel.center, 0); });
+
+// ══════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════
 
+initBedEvents();
 renderAll();
-renderAlleleRef();
+renderHerbarium();
+idleReel();
+showPage(location.hash.slice(1));
 
 // Auto-restore
-const saved=localStorage.getItem('floralis_data');
-if (saved) {
-  try {
+try {
+  const saved=localStorage.getItem('floralis_data');
+  if (saved) {
     const data=JSON.parse(saved);
     if (data.garden && data.garden.length>0) {
       deserializeState(data);
       renderAll();
       const achCount=Object.keys(appState.achievements).length;
-      setStatus('Restored '+appState.garden.length+' flowers · '+achCount+' achievements');
+      setStatus('Restored '+appState.garden.length+' flowers · '+achCount+' laurels');
     }
-  } catch(e) {}
-}
+  }
+} catch(e) {}
 </script>
+
 </body>
 </html>

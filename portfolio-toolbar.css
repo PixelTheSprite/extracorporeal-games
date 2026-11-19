@@ -1,0 +1,178 @@
+/* The "Back to Portfolio" bar at the top of each game.
+   This file holds the layout only: a fixed 56px bar with one 44px-tall button.
+   Each game themes it to match itself by setting --pt-* variables in a
+   <style> block right after the link to this file:
+
+     #portfolio-toolbar { --pt-bar-bg: #000; --pt-btn-color: #fff; ... }
+
+   Markup each game needs:
+     <body style="padding-top: 56px !important;">
+     <div id="portfolio-toolbar"><a href="../../index.html" class="portfolio-back-btn"><span class="portfolio-back-arrow" aria-hidden="true">←</span>Back<span class="portfolio-back-extra"> to Portfolio</span></a></div>
+     <script src="../../game-versions.js" defer></script>
+     <script src="../../portfolio-toolbar.js" defer></script>
+
+   portfolio-toolbar.js adds a "Version" menu on the right when game-versions.js
+   lists more than one version of the game.
+
+   Everything is !important because each game brings its own global styles.
+   The fallbacks below are the hub's Win95 look. */
+
+#portfolio-toolbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000000 !important;
+    height: 56px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 0 16px !important;
+    margin: 0 !important;
+    background: var(--pt-bar-bg, #c0c0c0) !important;
+    border: 0 !important;
+    border-bottom: var(--pt-bar-border, 0 solid transparent) !important;
+    box-shadow: var(--pt-bar-shadow, inset 0 1px #fff, inset 0 -1px #0a0a0a, inset 0 -2px #808080) !important;
+    cursor: auto !important;
+}
+
+.portfolio-back-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    box-sizing: border-box !important;
+    min-height: 44px !important;
+    padding: 0 var(--pt-btn-pad, 16px) !important;
+    margin: 0 !important;
+    background: var(--pt-btn-bg, #c0c0c0) !important;
+    border: var(--pt-btn-border, 0 solid transparent) !important;
+    border-radius: var(--pt-btn-radius, 0) !important;
+    box-shadow: var(--pt-btn-shadow, inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf) !important;
+    color: var(--pt-btn-color, #000) !important;
+    font-family: var(--pt-font, Tahoma, Verdana, "Segoe UI", sans-serif) !important;
+    font-size: var(--pt-size, 14px) !important;
+    font-style: var(--pt-font-style, normal) !important;
+    font-weight: var(--pt-weight, 400) !important;
+    line-height: 1 !important;
+    letter-spacing: var(--pt-spacing, normal) !important;
+    text-transform: var(--pt-transform, none) !important;
+    text-decoration: none !important;
+    text-shadow: var(--pt-text-shadow, none) !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    transform: none !important;
+    transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s !important;
+}
+
+.portfolio-back-btn:hover {
+    background: var(--pt-hover-bg, var(--pt-btn-bg, #c0c0c0)) !important;
+    border-color: var(--pt-hover-border-color, currentColor) !important;
+    box-shadow: var(--pt-hover-shadow, var(--pt-btn-shadow, inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf)) !important;
+    color: var(--pt-hover-color, var(--pt-btn-color, #000)) !important;
+    transform: none !important;
+}
+
+.portfolio-back-btn:focus-visible {
+    outline: 2px solid var(--pt-focus, currentColor) !important;
+    outline-offset: 3px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .portfolio-back-btn { transition: none !important; }
+}
+
+/* Many game fonts have no arrow glyph, so draw it in a system font at a fixed size */
+.portfolio-back-arrow {
+    font-family: system-ui, "Segoe UI", Arial, sans-serif !important;
+    font-size: 16px !important;
+    font-style: normal !important;
+    font-weight: 700 !important;
+    letter-spacing: 0 !important;
+    line-height: 1 !important;
+}
+
+/* ── Version menu (added by portfolio-toolbar.js) ───────────────────────
+   Uses the same --pt-* variables as the back button, so it matches each game.
+   Optional extras: --pt-select-bg (menu background) and --pt-bar-color
+   (colour of text sitting directly on the bar). */
+
+.portfolio-back-btn { flex-shrink: 0 !important; }
+
+.portfolio-version-old {
+    margin-left: auto !important;
+    color: var(--pt-bar-color, var(--pt-btn-color, #000)) !important;
+    font-family: var(--pt-font, Tahoma, Verdana, "Segoe UI", sans-serif) !important;
+    font-size: 12px !important;
+    letter-spacing: var(--pt-spacing, normal) !important;
+    text-transform: var(--pt-transform, none) !important;
+    opacity: 0.8 !important;
+    white-space: nowrap !important;
+}
+
+.portfolio-version {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+    margin: 0 0 0 auto !important;
+    color: var(--pt-bar-color, var(--pt-btn-color, #000)) !important;
+    font-family: var(--pt-font, Tahoma, Verdana, "Segoe UI", sans-serif) !important;
+    font-size: var(--pt-size, 14px) !important;
+    letter-spacing: var(--pt-spacing, normal) !important;
+    text-transform: var(--pt-transform, none) !important;
+}
+.portfolio-version-old + .portfolio-version { margin-left: 0 !important; }
+
+/* Drop-down arrow, drawn over the select so it works with any background */
+.portfolio-version::after {
+    content: "▾" !important;
+    position: absolute !important;
+    right: 12px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: var(--pt-btn-color, #000) !important;
+    font-family: system-ui, "Segoe UI", Arial, sans-serif !important;
+    font-size: 14px !important;
+    letter-spacing: 0 !important;
+    pointer-events: none !important;
+}
+
+.portfolio-version-caption { white-space: nowrap !important; }
+
+.portfolio-version select {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 44px !important;
+    margin: 0 !important;
+    padding: 0 34px 0 12px !important;
+    background: var(--pt-select-bg, var(--pt-btn-bg, #fff)) !important;
+    border: var(--pt-btn-border, 0 solid transparent) !important;
+    border-radius: var(--pt-btn-radius, 0) !important;
+    box-shadow: var(--pt-btn-shadow, inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a) !important;
+    color: var(--pt-btn-color, #000) !important;
+    font: inherit !important;
+    letter-spacing: inherit !important;
+    text-transform: inherit !important;
+    text-overflow: ellipsis !important;
+    cursor: pointer !important;
+}
+.portfolio-version select:focus-visible {
+    outline: 2px solid var(--pt-focus, currentColor) !important;
+    outline-offset: 3px !important;
+}
+/* The open list is drawn by the browser; keep it plainly readable */
+.portfolio-version option { background: #fff !important; color: #000 !important; text-transform: none !important; }
+
+@media (max-width: 600px) {
+    .portfolio-version-old, .portfolio-version-caption { display: none !important; }
+}
+/* On phones, shorten the back button to "← Back" when a version menu is present */
+@media (max-width: 480px) {
+    #portfolio-toolbar:has(.portfolio-version) .portfolio-back-extra { display: none !important; }
+    #portfolio-toolbar { padding: 0 12px !important; gap: 8px !important; }
+}

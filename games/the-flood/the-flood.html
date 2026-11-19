@@ -633,46 +633,35 @@
     @media (min-width: 481px) and (max-width: 1024px) {
       .strategy-grid { grid-template-columns: 1fr 1fr; }
     }
-    #portfolio-toolbar {
-        background-color: #f8fafc !important;
-        border-bottom: 1px solid #e2e8f0 !important;
-        padding: 0 24px !important;
-        display: flex !important;
-        align-items: center !important;
-        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
-        z-index: 1000000 !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        height: 56px !important;
-        box-sizing: border-box !important;
-    }
-    .portfolio-back-btn {
-        display: inline-flex !important;
-        align-items: center !important;
-        padding: 8px 16px !important;
-        background-color: #6366f1 !important;
-        color: #ffffff !important;
-        text-decoration: none !important;
-        border-radius: 8px !important;
-        font-size: 14px !important;
-        font-weight: 600 !important;
-        transition: all 0.2s ease !important;
-        line-height: 1 !important;
-        border: none !important;
-        cursor: pointer !important;
-    }
-    .portfolio-back-btn:hover {
-        background-color: #4f46e5 !important;
-        transform: translateY(-1px) !important;
-    }
 </style>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+<link rel="stylesheet" href="../../portfolio-toolbar.css">
+<style id="portfolio-toolbar-theme">
+/* Back-to-portfolio bar, themed to match this game (dark ops console) */
+#portfolio-toolbar {
+    --pt-bar-bg: #1C1C21;
+    --pt-bar-border: 1px solid #36363F;
+    --pt-bar-shadow: none;
+    --pt-font: 'Bebas Neue', sans-serif;
+    --pt-size: 17px;
+    --pt-weight: 400;
+    --pt-spacing: 2px;
+    --pt-btn-pad: 20px;
+    --pt-btn-bg: transparent;
+    --pt-btn-border: 1px solid #36363F;
+    --pt-btn-radius: 4px;
+    --pt-btn-shadow: none;
+    --pt-btn-color: #8E8E9A;
+    --pt-hover-color: #F2F2F7;
+    --pt-hover-border-color: #8E8E9A;
+    --pt-focus: #FF3B30;
+}
+</style>
+<script src="../../game-versions.js" defer></script>
+<script src="../../portfolio-toolbar.js" defer></script>
 </head>
 <body style="padding-top: 56px !important;">
     <div id="portfolio-toolbar">
-        <a href="../../index.html" class="portfolio-back-btn">← Back to Portfolio</a>
+        <a href="../../index.html" class="portfolio-back-btn"><span class="portfolio-back-arrow" aria-hidden="true">←</span>Back<span class="portfolio-back-extra"> to Portfolio</span></a>
     </div>
 
 

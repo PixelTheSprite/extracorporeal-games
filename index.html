@@ -3,219 +3,306 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Extracorporeal Games</title>
+    <title>Extracorporeal Games · Mike's Portfolio</title>
     <meta name="description" content="A portfolio of interactive games and educational tools exploring media literacy, game design, and systems thinking.">
-    <script src="achievement-system.js"></script>
+    <!-- Site icon lives on the main site (pixelthesprite.github.io) -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
     <link rel="stylesheet" href="index.css">
+    <script src="achievement-system.js"></script>
+    <script src="desktop.js" defer></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🎮 Extracorporeal Games</h1>
-            <p>Interactive games and educational tools exploring media literacy, game design, and systems thinking. Mostly.</p>
-            <p><i>Note: This portfolio is AI assisted. This is an experiment in learning how to use AI more effectively.</i></p>
-        </header>
-        
-        <!-- Statistics Bar -->
-        <div class="stats-bar" id="stats-bar">
-            <div class="stat-card">
-                <div class="stat-number" id="total-games">0</div>
-                <div class="stat-label">Available Achievements</div>
-                <div class="stat-bar">
-                    <div class="stat-bar-fill" id="total-games-fill"></div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="total-achievements">0</div>
-                <div class="stat-label">Unlocked Achievements</div>
-                <div class="stat-bar">
-                    <div class="stat-bar-fill" id="total-achievements-fill"></div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="completion-rate">0%</div>
-                <div class="stat-label">Completion Rate</div>
-                <div class="stat-bar">
-                    <div class="stat-bar-fill" id="completion-rate-fill"></div>
-                </div>
-            </div>
-        </div>
-        <!-- Navigation Tabs -->
-        <div class="nav-tabs">
-            <button class="nav-tab active" data-tab="games">Games</button>
-            <button class="nav-tab" data-tab="achievements">Achievements</button>
-            <button class="nav-tab" data-tab="leaderboard">Progress</button>
-        </div>
-        <!-- Games Section -->
-        <div id="games" class="content-section active">
-        <div class="games-grid">
-            <div class="game-card" id="card-clickin-ship">
-                <div class="game-card-header">
-                    <h2>Clickin' Ship</h2>
-                    <p>Ship Commander</p>
-                </div>
-                <div class="game-card-body">
-                    <p>Command your own starship in this space exploration game. Feature-rich clicking mechanics and cosmic adventure await.</p>
-                </div>
-                <div class="game-card-footer">
-                    <a href="./games/clickin_ship/clickin_ship.html" class="btn" id="play-clickin-ship">Play</a>
-                    <a href="./docs/clickin_ship/README.md" class="btn btn-secondary" id="docs-clickin-ship">Docs</a>
-                </div>
-            </div>
+    <a class="skip-link" href="#main">Skip to content</a>
 
-            <div class="game-card" id="card-cryptozone">
-                <div class="game-card-header">
-                    <h2>CryptoZone</h2>
-                    <p>Educational Dark Pattern Demo</p>
-                </div>
-                <div class="game-card-body">
-                    <p>An educational experience exposing the deceptive "dark patterns" used by crypto platforms to manipulate users.</p>
-                </div>
-                <div class="game-card-footer">
-                    <a href="./games/cryptozone/cryptozone-dark-patterns-game.html" class="btn" id="play-cryptozone">Play</a>
-                    <a href="./docs/cryptozone/README.md" class="btn btn-secondary" id="docs-cryptozone">Docs</a>
-                </div>
-            </div>
+    <!-- Header: matches the main site (pixelthesprite.github.io). These games are one of its projects. -->
+    <header class="site-header">
+        <nav class="nav" aria-label="Main">
+            <a class="brand" href="https://pixelthesprite.github.io/">
+                <canvas class="globe" data-globe width="22" height="22" aria-hidden="true"></canvas>
+                <span class="brand-name">Mike's Portfolio</span>
+            </a>
+            <ul class="nav-links">
+                <li><a class="btn" href="https://pixelthesprite.github.io/about.html">About</a></li>
+                <li><a class="btn" href="https://pixelthesprite.github.io/blog.html">Blog</a></li>
+                <li><a class="btn" href="https://pixelthesprite.github.io/projects.html" aria-current="page">Projects</a></li>
+                <li><a class="btn" href="https://pixelthesprite.github.io/contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
 
-            <div class="game-card" id="card-html5-scuffle">
-                <div class="game-card-header">
-                    <h2>HTML5 Scuffle</h2>
-                    <p>Arcade Edition</p>
-                </div>
-                <div class="game-card-body">
-                    <p>A high-octane tribute to the classic platform fighter, featuring parody characters and intense arcade combat.</p>
-                </div>
-                <div class="game-card-footer">
-                    <a href="./games/fighting-game/html5_scuffle.html" class="btn" id="play-html5-scuffle">Play</a>
-                    <a href="./docs/fighting-game/README.md" class="btn btn-secondary" id="docs-html5-scuffle">Docs</a>
-                </div>
+    <main id="main">
+        <section class="window" aria-labelledby="page-title">
+            <div class="title-bar">
+                <span class="title-bar-text">C:\MIKE\PROJECTS\GAMES</span>
+                <span class="title-bar-controls" aria-hidden="true"><span class="tb-min"></span><span class="tb-max"></span><span class="tb-close"></span></span>
             </div>
+            <div class="window-body">
+                <h1 id="page-title">Extracorporeal Games</h1>
+                <p class="lead">Interactive games and educational tools exploring media literacy, game design, and systems thinking. Mostly.</p>
+                <p class="ai-note"><span class="badge badge-ai">AI-Assisted</span> This portfolio is AI assisted. This is an experiment in learning how to use AI more effectively.</p>
 
-            <div class="game-card" id="card-floralis">
-                <div class="game-card-header">
-                    <h2>Floralis</h2>
-                    <p>Mendelian Flower Garden</p>
-                </div>
-                <div class="game-card-body">
-                    <p>Explore the beauty of genetics in this relaxing garden simulator. Breed flowers to unlock rare traits and colors.</p>
-                </div>
-                <div class="game-card-footer">
-                    <a href="./games/floralis/floralis.html" class="btn" id="play-floralis">Play</a>
-                    <a href="./docs/floralis/README.md" class="btn btn-secondary" id="docs-floralis">Docs</a>
-                </div>
-            </div>
-
-            <div class="game-card" id="card-grand-works">
-                <div class="game-card-header">
-                    <h2>Grand Works</h2>
-                    <p>A Collector's Edition</p>
-                </div>
-                <div class="game-card-body">
-                    <p>A premium card-collecting experience where you curate and manage a gallery of exceptional artistic works.</p>
-                </div>
-                <div class="game-card-footer">
-                    <a href="./games/grand-works/card-collector.html" class="btn" id="play-grand-works">Play</a>
-                    <a href="./docs/grand-works/README.md" class="btn btn-secondary" id="docs-grand-works">Docs</a>
-                </div>
-            </div>
-
-            <div class="game-card" id="card-nautilio">
-                <div class="game-card-header">
-                    <h2>Nautil.io</h2>
-                    <p>Multiplayer Ship Combat</p>
-                </div>
-                <div class="game-card-body">
-                    <p>A multiplayer action game where you pilot ships, capture objectives, and outmaneuver other players in real-time.</p>
-                </div>
-                <div class="game-card-footer">
-                    <a href="./games/nautil.io/nautil_io.html" class="btn" id="play-nautilio">Play</a>
-                    <a href="./docs/nautil.io/README.md" class="btn btn-secondary" id="docs-nautilio">Docs</a>
-                </div>
-            </div>
-
-            <div class="game-card" id="card-vice-city">
-                <div class="game-card-header">
-                    <h2>Vice City Pocket</h2>
-                    <p>GTA VI Inspired Action</p>
-                </div>
-                <div class="game-card-body">
-                    <p>Race and explore through a neon-drenched pocket version of Vice City in this retro-styled action game.</p>
-                </div>
-                <div class="game-card-footer">
-                    <a href="./games/racearound/race-around.html" class="btn" id="play-vice-city">Play</a>
-                    <a href="./docs/racearound/README.md" class="btn btn-secondary" id="docs-vice-city">Docs</a>
-                </div>
-            </div>
-
-            <div class="game-card" id="card-the-flood">
-                <div class="game-card-header">
-                    <h2>THE FLOOD</h2>
-                    <p>Gish Gallop Trainer</p>
-                </div>
-                <div class="game-card-body">
-                    <p>Master the art of identifying and neutralizing bad-faith rhetorical tactics like the Gish Gallop in real-time.</p>
-                </div>
-                <div class="game-card-footer">
-                    <a href="./games/the-flood/the-flood.html" class="btn" id="play-the-flood">Play</a>
-                    <a href="./docs/the-flood/README.md" class="btn btn-secondary" id="docs-the-flood">Docs</a>
-                </div>
-            </div>
-
-            <div class="game-card" id="card-the-stacks">
-                <div class="game-card-header">
-                    <h2>The Stacks</h2>
-                    <p>Research Skills Academy</p>
-                </div>
-                <div class="game-card-body">
-                    <p>Develop essential research skills in this interactive library simulation. Learn to verify sources and fight misinformation.</p>
-                </div>
-                <div class="game-card-footer">
-                    <a href="./games/the-stacks/the-stacks.html" class="btn" id="play-the-stacks">Play</a>
-                    <a href="./docs/the-stacks/README.md" class="btn btn-secondary" id="docs-the-stacks">Docs</a>
-                </div>
-            </div>
-        </div>
-        </div>
-        
-        <!-- Achievements Section -->
-        <div id="achievements" class="content-section">
-            <div class="achievements-container">
-                <div class="controls">
-                    <div class="search-box">
-                        <input type="text" id="achievementSearch" placeholder="Search achievements...">
+                <!-- Statistics -->
+                <div class="stats-bar" id="stats-bar">
+                    <div class="stat-card">
+                        <div class="stat-label">Available Achievements</div>
+                        <div class="stat-number" id="total-games">0</div>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill" id="total-games-fill"></div>
+                        </div>
                     </div>
-                    <select class="filter-select" id="rarityFilter">
-                        <option value="">All Rarities</option>
-                        <option value="common">Common</option>
-                        <option value="uncommon">Uncommon</option>
-                        <option value="rare">Rare</option>
-                        <option value="legendary">Legendary</option>
-                    </select>
-                    <select class="filter-select" id="statusFilter">
-                        <option value="">All Achievements</option>
-                        <option value="unlocked">Unlocked</option>
-                        <option value="locked">Locked</option>
-                    </select>
-                    <button class="btn btn-danger" id="resetBtn">Reset All</button>
+                    <div class="stat-card">
+                        <div class="stat-label">Unlocked Achievements</div>
+                        <div class="stat-number" id="total-achievements">0</div>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill" id="total-achievements-fill"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Completion Rate</div>
+                        <div class="stat-number" id="completion-rate">0%</div>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill" id="completion-rate-fill"></div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div id="achievementsList"></div>
-            </div>
-        </div>
 
-        <!-- Leaderboard Section -->
-        <div id="leaderboard" class="content-section">
-            <div class="achievements-container">
-                <h2>Your Progress by Game</h2>
-                <div id="leaderboardList"></div>
-            </div>
-        </div>
+                <!-- Tabs -->
+                <div class="nav-tabs" role="tablist" aria-label="Sections">
+                    <button class="nav-tab active" role="tab" aria-selected="true" aria-controls="games" data-tab="games">Games</button>
+                    <button class="nav-tab" role="tab" aria-selected="false" aria-controls="achievements" data-tab="achievements">Achievements</button>
+                    <button class="nav-tab" role="tab" aria-selected="false" aria-controls="leaderboard" data-tab="leaderboard">Progress</button>
+                </div>
 
-        <footer>
-            <p>Built with HTML, CSS, JavaScript | Hosted on GitHub Pages</p>
-            <p><a href="https://pixelthesprite.github.io/extracorporeal-games/">View on GitHub</a></p>
-        </footer>
-    </div>
+                <div class="tab-panel">
+                    <!-- Games Section -->
+                    <div id="games" class="content-section active" role="tabpanel">
+                        <div class="games-grid">
+                            <!-- To add a game, copy one game-card block. -->
+                            <div class="game-card" id="card-clickin-ship">
+                                <div class="game-card-header">
+                                    <h2>Clickin' Ship</h2>
+                                    <p>Ship Commander</p>
+                                </div>
+                                <div class="game-card-body">
+                                    <p>Command your own starship in this space exploration game. Feature-rich clicking mechanics and cosmic adventure await.</p>
+                                </div>
+                                <div class="game-card-footer">
+                                    <a href="./games/clickin_ship/clickin_ship.html" class="btn btn-default" id="play-clickin-ship">Play</a>
+                                    <a href="./docs/clickin_ship/README.md" class="btn btn-secondary" id="docs-clickin-ship">Docs</a>
+                                </div>
+                            </div>
+
+                            <div class="game-card" id="card-cryptozone">
+                                <div class="game-card-header">
+                                    <h2>CryptoZone</h2>
+                                    <p>Educational Dark Pattern Demo</p>
+                                </div>
+                                <div class="game-card-body">
+                                    <p>An educational experience exposing the deceptive "dark patterns" used by crypto platforms to manipulate users.</p>
+                                </div>
+                                <div class="game-card-footer">
+                                    <a href="./games/cryptozone/cryptozone-dark-patterns-game.html" class="btn btn-default" id="play-cryptozone">Play</a>
+                                    <a href="./docs/cryptozone/README.md" class="btn btn-secondary" id="docs-cryptozone">Docs</a>
+                                </div>
+                            </div>
+
+                            <div class="game-card" id="card-html5-scuffle">
+                                <div class="game-card-header">
+                                    <h2>HTML5 Scuffle</h2>
+                                    <p>Arcade Edition</p>
+                                </div>
+                                <div class="game-card-body">
+                                    <p>A high-octane tribute to the classic platform fighter, featuring parody characters and intense arcade combat.</p>
+                                </div>
+                                <div class="game-card-footer">
+                                    <a href="./games/fighting-game/html5_scuffle.html" class="btn btn-default" id="play-html5-scuffle">Play</a>
+                                    <a href="./docs/fighting-game/README.md" class="btn btn-secondary" id="docs-html5-scuffle">Docs</a>
+                                </div>
+                            </div>
+
+                            <div class="game-card" id="card-floralis">
+                                <div class="game-card-header">
+                                    <h2>Floralis</h2>
+                                    <p>Mendelian Flower Garden</p>
+                                </div>
+                                <div class="game-card-body">
+                                    <p>Explore the beauty of genetics in this relaxing garden simulator. Breed flowers to unlock rare traits and colors.</p>
+                                </div>
+                                <div class="game-card-footer">
+                                    <a href="./games/floralis/floralis.html" class="btn btn-default" id="play-floralis">Play</a>
+                                    <a href="./docs/floralis/README.md" class="btn btn-secondary" id="docs-floralis">Docs</a>
+                                </div>
+                            </div>
+
+                            <div class="game-card" id="card-grand-works">
+                                <div class="game-card-header">
+                                    <h2>Grand Works</h2>
+                                    <p>A Collector's Edition</p>
+                                </div>
+                                <div class="game-card-body">
+                                    <p>A premium card-collecting experience where you curate and manage a gallery of exceptional artistic works.</p>
+                                </div>
+                                <div class="game-card-footer">
+                                    <a href="./games/grand-works/card-collector.html" class="btn btn-default" id="play-grand-works">Play</a>
+                                    <a href="./docs/grand-works/README.md" class="btn btn-secondary" id="docs-grand-works">Docs</a>
+                                </div>
+                            </div>
+
+                            <div class="game-card" id="card-nautilio">
+                                <div class="game-card-header">
+                                    <h2>Nautil.io</h2>
+                                    <p>Multiplayer Ship Combat</p>
+                                </div>
+                                <div class="game-card-body">
+                                    <p>A multiplayer action game where you pilot ships, capture objectives, and outmaneuver other players in real-time.</p>
+                                </div>
+                                <div class="game-card-footer">
+                                    <a href="./games/nautil.io/nautil_io.html" class="btn btn-default" id="play-nautilio">Play</a>
+                                    <a href="./docs/nautil.io/README.md" class="btn btn-secondary" id="docs-nautilio">Docs</a>
+                                </div>
+                            </div>
+
+                            <div class="game-card" id="card-vice-city">
+                                <div class="game-card-header">
+                                    <h2>Vice City Pocket</h2>
+                                    <p>GTA VI Inspired Action</p>
+                                </div>
+                                <div class="game-card-body">
+                                    <p>Race and explore through a neon-drenched pocket version of Vice City in this retro-styled action game.</p>
+                                </div>
+                                <div class="game-card-footer">
+                                    <a href="./games/racearound/race-around.html" class="btn btn-default" id="play-vice-city">Play</a>
+                                    <a href="./docs/racearound/README.md" class="btn btn-secondary" id="docs-vice-city">Docs</a>
+                                </div>
+                            </div>
+
+                            <div class="game-card" id="card-the-flood">
+                                <div class="game-card-header">
+                                    <h2>THE FLOOD</h2>
+                                    <p>Gish Gallop Trainer</p>
+                                </div>
+                                <div class="game-card-body">
+                                    <p>Master the art of identifying and neutralizing bad-faith rhetorical tactics like the Gish Gallop in real-time.</p>
+                                </div>
+                                <div class="game-card-footer">
+                                    <a href="./games/the-flood/the-flood.html" class="btn btn-default" id="play-the-flood">Play</a>
+                                    <a href="./docs/the-flood/README.md" class="btn btn-secondary" id="docs-the-flood">Docs</a>
+                                </div>
+                            </div>
+
+                            <div class="game-card" id="card-the-stacks">
+                                <div class="game-card-header">
+                                    <h2>The Stacks</h2>
+                                    <p>Research Skills Academy</p>
+                                </div>
+                                <div class="game-card-body">
+                                    <p>Develop essential research skills in this interactive library simulation. Learn to verify sources and fight misinformation.</p>
+                                </div>
+                                <div class="game-card-footer">
+                                    <a href="./games/the-stacks/the-stacks.html" class="btn btn-default" id="play-the-stacks">Play</a>
+                                    <a href="./docs/the-stacks/README.md" class="btn btn-secondary" id="docs-the-stacks">Docs</a>
+                                </div>
+                            </div>
+
+                            <div class="game-card" id="card-american-dream">
+                                <div class="game-card-header">
+                                    <h2>American Dream Simulator</h2>
+                                    <p>Economic Satire</p>
+                                </div>
+                                <div class="game-card-body">
+                                    <p>A satirical terminal-styled economic simulation that explores the realities of the American Dream through resource management and life choices.</p>
+                                </div>
+                                <div class="game-card-footer">
+                                    <a href="./games/american-dream-simulator/american-dream-simulator.html" class="btn btn-default" id="play-american-dream">Play</a>
+                                    <a href="./docs/american-dream-simulator/README.md" class="btn btn-secondary" id="docs-american-dream">Docs</a>
+                                </div>
+                            </div>
+
+                            <div class="game-card" id="card-sticker-star">
+                                <div class="game-card-header">
+                                    <h2>StickerStar</h2>
+                                    <p>Ultimate Collectibles Hub</p>
+                                </div>
+                                <div class="game-card-body">
+                                    <p>Print, collect, trade, and gamble with custom stickers in this neon-drenched collectibles sim — with educational dark-pattern awareness built in.</p>
+                                </div>
+                                <div class="game-card-footer">
+                                    <a href="./games/sticker-star/StickerStar.html" class="btn btn-default" id="play-sticker-star">Play</a>
+                                    <a href="./docs/sticker-star/README.md" class="btn btn-secondary" id="docs-sticker-star">Docs</a>
+                                </div>
+                            </div>
+
+                            <div class="game-card" id="card-wacky-pets">
+                                <div class="game-card-header">
+                                    <h2>Wacky Pets</h2>
+                                    <p>Virtual Pet Arena</p>
+                                </div>
+                                <div class="game-card-body">
+                                    <p>Hatch, train, and evolve your own virtual pet. Enter contests, earn trophies, and power up your companion in this retro-styled pet simulator.</p>
+                                </div>
+                                <div class="game-card-footer">
+                                    <a href="./games/wacky-pets/virtual-pet-game.html" class="btn btn-default" id="play-wacky-pets">Play</a>
+                                    <a href="./docs/wacky-pets/README.md" class="btn btn-secondary" id="docs-wacky-pets">Docs</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Achievements Section -->
+                    <div id="achievements" class="content-section" role="tabpanel">
+                        <div class="controls">
+                            <div class="search-box">
+                                <label class="visually-hidden" for="achievementSearch">Search achievements</label>
+                                <input type="text" id="achievementSearch" placeholder="Search achievements...">
+                            </div>
+                            <label class="visually-hidden" for="rarityFilter">Rarity</label>
+                            <select class="filter-select" id="rarityFilter">
+                                <option value="">All Rarities</option>
+                                <option value="common">Common</option>
+                                <option value="uncommon">Uncommon</option>
+                                <option value="rare">Rare</option>
+                                <option value="legendary">Legendary</option>
+                            </select>
+                            <label class="visually-hidden" for="statusFilter">Status</label>
+                            <select class="filter-select" id="statusFilter">
+                                <option value="">All Achievements</option>
+                                <option value="unlocked">Unlocked</option>
+                                <option value="locked">Locked</option>
+                            </select>
+                            <button class="btn btn-danger" id="resetBtn">Reset All</button>
+                        </div>
+
+                        <div id="achievementsList"></div>
+                    </div>
+
+                    <!-- Leaderboard Section -->
+                    <div id="leaderboard" class="content-section" role="tabpanel">
+                        <h2>Your Progress by Game</h2>
+                        <div id="leaderboardList"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="status-bar"><p>12 game(s)</p><p>Progress is saved in this browser</p></div>
+        </section>
+    </main>
+
+    <!-- Footer (taskbar): matches the main site. -->
+    <footer class="taskbar">
+        <div class="taskbar-inner">
+            <p>&copy; 2026 Mike</p>
+            <ul class="tray">
+                <li><a class="btn" href="https://github.com/PixelTheSprite"><svg viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="#000" d="M2 1h1v1h-1zM12 1h1v1h-1zM2 2h2v1h-2zM11 2h2v1h-2zM2 3h3v1h-3zM10 3h3v1h-3zM2 4h11v1h-11zM1 5h13v1h-13zM1 6h13v1h-13zM1 7h3v1h-3zM6 7h3v1h-3zM11 7h3v1h-3zM1 8h3v1h-3zM6 8h3v1h-3zM11 8h3v1h-3zM1 9h13v1h-13zM2 10h11v1h-11zM3 11h9v1h-9zM4 12h2v1h-2zM9 12h2v1h-2zM4 13h2v1h-2zM9 13h2v1h-2zM3 14h2v1h-2zM10 14h2v1h-2z"/></svg>GitHub</a></li>
+                <li><a class="btn" href="https://www.linkedin.com/in/michael-youngdahl/"><svg viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="#0a66c2" d="M1 1h14v1h-14zM1 2h14v1h-14zM1 3h2v1h-2zM5 3h10v1h-10zM1 4h2v1h-2zM5 4h10v1h-10zM1 5h14v1h-14zM1 6h2v1h-2zM5 6h2v1h-2zM12 6h3v1h-3zM1 7h2v1h-2zM5 7h2v1h-2zM13 7h2v1h-2zM1 8h2v1h-2zM5 8h2v1h-2zM9 8h2v1h-2zM13 8h2v1h-2zM1 9h2v1h-2zM5 9h2v1h-2zM9 9h2v1h-2zM13 9h2v1h-2zM1 10h2v1h-2zM5 10h2v1h-2zM9 10h2v1h-2zM13 10h2v1h-2zM1 11h2v1h-2zM5 11h2v1h-2zM9 11h2v1h-2zM13 11h2v1h-2zM1 12h2v1h-2zM5 12h2v1h-2zM9 12h2v1h-2zM13 12h2v1h-2zM1 13h14v1h-14zM1 14h14v1h-14z"/><path fill="#fff" d="M3 3h2v1h-2zM3 4h2v1h-2zM3 6h2v1h-2zM7 6h5v1h-5zM3 7h2v1h-2zM7 7h6v1h-6zM3 8h2v1h-2zM7 8h2v1h-2zM11 8h2v1h-2zM3 9h2v1h-2zM7 9h2v1h-2zM11 9h2v1h-2zM3 10h2v1h-2zM7 10h2v1h-2zM11 10h2v1h-2zM3 11h2v1h-2zM7 11h2v1h-2zM11 11h2v1h-2zM3 12h2v1h-2zM7 12h2v1h-2zM11 12h2v1h-2z"/></svg>LinkedIn</a></li>
+                <li class="clock" data-clock hidden></li>
+            </ul>
+        </div>
+    </footer>
 
         <script>
         // Initialize achievement system on page load
@@ -230,7 +317,7 @@
         function initializePortfolio() {
             // Register achievements for each game
             // These mirror the registrations inside each game's HTML file
-            
+
             AchievementSystem.register('the-arena', [
                 { id: 'first-win', name: 'First Victory', description: 'Win your first debate', icon: '🏆', points: 10, rarity: 'common' },
                 { id: 'speedrunner', name: 'Speed Runner', description: 'Complete in under 2 minutes', icon: '⚡', points: 25, rarity: 'rare' },
@@ -287,7 +374,7 @@
             // Tab navigation
             document.querySelectorAll('.nav-tab').forEach(tab => {
                 tab.addEventListener('click', (e) => {
-                    const tabName = e.target.dataset.tab;
+                    const tabName = e.currentTarget.dataset.tab;
                     switchTab(tabName);
                 });
             });
@@ -319,13 +406,16 @@
             // Deactivate all tabs
             document.querySelectorAll('.nav-tab').forEach(tab => {
                 tab.classList.remove('active');
+                tab.setAttribute('aria-selected', 'false');
             });
 
             // Show selected section
             document.getElementById(tabName).classList.add('active');
 
             // Activate selected tab
-            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            const activeTab = document.querySelector(`[data-tab="${tabName}"]`);
+            activeTab.classList.add('active');
+            activeTab.setAttribute('aria-selected', 'true');
         }
 
         function updateStatsDisplay() {
@@ -335,7 +425,7 @@
             const totalGamesEl = document.getElementById('total-games');
             const totalAchievementsEl = document.getElementById('total-achievements');
             const completionRateEl = document.getElementById('completion-rate');
-            
+
             const totalGamesFill = document.getElementById('total-games-fill');
             const totalAchievementsFill = document.getElementById('total-achievements-fill');
             const completionRateFill = document.getElementById('completion-rate-fill');
@@ -343,7 +433,7 @@
             if (totalGamesEl) totalGamesEl.textContent = stats.totalAchievements || 0;
             if (totalAchievementsEl) totalAchievementsEl.textContent = stats.totalUnlocked || 0;
             if (completionRateEl) completionRateEl.textContent = (stats.unlockedPercentage || 0) + '%';
-            
+
             // Update bar fills
             if (totalGamesFill) totalGamesFill.style.width = '100%'; // Always 100% since it's just a count
             if (totalAchievementsFill) totalAchievementsFill.style.width = (stats.unlockedPercentage || 0) + '%';
