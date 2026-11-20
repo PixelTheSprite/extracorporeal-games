@@ -1,5 +1,5 @@
-/* Adds a "Version" menu to the Back to Portfolio bar when a game has more than one
-   version listed in game-versions.js. Styled by portfolio-toolbar.css. */
+/* Adds a "Version" menu to the Back to Portfolio bar, listing the versions of the
+   game from game-versions.js. Styled by portfolio-toolbar.css. */
 (function () {
   function init() {
     var bar = document.getElementById('portfolio-toolbar');
@@ -11,7 +11,8 @@
     var file = parts[parts.length - 1] || '';
     var game = parts[parts.length - 2] || '';
     var versions = all[game];
-    if (!versions || versions.length < 2) return;
+    // Every game gets the menu; one that isn't listed shows just the open page
+    if (!versions || !versions.length) versions = [{ file: file, label: 'v1', current: true }];
 
     var here = null;
     for (var i = 0; i < versions.length; i++) {

@@ -102,6 +102,17 @@
     --pt-hover-shadow: 0 0 20px rgba(240, 192, 64, 0.4);
 }
 </style>
+<style id="portfolio-fit">
+/* Full-screen overlays start below the 56px portfolio bar. "safe center" keeps the
+   top of a tall screen reachable (plain "center" pushes it off the top on short
+   screens such as a phone held sideways), and overflow lets it scroll. */
+.screen {
+    top: 56px !important;
+    align-items: safe center !important;
+    justify-content: safe center !important;
+    overflow-y: auto !important;
+}
+</style>
 <script src="../../game-versions.js" defer></script>
 <script src="../../portfolio-toolbar.js" defer></script>
 </head>

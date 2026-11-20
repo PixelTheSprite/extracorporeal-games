@@ -28,3 +28,6 @@ build/
 # Temporary files
 *.tmp
 *.bak
+
+# Dev Files
+games/*.zip

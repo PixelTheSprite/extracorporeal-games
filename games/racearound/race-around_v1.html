@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Race Around: Vice City</title>
+<title>Race Around: Neon Bay</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -549,7 +549,7 @@
 </style>
 <link rel="stylesheet" href="../../portfolio-toolbar.css">
 <style id="portfolio-toolbar-theme">
-/* Back-to-portfolio bar, themed to match this game (neon Vice City) */
+/* Back-to-portfolio bar, themed to match this game (neon beach city) */
 #portfolio-toolbar {
     --pt-bar-bg: #050508;
     --pt-bar-border: 2px solid #FF2D78;
@@ -565,6 +565,18 @@
     --pt-btn-color: #000;
     --pt-hover-shadow: 0 0 28px rgba(255, 45, 120, 0.8);
     --pt-focus: #00F5FF;
+    --pt-bar-color: #FF2D78; /* "Version" caption on the bar */
+}
+</style>
+<style id="portfolio-fit">
+/* Full-screen overlays start below the 56px portfolio bar. "safe center" keeps the
+   top of a tall screen reachable (plain "center" pushes it off the top on short
+   screens such as a phone held sideways), and overflow lets it scroll. */
+#overlay, #garageModal, #startScreen {
+    top: 56px !important;
+    align-items: safe center !important;
+    justify-content: safe center !important;
+    overflow-y: auto !important;
 }
 </style>
 <script src="../../game-versions.js" defer></script>
@@ -580,7 +592,7 @@
 <div id="startScreen">
   <div class="start-logo">
     <span class="line1">Race Around</span>
-    <span class="line2">Vice City</span>
+    <span class="line2">Neon Bay</span>
   </div>
   <p class="start-tagline">A tiny city. Questionable physics. Zero regrets.</p>
   <div class="start-controls">
@@ -598,7 +610,7 @@
 <div id="hud">
   <div class="hud-left">
     <div class="hud-title">Race Around</div>
-    <div class="hud-sub">Vice City</div>
+    <div class="hud-sub">Neon Bay</div>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
     <div class="stat-block">
@@ -647,7 +659,7 @@
 <div id="garageModal">
   <div class="garage-panel">
     <div class="garage-title">🔧 GARAGE</div>
-    <div class="garage-sub">Pay & Spray • Vice City</div>
+    <div class="garage-sub">Spray Shop • Neon Bay</div>
     <div class="garage-status">✓ WANTED LEVEL CLEARED — YOU'RE CLEAN</div>
     <div>
       <div class="garage-section-label">Choose Your Color</div>
@@ -684,7 +696,7 @@
 
 <!-- OVERLAY -->
 <div id="overlay">
-  <div class="overlay-title" id="overlayTitle">BUSTED</div>
+  <div class="overlay-title" id="overlayTitle">CAUGHT</div>
   <div class="overlay-sub" id="overlaySub">You ran out of health</div>
   <div class="overlay-score" id="overlayScore">Score: 0</div>
   <button class="btn-restart" onclick="restartGame()">RESPAWN</button>
@@ -692,7 +704,7 @@
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  Race Around Vice City
+//  Race Around: Neon Bay
 //  Top-down driving with intentionally questionable physics
 // ═══════════════════════════════════════════════════════════
 
@@ -1548,7 +1560,7 @@ function collectPickup(pk) {
 
 const CAR_COLORS = [
   { name: 'Hot Pink',    body: '#FF2D78', roof: '#CC0055' },
-  { name: 'Vice Cyan',   body: '#00F5FF', roof: '#009AAA' },
+  { name: 'Bay Cyan',   body: '#00F5FF', roof: '#009AAA' },
   { name: 'Neon Yellow', body: '#FFE600', roof: '#AA9900' },
   { name: 'Tangerine',   body: '#FF6B00', roof: '#AA4400' },
   { name: 'Lime',        body: '#39FF14', roof: '#1A8800' },
@@ -2253,7 +2265,7 @@ function loop() {
 function gameOver() {
   state.gameOver = true;
   const ov = document.getElementById('overlay');
-  document.getElementById('overlayTitle').textContent = state.player.wantedLevel >= 3 ? 'BUSTED!' : 'WASTED!';
+  document.getElementById('overlayTitle').textContent = state.player.wantedLevel >= 3 ? 'CAUGHT!' : 'WRECKED!';
   document.getElementById('overlaySub').textContent = state.player.wantedLevel >= 3 ? 'Too hot to handle.' : 'You ran out of health.';
   document.getElementById('overlayScore').textContent =
     'Score: ' + state.player.score.toLocaleString() + '   |   Cash: $' + state.player.cash.toLocaleString();
@@ -2293,7 +2305,7 @@ function startGame() {
   state.player.y = start.y;
   state.cam.x = start.x - canvas.width / 2;
   state.cam.y = start.y - canvas.height / 2;
-  showToast('WELCOME TO VICE CITY 🌴');
+  showToast('WELCOME TO NEON BAY 🌴');
   loop();
 }
 

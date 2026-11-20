@@ -1,5 +1,5 @@
 This is a readme for the racearound game.
 
-# GTA VI — Vice City Pocket
+# Race Around: Neon Bay
 
-GTA VI — Vice City Pocket is a miniature racing and exploration game inspired by the neon-soaked streets of Vice City.
+Race Around is a miniature top-down racing and exploration game set in Neon Bay, a fictional neon-soaked beach city.

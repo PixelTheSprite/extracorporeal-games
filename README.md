@@ -6,7 +6,7 @@ A collection of interactive games and educational tools exploring media literacy
 
 - **The Arena** - Bad-faith rhetoric identification trainer
 - **The Stacks** - Research literacy and source evaluation game
-- **Fighting Game** - Browser-based fighting game with Nintendo parody characters
+- **Legally Distinct Mix-Em-Up** - Browser-based platform fighter with an original cast plus public-domain characters
 - [Add others...]
 
 ## Running Locally
@@ -62,7 +62,7 @@ The hub matches the main site (pixelthesprite.github.io): a Windows 95/98 deskto
 | `index.css` | Hub styles. The top half mirrors the main site's `assets/css/style.css` (colors, fonts, windows, buttons, header, taskbar); keep them in sync |
 | `desktop.js` | Spinning globe logo and taskbar clock, copied from the main site's `assets/js/desktop.js` |
 | `portfolio-toolbar.css` | Layout for the "Back to Portfolio" bar at the top of every game (fixed 56px bar, 44px button). Each game links it, then sets `--pt-*` colour and font variables in a `<style id="portfolio-toolbar-theme">` block so the bar matches that game. New games: copy the link, theme block, two script tags and toolbar markup from any existing game. |
-| `portfolio-toolbar.js` | Adds the "Version" menu to that bar when a game has more than one version |
+| `portfolio-toolbar.js` | Adds the "Version" menu to that bar (every game has one, even with a single version) |
 | `game-versions.js` | The list of versions for each game (see below) |
 | `achievement-system.js` | Also draws the "Achievement Unlocked!" popup, styled as a small Win95 window |
 
@@ -70,7 +70,7 @@ The games themselves keep their own look.
 
 ## Adding a version
 
-Each game can keep older iterations so visitors can compare them. When a game has two or more versions, a **Version** menu appears on the right of its "Back to Portfolio" bar. Floralis has two.
+Each game can keep older iterations so visitors can compare them. Every game has a **Version** menu on the right of its "Back to Portfolio" bar, listing what `game-versions.js` has for it (a game with one version shows just "v1 (current)"). Floralis and Wacky Pets have two versions; the fighting game has four.
 
 1. Save the older HTML file **in the same folder** as the current one, e.g. `games/the-flood/the-flood-v1.html`. Keeping it in the same folder means its `../../` links (hub, toolbar, achievements) keep working.
 2. Make sure the file has the toolbar link, a `portfolio-toolbar-theme` block, the two script tags (`game-versions.js`, `portfolio-toolbar.js`) and the toolbar markup. Copy them from the current version, and adjust the theme colours if that version looked different.
@@ -85,7 +85,11 @@ Each game can keep older iterations so visitors can compare them. When a game ha
 
    The key is the game's folder name. `current: true` goes on the version the hub's Play button opens.
 
-Cryptozone's "Highlight Dark Patterns" button sits where the Version menu would go. If Cryptozone gets versions, move that button below the bar first.
+Cryptozone's "Highlight Dark Patterns" button lives inside the bar, between Back and the Version menu.
+
+If the text on the bar (the "Version" caption and "Older version" tag) is hard to read against a game's bar colour, set `--pt-bar-color` in that game's theme block.
+
+The fighting game's current version (`html5_scuffle.html`) is a build output: it was copied from `v4/mix_em_up_project.zip`, where it is built from `src/`. If you rebuild it, copy the new file over `html5_scuffle.html` and keep the toolbar theme (including `--pt-bar-color`) in `src/a_head.html`.
 
 ## Technology
 

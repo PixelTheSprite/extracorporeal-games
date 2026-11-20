@@ -170,6 +170,8 @@
 
 @media (max-width: 600px) {
     .portfolio-version-old, .portfolio-version-caption { display: none !important; }
+    /* With the "Older version" tag hidden, the menu takes the auto margin back */
+    .portfolio-version-old + .portfolio-version { margin-left: auto !important; }
 }
 /* On phones, shorten the back button to "← Back" when a version menu is present */
 @media (max-width: 480px) {

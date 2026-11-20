@@ -43,11 +43,11 @@
   /* === EDUCATIONAL TOGGLE === */
   /* Sits in the right side of the Back to Portfolio bar so it never covers the top bar */
   #edu-toggle {
-    position: fixed;
-    top: 6px; right: 16px;
-    z-index: 1000001;
+    position: static;
+    flex: 0 1 auto;
+    margin-left: auto;
+    min-width: 0;
     min-height: 44px;
-    max-width: calc(100vw - 260px);
     background: rgba(3,12,6,0.9);
     border: 1px solid var(--cyan);
     border-radius: 4px;
@@ -866,6 +866,21 @@
     --pt-hover-color: #030c06;
     --pt-hover-border-color: #00FF41;
     --pt-hover-shadow: 0 0 12px rgba(0, 255, 65, 0.5);
+    --pt-bar-color: #00FF41;
+    --pt-select-bg: #050f08;
+}
+/* The Highlight Dark Patterns button takes the auto margin, so the menu sits right after it */
+#portfolio-toolbar .portfolio-version { margin-left: 0 !important; }
+</style>
+<style id="portfolio-fit">
+/* Full-screen overlays start below the 56px portfolio bar. "safe center" keeps the
+   top of a tall screen reachable (plain "center" pushes it off the top on short
+   screens such as a phone held sideways), and overflow lets it scroll. */
+#quit-overlay, #offer-overlay, #airdrop-result {
+    top: 56px !important;
+    align-items: safe center !important;
+    justify-content: safe center !important;
+    overflow-y: auto !important;
 }
 </style>
 <script src="../../game-versions.js" defer></script>
@@ -874,11 +889,11 @@
 <body style="padding-top: 56px !important;">
     <div id="portfolio-toolbar">
         <a href="../../index.html" class="portfolio-back-btn"><span class="portfolio-back-arrow" aria-hidden="true">←</span>Back<span class="portfolio-back-extra"> to Portfolio</span></a>
+        <!-- Sits in the bar between Back and the Version menu (added by portfolio-toolbar.js) -->
+        <button id="edu-toggle" onclick="toggleEdu()">
+          <span class="dot"></span>Highlight Dark Patterns
+        </button>
     </div>
-
-<button id="edu-toggle" onclick="toggleEdu()">
-  <span class="dot"></span>Highlight Dark Patterns
-</button>
 
 <!-- TOP BAR -->
 <div id="topbar">

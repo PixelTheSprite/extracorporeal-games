@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PETAMON: Mythic Beast Kennel</title>
+<title>WACKY PETS: Mythic Beast Kennel</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 /* ===== css: base.css ===== */
@@ -748,8 +748,8 @@
   }
   .bar-meter-fill.full { background: linear-gradient(90deg, var(--gold), #ff6600, var(--gold)); box-shadow: 0 0 15px rgba(255,215,0,0.5); }
 
-/* ===== css: petamon.css ===== */
-/* PETAMON additions: room canvas, kennel, care, evolution, shop, egg chooser, responsive. */
+/* ===== css: wacky-pets.css ===== */
+/* WACKY PETS additions: room canvas, kennel, care, evolution, shop, egg chooser, responsive. */
 .main-layout { grid-template-columns: 290px 1fr 300px; max-width: 1280px; }
 .col { min-width: 0; }
 .dim-note { color: var(--text-dim); font-size: 11px; text-align: center; padding: 12px; }
@@ -932,6 +932,17 @@
 /* keep pop-up notifications clear of the bar */
 .notif-stack { top: 76px !important; }
 </style>
+<style id="portfolio-fit">
+/* Full-screen overlays start below the 56px portfolio bar. "safe center" keeps the
+   top of a tall screen reachable (plain "center" pushes it off the top on short
+   screens such as a phone held sideways), and overflow lets it scroll. */
+.arena-overlay {
+    top: 56px !important;
+    align-items: safe center !important;
+    justify-content: safe center !important;
+    overflow-y: auto !important;
+}
+</style>
 <script src="../../game-versions.js" defer></script>
 <script src="../../portfolio-toolbar.js" defer></script>
 </head>
@@ -967,7 +978,7 @@
 </div>
 
 <div class="title-bar">
-  <h1>✦ PETAMON ✦</h1>
+  <h1>✦ WACKY PETS ✦</h1>
   <p>Hatch · Care · Bond · Evolve · Compete</p>
   <button class="hamburger" id="menuBtn" onclick="openMenu()" aria-label="Open menu" aria-expanded="false" aria-controls="sideMenu"><span></span><span></span><span></span></button>
   <button class="btn btn-outline mute-btn" id="muteBtn" onclick="toggleMute()" aria-label="Toggle sound">🔊</button>
@@ -1508,7 +1519,7 @@ const registry = {
     for (const r of this.all('rivals')) if (!BEAST_DRAWERS[r.species]) errs.push(`rival "${r.id}" uses unknown species`);
     if ((DATA.rules.evolve || []).length !== 4) errs.push('rules.evolve needs 4 thresholds (Baby→Infant … Adult→Legend)');
     if (errs.length) {
-      document.body.innerHTML = `<pre style="color:#ff6b6b;padding:20px;font:14px monospace">PETAMON data error:\n${errs.join('\n')}</pre>`;
+      document.body.innerHTML = `<pre style="color:#ff6b6b;padding:20px;font:14px monospace">WACKY PETS data error:\n${errs.join('\n')}</pre>`;
       throw new Error(errs.join('; '));
     }
   },
@@ -1517,7 +1528,7 @@ const registry = {
 /* ===== js: storage.js ===== */
 // Persistence: autosave to localStorage; Export/Import a JSON save via File System Access API
 // (falls back to download / file input where the API is missing).
-const STORE_KEY = 'petamon_save_v2';
+const STORE_KEY = 'petamon_save_v2'; // old internal name, kept so existing saves still load
 let fileHandle = null;
 
 function serialize() {
@@ -1526,7 +1537,7 @@ function serialize() {
 }
 
 function applySave(data) {
-  if (!data || !Array.isArray(data.pets)) throw new Error('Not a PETAMON save');
+  if (!data || !Array.isArray(data.pets)) throw new Error('Not a Wacky Pets save');
   newGameState();
   const { rt, ...rest } = data;
   Object.assign(appState, rest);
@@ -1551,13 +1562,13 @@ async function exportSave() {
   const text = JSON.stringify(JSON.parse(serialize()), null, 2);
   try {
     if (window.showSaveFilePicker) {
-      fileHandle = fileHandle || await window.showSaveFilePicker({ suggestedName: 'petamon-save.json',
-        types: [{ description: 'PETAMON save', accept: { 'application/json': ['.json'] } }] });
+      fileHandle = fileHandle || await window.showSaveFilePicker({ suggestedName: 'wacky-pets-save.json',
+        types: [{ description: 'Wacky Pets save', accept: { 'application/json': ['.json'] } }] });
       const w = await fileHandle.createWritable(); await w.write(text); await w.close();
     } else {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
-      a.download = 'petamon-save.json'; a.click(); URL.revokeObjectURL(a.href);
+      a.download = 'wacky-pets-save.json'; a.click(); URL.revokeObjectURL(a.href);
     }
     setStatus('💾 Save exported');
   } catch (e) { if (e.name !== 'AbortError') setStatus('⚠️ Export failed: ' + e.message); }
@@ -1567,7 +1578,7 @@ async function importSave() {
   try {
     let text;
     if (window.showOpenFilePicker) {
-      [fileHandle] = await window.showOpenFilePicker({ types: [{ description: 'PETAMON save', accept: { 'application/json': ['.json'] } }] });
+      [fileHandle] = await window.showOpenFilePicker({ types: [{ description: 'Wacky Pets save', accept: { 'application/json': ['.json'] } }] });
       text = await (await fileHandle.getFile()).text();
     } else {
       text = await new Promise((res, rej) => {

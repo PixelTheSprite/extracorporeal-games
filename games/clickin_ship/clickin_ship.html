@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>STARFORGE — Ship Commander</title>
+<title>CLICKIN' SHIP — Ship Commander</title>
 <script src="../../achievement-system.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -821,6 +821,17 @@ body::before {
     --pt-hover-shadow: 0 0 10px #00d4ff55, 0 0 20px #00d4ff22;
 }
 </style>
+<style id="portfolio-fit">
+/* Full-screen overlays start below the 56px portfolio bar. "safe center" keeps the
+   top of a tall screen reachable (plain "center" pushes it off the top on short
+   screens such as a phone held sideways), and overflow lets it scroll. */
+#modal-overlay {
+    top: 56px !important;
+    align-items: safe center !important;
+    justify-content: safe center !important;
+    overflow-y: auto !important;
+}
+</style>
 <script src="../../game-versions.js" defer></script>
 <script src="../../portfolio-toolbar.js" defer></script>
 </head>
@@ -830,7 +841,7 @@ body::before {
     </div>
 
 <div id="header" style="top: 56px !important;">
-  <div id="logo">STAR<span>FORGE</span></div>
+  <div id="logo">CLICKIN'<span> SHIP</span></div>
   <div id="resources-bar">
     <div class="res-chip tooltip-wrap">
       <span class="res-icon">⚡</span>
@@ -867,7 +878,7 @@ body::before {
     <button class="btn btn-danger" onclick="confirmReset()">🔄 New</button>
     <button class="btn btn-prestige" id="prestige-btn" onclick="showPrestigeModal()" style="display:none">✨ Prestige</button>
   </div>
-  <div id="status-bar" id="status">Ready · STARFORGE v1.0</div>
+  <div id="status-bar" id="status">Ready · CLICKIN' SHIP v1.0</div>
 </div>
 
 <div id="app">
@@ -1577,7 +1588,7 @@ async function saveGame() {
   try {
     if (!fileHandle) {
       fileHandle = await window.showSaveFilePicker({
-        suggestedName: 'starforge_save.json',
+        suggestedName: 'clickin_ship_save.json',
         types: [{ description: 'JSON Save File', accept: { 'application/json': ['.json'] } }]
       });
     }
@@ -2094,7 +2105,7 @@ function init() {
     }
   }, 800);
 
-  setStatus('STARFORGE loaded. Click your ship to begin!');
+  setStatus("CLICKIN' SHIP loaded. Click your ship to begin!");
 }
 
 init();
