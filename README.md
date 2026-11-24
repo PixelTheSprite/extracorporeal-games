@@ -70,7 +70,7 @@ The games themselves keep their own look.
 
 ## Adding a version
 
-Each game can keep older iterations so visitors can compare them. Every game has a **Version** menu on the right of its "Back to Portfolio" bar, listing what `game-versions.js` has for it (a game with one version shows just "v1 (current)"). Floralis and Wacky Pets have two versions; the fighting game has four.
+Each game can keep older iterations so visitors can compare them. Every game has a **Version** menu on the right of its "Back to Portfolio" bar, listing what `game-versions.js` has for it (a game with one version shows just "v1 (current)"). Floralis, Nautil.io and Wacky Pets have two versions; the fighting game has four; Race Around has three releases plus six v4 dev builds.
 
 1. Save the older HTML file **in the same folder** as the current one, e.g. `games/the-flood/the-flood-v1.html`. Keeping it in the same folder means its `../../` links (hub, toolbar, achievements) keep working.
 2. Make sure the file has the toolbar link, a `portfolio-toolbar-theme` block, the two script tags (`game-versions.js`, `portfolio-toolbar.js`) and the toolbar markup. Copy them from the current version, and adjust the theme colours if that version looked different.
@@ -84,6 +84,10 @@ Each game can keep older iterations so visitors can compare them. Every game has
    ```
 
    The key is the game's folder name. `current: true` goes on the version the hub's Play button opens.
+
+Builds kept in a subfolder also work (Race Around's `dev_versions/0.0.x/` builds toward v4). List them by their path from the game folder, e.g. `file: 'dev_versions/0.0.6/race-around_v3.html'`, and add one `../` per extra folder to the page's hub, toolbar and achievement links (`../../../../portfolio-toolbar.css` for two extra folders). Versions listed above the `current` one are labelled "Dev build" on the bar instead of "Older version".
+
+Use file names without spaces or punctuation other than `.`, `-` and `_`; the Version menu won't open anything else.
 
 Cryptozone's "Highlight Dark Patterns" button lives inside the bar, between Back and the Version menu.
 

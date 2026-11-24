@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fossil Revival — Jungle Expedition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#2a1a0e;--wood:#7a4a22;--wood-d:#4e2d14;--wood-l:#a0662f;--bamboo:#d9b44a;--bamboo-d:#b08a2e;--bamboo-l:#f0d878;
+  --leaf:#3f8f3f;--leaf-d:#24602c;--leaf-l:#8fcf55;--cream:#f6e7c1;--cream-d:#d9c79a;--gold:#f2c14e;--red:#c93a3a;--teal:#2a9aa0;--teal-l:#7fd6d0;
+  --bg:#12281a;--sand:#e6c98a;--font-d:'Press Start 2P','Courier New',monospace;--font-b:'VT323','Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--cream);font-family:var(--font-b);font-size:20px;line-height:1.15}
+body{background-image:radial-gradient(#1b3a25 1px,transparent 1.5px),radial-gradient(#0f2217 1px,transparent 1.5px);background-size:12px 12px,12px 12px;background-position:0 0,6px 6px;min-height:100vh}
+img.px,canvas.px{image-rendering:pixelated;image-rendering:crisp-edges;vertical-align:middle}
+button{font-family:var(--font-b);font-size:20px;cursor:pointer;color:inherit}
+:focus-visible{outline:3px dashed var(--gold);outline-offset:2px}
+#app{max-width:1120px;margin:0 auto;padding:8px 8px 40px}
+.hidden{display:none!important}
+
+/* ---------- header sign ---------- */
+#top{position:relative;border:4px solid var(--ink);box-shadow:0 4px 0 rgba(0,0,0,.45);background:#000;overflow:hidden}
+#banner{display:block;width:100%;height:clamp(84px,15vw,150px);image-rendering:pixelated;object-fit:cover}
+.titleblock{position:absolute;left:0;right:0;top:6px;text-align:center;pointer-events:none}
+.titleblock h1{font-family:var(--font-d);font-size:clamp(14px,4.2vw,30px);color:var(--cream);letter-spacing:2px;text-shadow:3px 3px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink)}
+.titleblock p{font-size:clamp(16px,3vw,22px);color:var(--gold);text-shadow:2px 2px 0 var(--ink);margin-top:2px}
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--wood-d);border:4px solid var(--ink);border-top:0;padding:6px 8px}
+#status{flex:1;min-width:160px;color:var(--cream-d);font-size:18px;text-align:right}
+@media(max-width:480px){#status{text-align:left;flex-basis:100%;order:5}}
+
+/* ---------- buttons / panels ---------- */
+.btn{background:var(--bamboo);color:var(--ink);border:3px solid var(--ink);padding:6px 12px;min-height:44px;box-shadow:inset -3px -3px 0 var(--bamboo-d),inset 3px 3px 0 var(--bamboo-l);font-family:var(--font-d);font-size:10px;letter-spacing:1px;line-height:1.4;text-transform:uppercase;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover:not(:disabled){filter:brightness(1.1)}
+.btn:active:not(:disabled){transform:translateY(2px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:3px 8px;min-height:36px}
+.btn.go{background:var(--leaf-l);box-shadow:inset -3px -3px 0 var(--leaf),inset 3px 3px 0 #c4e88a}
+.btn.warn{background:#e8836e;box-shadow:inset -3px -3px 0 #b3402e,inset 3px 3px 0 #f4b5a5}
+.btn.dark{background:var(--wood-l);color:var(--cream);box-shadow:inset -3px -3px 0 var(--wood-d),inset 3px 3px 0 #c88850}
+.btn.act{background:var(--cream);box-shadow:inset -3px -3px 0 var(--cream-d),inset 3px 3px 0 #fff}
+.panel{background:var(--wood);border:4px solid var(--ink);box-shadow:inset 0 0 0 2px var(--wood-l),inset 0 0 0 4px var(--wood-d),4px 4px 0 rgba(0,0,0,.45);padding:12px;margin-bottom:12px;position:relative}
+.panel.paper{background:#e9d7a6;color:var(--ink);box-shadow:inset 0 0 0 2px #f6e7c1,inset 0 0 0 4px #c9b27a,4px 4px 0 rgba(0,0,0,.45)}
+.h2{font-family:var(--font-d);font-size:clamp(11px,2.8vw,15px);color:var(--gold);text-shadow:2px 2px 0 var(--ink);margin-bottom:6px;line-height:1.5}
+.sub{color:var(--cream-d);margin-bottom:10px;font-size:20px}
+.lbl{font-family:var(--font-d);font-size:9px;color:var(--bamboo-l);letter-spacing:1px;margin:10px 0 6px;text-transform:uppercase;display:block}
+.rule{height:4px;background:repeating-linear-gradient(90deg,var(--bamboo) 0 12px,var(--bamboo-d) 12px 16px);margin:8px 0;border:2px solid var(--ink)}
+
+/* ---------- tabs (bamboo rail) ---------- */
+#tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:10px 0 12px}
+.tabbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:56px;padding:6px 2px;background:var(--wood-d);border:4px solid var(--ink);border-bottom-width:6px;color:var(--cream-d);font-family:var(--font-d);font-size:7px;line-height:1.3;text-align:center;box-shadow:inset 0 0 0 2px var(--wood)}
+.tabbtn span{display:block}
+.tabbtn:hover{color:var(--cream);background:var(--wood)}
+.tabbtn.on{background:var(--bamboo);color:var(--ink);box-shadow:inset 0 0 0 2px var(--bamboo-l),inset -3px -3px 0 var(--bamboo-d);transform:translateY(-2px)}
+@media(min-width:481px){.tabbtn{flex-direction:row;gap:10px;font-size:9px;min-height:52px}}
+@media(min-width:1025px){.tabbtn{font-size:11px}}
+.tab{display:none}.tab.on{display:block}
+
+/* ---------- world stage ---------- */
+.hudrow{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:8px 12px}
+.hudrow .where{font-family:var(--font-d);font-size:11px;color:var(--cream);flex:1;min-width:140px;line-height:1.5}
+.hearts{display:flex;gap:2px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--wood-d);border:3px solid var(--ink);padding:2px 8px;font-size:18px;color:var(--cream)}
+.chip.off{opacity:.45;filter:grayscale(1)}
+.stagewrap{padding:10px;background:#1b0f07}
+.stage{position:relative;margin:0 auto;line-height:0;border:4px solid var(--ink);background:#000;width:max-content;max-width:100%;touch-action:none}
+.stage canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+#labels{position:absolute;inset:0;pointer-events:none}
+.mlabel{position:absolute;transform:translate(-50%,0);font-family:var(--font-d);font-size:clamp(5px,1.2vw,8px);color:var(--cream);background:rgba(42,26,14,.82);border:2px solid var(--ink);padding:2px 4px;white-space:nowrap;line-height:1.3}
+.mlabel.here{background:var(--gold);color:var(--ink)}
+.mlabel.new{opacity:.75}
+.dlg{position:absolute;left:6px;right:6px;bottom:6px;background:#f1dfae;color:var(--ink);border:4px solid var(--ink);box-shadow:inset 0 0 0 2px #fff6d8,inset 0 0 0 4px #c9b27a;padding:10px 12px;display:flex;gap:12px;line-height:1.1;z-index:5}
+.dlg .port{flex:none;background:var(--wood-d);border:3px solid var(--ink);padding:4px;display:flex;align-items:center;justify-content:center;width:72px;height:72px}
+.dlg .who{font-family:var(--font-d);font-size:10px;color:var(--red);margin-bottom:6px}
+.dlg .txt{font-size:clamp(18px,3.4vw,24px);min-height:2.4em}
+.dlg .more{font-family:var(--font-d);font-size:8px;color:var(--wood);margin-top:6px;animation:blink 1s steps(2) infinite}
+.dlg .choices{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+@keyframes blink{50%{opacity:0}}
+.touch{display:none;justify-content:space-between;align-items:flex-end;margin-top:10px;gap:10px;user-select:none;-webkit-user-select:none}
+@media(pointer:coarse){.touch{display:flex}}
+.dpad{display:grid;grid-template-columns:repeat(3,56px);grid-template-rows:repeat(3,56px);gap:2px}
+.dpad button,.abtns button{background:var(--wood-l);border:4px solid var(--ink);color:var(--cream);font-family:var(--font-d);font-size:14px;box-shadow:inset -3px -3px 0 var(--wood-d),inset 3px 3px 0 #c88850;touch-action:none}
+.abtns{display:flex;gap:10px}.abtns button{width:64px;height:64px;border-radius:50%}
+.infobar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;min-height:64px}
+.infobar .meta{flex:1;min-width:200px}
+.infobar .nm{font-family:var(--font-d);font-size:11px;color:var(--gold);margin-bottom:4px;line-height:1.5}
+.spr-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+
+/* ---------- excavation ---------- */
+.loc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.loc{background:var(--wood-d);border:4px solid var(--ink);padding:8px;text-align:left;color:var(--cream);display:flex;flex-direction:column;gap:4px;min-height:96px}
+.loc:hover:not(:disabled){background:var(--wood)}
+.loc.sel{background:var(--bamboo);color:var(--ink);box-shadow:0 0 0 3px var(--gold)}
+.loc.lock{opacity:.5;filter:grayscale(.8)}
+.loc .nm{font-family:var(--font-d);font-size:8px;line-height:1.5}
+.loc .pr{font-size:17px}
+.diffrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.diff{background:var(--wood-d);border:4px solid var(--ink);padding:8px;text-align:center;color:var(--cream);min-height:64px}
+.diff.sel{background:var(--bamboo);color:var(--ink);box-shadow:0 0 0 3px var(--gold)}
+.diff b{font-family:var(--font-d);font-size:9px;display:block;margin-bottom:4px}
+.diff i{font-style:normal;font-size:17px}
+.exlayout{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:900px){.exlayout{grid-template-columns:minmax(0,1fr) 300px}}
+.stat-line{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:8px;font-size:22px}
+.stat-line b{font-family:var(--font-d);font-size:16px;color:var(--gold)}
+.stat-line b.bad{color:#ff8a70}
+.shovels{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.shv{display:flex;align-items:center;gap:6px;background:var(--wood-d);border:3px solid var(--ink);padding:4px 8px;min-height:44px}
+.shv.sel{background:var(--bamboo);color:var(--ink)}
+.shv:disabled{opacity:.35}
+.shv em{font-style:normal;font-family:var(--font-d);font-size:8px;background:var(--ink);color:var(--gold);padding:2px 4px}
+.gridwrap{background:#1b0f07;padding:8px;border:4px solid var(--ink);display:flex;justify-content:center}
+.gridwrap canvas{cursor:crosshair;touch-action:manipulation}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:17px;margin-bottom:6px;color:var(--cream-d)}
+.legend i{display:inline-block;width:12px;height:12px;border:2px solid var(--ink);margin-right:4px;vertical-align:-1px}
+.plist .row{display:flex;align-items:center;gap:8px;padding:3px 0;border-bottom:2px dashed rgba(0,0,0,.35)}
+.plist .row .ok{margin-left:auto;color:var(--leaf-l);font-family:var(--font-d);font-size:8px}
+.plist .grp{font-family:var(--font-d);font-size:8px;color:var(--gold);margin:8px 0 2px;display:flex;align-items:center;gap:6px}
+.modal{position:fixed;inset:0;background:rgba(10,6,3,.82);z-index:50;display:flex;align-items:center;justify-content:center;padding:12px}
+.modal .box{max-width:480px;width:100%;text-align:center;max-height:92vh;overflow:auto}
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.chipx{display:flex;align-items:center;gap:6px;background:var(--wood-d);border:3px solid var(--ink);padding:3px 8px;font-size:18px}
+.chipx.done{border-color:var(--leaf-l);color:var(--leaf-l)}
+
+/* ---------- revival / guide ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.card{background:var(--wood-d);border:4px solid var(--ink);padding:10px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
+.card.alive{border-color:var(--leaf-l);box-shadow:0 0 0 2px var(--leaf)}
+.card.ready{border-color:var(--gold);box-shadow:0 0 0 2px var(--bamboo-d)}
+.card.lock .cs{opacity:.9}
+.card .cn{font-family:var(--font-d);font-size:10px;color:var(--cream);line-height:1.5}
+.card .ce{color:var(--cream-d);font-size:18px}
+.tag{font-family:var(--font-d);font-size:8px;padding:4px 6px;border:3px solid var(--ink);background:var(--wood);display:inline-block}
+.tag.alive{background:var(--leaf-l);color:var(--ink)}.tag.ready{background:var(--gold);color:var(--ink)}.tag.part{background:var(--wood-l)}
+.cs{display:block;margin:2px auto}
+.bob{animation:bob 1s steps(2) infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.ritual{position:fixed;inset:0;z-index:60;background:radial-gradient(#2a3a1c,#0a0e05);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;text-align:center;padding:16px}
+.ritual h2{font-family:var(--font-d);font-size:clamp(12px,3.5vw,20px);color:var(--leaf-l);text-shadow:3px 3px 0 var(--ink);line-height:1.6}
+.ritual .msg{min-height:50px;font-size:22px;color:var(--cream-d);max-width:420px}
+.seg{height:18px;background:var(--ink);border:3px solid var(--ink);position:relative;width:min(340px,90%);margin:0 auto}
+.seg>i{display:block;height:100%;background:var(--leaf-l);transition:width .12s steps(6)}
+.seg::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 8px,var(--ink) 8px 10px);pointer-events:none}
+.spark{position:absolute;width:6px;height:6px;background:var(--gold);animation:spark 1.2s steps(6) forwards}
+@keyframes spark{to{transform:translate(var(--dx),var(--dy));opacity:0}}
+.flash{animation:flash .5s steps(4)}
+@keyframes flash{0%{filter:brightness(4)}50%{filter:brightness(1)}100%{filter:brightness(1)}}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
+.sum div{background:var(--wood-d);border:4px solid var(--ink);padding:8px;text-align:center}
+.sum b{display:block;font-family:var(--font-d);font-size:16px;color:var(--gold);margin-bottom:6px}
+.sum span{font-family:var(--font-d);font-size:7px;color:var(--cream-d)}
+.pchips{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0;justify-content:center}
+.pchip{display:flex;gap:4px;align-items:center;background:var(--wood);border:2px solid var(--ink);padding:1px 6px;font-size:16px;opacity:.5;filter:grayscale(1)}
+.pchip.on{opacity:1;filter:none;background:var(--bamboo);color:var(--ink)}
+.bar{height:12px;border:3px solid var(--ink);background:var(--ink);width:100%;position:relative}
+.bar>i{display:block;height:100%;background:var(--gold)}
+.bar::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 6px,var(--ink) 6px 8px)}
+.ministats{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;width:100%}
+.ministats div{background:var(--wood);border:2px solid var(--ink);padding:2px;font-size:16px}
+.ministats small{display:block;font-family:var(--font-d);font-size:6px;color:var(--bamboo-l)}
+.lore{font-size:18px;color:var(--cream-d);text-align:left}
+
+/* ---------- training ---------- */
+.trlayout{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:800px){.trlayout{grid-template-columns:240px minmax(0,1fr)}}
+.roster{display:flex;flex-direction:row;gap:6px;overflow-x:auto}
+@media(min-width:800px){.roster{flex-direction:column;overflow:visible}}
+.rcard{display:flex;align-items:center;gap:8px;background:var(--wood-d);border:4px solid var(--ink);padding:6px 8px;min-width:170px;text-align:left;color:var(--cream);min-height:52px}
+.rcard.sel{background:var(--bamboo);color:var(--ink)}
+.rcard .n{font-family:var(--font-d);font-size:8px;line-height:1.5}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}
+@media(max-width:480px){.sgrid{grid-template-columns:1fr}}
+.srow .t{display:flex;justify-content:space-between;font-family:var(--font-d);font-size:8px;margin-bottom:3px}
+.srow .t b{color:var(--gold)}
+.sbar{height:14px;background:var(--ink);border:3px solid var(--ink);position:relative}
+.sbar>i{display:block;height:100%}
+.sbar::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 6px,var(--ink) 6px 8px)}
+.regs{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.reg{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--wood-d);border:4px solid var(--ink);padding:8px 4px;min-height:84px;color:var(--cream)}
+.reg:hover{background:var(--wood)}
+.reg b{font-family:var(--font-d);font-size:7px;line-height:1.5;text-align:center}
+.reg small{color:var(--gold);font-size:17px}
+.arena{display:flex;align-items:flex-end;justify-content:space-around;gap:10px;padding:12px;background:linear-gradient(#7fd6d0 0 40%,#8fcf55 40% 62%,#5ba84a 62%);border:4px solid var(--ink);margin-bottom:8px;min-height:190px}
+.fighter{text-align:center;color:var(--ink);flex:1;max-width:220px}
+.fighter .nm{font-family:var(--font-d);font-size:8px;background:var(--cream);border:3px solid var(--ink);padding:3px 4px;margin-bottom:4px;line-height:1.4}
+.hp{height:14px;background:var(--ink);border:3px solid var(--ink);position:relative;margin:4px 0}
+.hp>i{display:block;height:100%;background:#6adf5a;transition:width .3s steps(8)}
+.hp>i.mid{background:var(--gold)}.hp>i.low{background:var(--red)}
+.hit{animation:shake .35s steps(6)}
+@keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.log{background:#1b0f07;border:3px solid var(--ink);height:112px;overflow:auto;padding:6px 8px;font-size:19px;margin-bottom:8px}
+.log div.p{color:var(--leaf-l)}.log div.e{color:#ff9a80}.log div.s{color:var(--gold)}
+.moves{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mv{background:var(--wood-d);border:4px solid var(--ink);padding:6px 8px;text-align:left;color:var(--cream);min-height:52px}
+.mv:hover:not(:disabled){background:var(--wood)}
+.mv b{font-family:var(--font-d);font-size:8px;display:block;margin-bottom:4px;color:var(--gold);line-height:1.5}
+.empty{text-align:center;padding:36px 12px;color:var(--cream-d)}
+.pop{position:fixed;z-index:70;font-family:var(--font-d);font-size:12px;color:var(--leaf-l);text-shadow:2px 2px 0 var(--ink);pointer-events:none;animation:pop 1s steps(8) forwards}
+@keyframes pop{to{transform:translateY(-50px);opacity:0}}
+#toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:80;background:var(--cream);color:var(--ink);border:4px solid var(--ink);box-shadow:4px 4px 0 rgba(0,0,0,.5);padding:8px 14px;font-size:22px;max-width:92vw;text-align:center}
+.foot{text-align:center;color:var(--cream-d);font-size:17px;margin-top:16px}
+</style>
+<link rel="stylesheet" href="../../portfolio-toolbar.css">
+<style id="portfolio-toolbar-theme">
+/* Back-to-portfolio bar, themed to match this game (jungle wood and bamboo) */
+#portfolio-toolbar {
+    --pt-bar-bg: #4e2d14;
+    --pt-bar-border: 4px solid #2a1a0e;
+    --pt-bar-shadow: none;
+    --pt-font: 'Press Start 2P', 'Courier New', monospace;
+    --pt-size: 10px;
+    --pt-spacing: 1px;
+    --pt-transform: uppercase;
+    --pt-btn-pad: 14px;
+    --pt-btn-bg: #d9b44a;
+    --pt-btn-border: 3px solid #2a1a0e;
+    --pt-btn-shadow: inset -3px -3px 0 #b08a2e, inset 3px 3px 0 #f0d878;
+    --pt-btn-color: #2a1a0e;
+    --pt-hover-bg: #f0d878;
+    --pt-hover-color: #2a1a0e;
+    --pt-hover-border-color: #2a1a0e;
+    --pt-select-bg: #f6e7c1;
+    --pt-bar-color: #f6e7c1;
+    --pt-focus: #f2c14e;
+}
+</style>
+<style id="portfolio-fit">
+/* Full-screen overlays start below the 56px portfolio bar. "safe center" keeps the
+   top of a tall screen reachable (plain "center" pushes it off the top on short
+   screens such as a phone held sideways), and overflow lets it scroll. */
+.modal, .ritual {
+    top: 56px !important;
+    align-items: safe center !important;
+    justify-content: safe center !important;
+    overflow-y: auto !important;
+}
+</style>
+<script src="../../game-versions.js" defer></script>
+<script src="../../portfolio-toolbar.js" defer></script>
+</head>
+<body style="padding-top: 56px !important;">
+    <div id="portfolio-toolbar">
+        <a href="../../index.html" class="portfolio-back-btn"><span class="portfolio-back-arrow" aria-hidden="true">←</span>Back<span class="portfolio-back-extra"> to Portfolio</span></a>
+    </div>
+<div id="app">
+  <header id="top">
+    <canvas id="banner" width="320" height="48"></canvas>
+    <div class="titleblock"><h1>FOSSIL REVIVAL</h1><p>Jungle Expedition &amp; Excavation Co.</p></div>
+  </header>
+  <div class="toolbar">
+    <button class="btn sm" id="btnLoad">Load</button>
+    <button class="btn sm" id="btnSave">Save</button>
+    <button class="btn sm warn" id="btnNew">New</button>
+    <span id="status" aria-live="polite"></span>
+  </div>
+  <nav id="tabs" role="tablist" aria-label="Expedition sections"></nav>
+  <main>
+    <section id="tab-world" class="tab on">
+      <div class="panel hudrow" id="whud"></div>
+      <div class="panel stagewrap" id="stagewrap">
+        <div class="stage" id="stage">
+          <canvas id="wc" width="320" height="192"></canvas>
+          <div id="labels"></div>
+          <div id="dlg" class="dlg hidden"></div>
+        </div>
+        <div class="touch" id="touch">
+          <div class="dpad">
+            <span></span><button data-k="ArrowUp" aria-label="Up">&#9650;</button><span></span>
+            <button data-k="ArrowLeft" aria-label="Left">&#9664;</button><span></span><button data-k="ArrowRight" aria-label="Right">&#9654;</button>
+            <span></span><button data-k="ArrowDown" aria-label="Down">&#9660;</button><span></span>
+          </div>
+          <div class="abtns"><button data-k="x" aria-label="Pickaxe">B</button><button data-k=" " aria-label="Jump or interact">A</button></div>
+        </div>
+      </div>
+      <div class="panel infobar" id="winfo"></div>
+    </section>
+    <section id="tab-dig" class="tab"></section>
+    <section id="tab-revival" class="tab"></section>
+    <section id="tab-train" class="tab"></section>
+    <section id="tab-guide" class="tab"></section>
+  </main>
+  <p class="foot">Arrow keys / WASD to move · Space to jump or talk · X to swing your pickaxe · Esc to leave a dig site</p>
+</div>
+<div id="toast" class="hidden"></div>
+<script>
+/* ============================================================
+   PIXEL ART ENGINE — all sprites are drawn from code, no images
+   ============================================================ */
+const PAL={'.':null,k:'#2a1a0e',w:'#f6e7c1',W:'#d9c79a',b:'#e8d9b0',B:'#b9a679',g:'#3f8f3f',G:'#24602c',l:'#8fcf55',L:'#c4e88a',y:'#f2c14e',Y:'#c18f26',o:'#e8832e',O:'#a8501a',r:'#c93a3a',R:'#8a2222',n:'#8b5a2b',N:'#5a3517',t:'#d9b27c',T:'#a8814f',s:'#9a9082',S:'#625a4d',c:'#3bb3b8',C:'#1f7c86',p:'#e88ca0',u:'#8a5ab8',U:'#5a3a80',e:'#b8b8b8',E:'#6a6a6a',f:'#f0b98a',F:'#c98a5e','1':'#ffffff'};
+const cv=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
+const hash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;};
+const rng=seed=>{let s=seed>>>0;return()=>{s=(s+0x6D2B79F5)>>>0;let t=s;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};};
+const col=k=>PAL[k]||k;
+
+function mk(rows,pal){
+  const w=Math.max(...rows.map(r=>r.length)),h=rows.length,c=cv(w,h),x=c.getContext('2d');
+  rows.forEach((r,j)=>{for(let i=0;i<r.length;i++){const ch=r[i];const v=(pal&&ch in pal)?pal[ch]:PAL[ch];if(v){x.fillStyle=v;x.fillRect(i,j,1,1);}}});
+  return c;
+}
+function outline(c,color){
+  const x=c.getContext('2d'),w=c.width,h=c.height,s=x.getImageData(0,0,w,h).data,out=[];
+  for(let j=0;j<h;j++)for(let i=0;i<w;i++){
+    if(s[(j*w+i)*4+3]>0)continue;
+    for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const a=i+dx,b=j+dy;if(a>=0&&b>=0&&a<w&&b<h&&s[(b*w+a)*4+3]>0){out.push([i,j]);break;}}
+  }
+  x.fillStyle=color;out.forEach(([i,j])=>x.fillRect(i,j,1,1));
+}
+function bevel(c){
+  const x=c.getContext('2d'),w=c.width,h=c.height,d=x.getImageData(0,0,w,h),s=d.data,o=new Uint8ClampedArray(s);
+  const a=(i,j)=>(i<0||j<0||i>=w||j>=h)?0:s[(j*w+i)*4+3];
+  for(let j=0;j<h;j++)for(let i=0;i<w;i++){
+    const p=(j*w+i)*4;if(!s[p+3])continue;
+    if(!a(i,j-1)){for(let k=0;k<3;k++)o[p+k]=Math.min(255,s[p+k]+26);}
+    else if(!a(i,j+1)){for(let k=0;k<3;k++)o[p+k]=Math.max(0,s[p+k]-38);}
+  }
+  d.data.set(o);x.putImageData(d,0,0);
+}
+function rs(w,h,list,o={}){
+  const c=cv(w,h),x=c.getContext('2d');
+  for(const[rx,ry,rw,rh,cl]of list){x.fillStyle=col(cl);x.fillRect(rx,ry,rw,rh);}
+  if(o.bevel)bevel(c);
+  if(o.outline!==false)outline(c,o.oc||PAL.k);
+  return c;
+}
+function mapPx(c,fn){
+  const o=cv(c.width,c.height),x=o.getContext('2d'),d=c.getContext('2d').getImageData(0,0,c.width,c.height),s=d.data;
+  for(let i=0;i<s.length;i+=4){if(!s[i+3])continue;const r=fn(s[i],s[i+1],s[i+2],s[i+3]);s[i]=r[0];s[i+1]=r[1];s[i+2]=r[2];s[i+3]=r[3];}
+  x.putImageData(d,0,0);return o;
+}
+const isOutline=(r,g,b)=>r<60&&g<40&&b<30;
+const silhouette=(c,color='#1a1008')=>{const h=color.match(/\w\w/g).map(v=>parseInt(v,16));return mapPx(c,(r,g,b,a)=>[h[0],h[1],h[2],a]);};
+const boneTint=c=>mapPx(c,(r,g,b,a)=>{if(isOutline(r,g,b))return[r,g,b,a];const l=(r*.3+g*.59+b*.11)/255;return l>.5?[232,217,176,a]:l>.32?[201,184,140,a]:[163,146,106,a];});
+const flipH=c=>{const o=cv(c.width,c.height),x=o.getContext('2d');x.translate(c.width,0);x.scale(-1,1);x.drawImage(c,0,0);return o;};
+const crop=(c,sx,sy,w,h)=>{const o=cv(w,h);o.getContext('2d').drawImage(c,sx,sy,w,h,0,0,w,h);return o;};
+const urlCache=new WeakMap();
+const url=c=>{let u=urlCache.get(c);if(!u){u=c.toDataURL();urlCache.set(c,u);}return u;};
+const img=(c,scale=1,cls='',alt='')=>`<img class="px ${cls}" src="${url(c)}" width="${c.width*scale}" height="${c.height*scale}" alt="${alt}">`;
+function tex(base,specks,seed,w=16,h=16){
+  const c=cv(w,h),x=c.getContext('2d'),r=rng(seed);x.fillStyle=base;x.fillRect(0,0,w,h);
+  for(const[cl,n,sw,sh]of specks){x.fillStyle=cl;for(let i=0;i<n;i++)x.fillRect(Math.floor(r()*w),Math.floor(r()*h),sw||1,sh||1);}
+  return c;
+}
+
+/* ---------- 8x8 ICONS (fossil parts, items, UI) ---------- */
+const ICON_ROWS={
+  skull:['.wwwwww.','wwwwwwww','wkkwwkkw','wkkwwkkw','wwwkkwww','.wwwwww.','.wBwBwB.','..BBBB..'],
+  bone:['........','........','ww....ww','wwwwwwww','wBBBBBBw','ww....ww','........','........'],
+  spine:['..wwww..','...BB...','.wwwwww.','..BBBB..','..wwww..','...BB...','.wwwwww.','..BBBB..'],
+  rib:['w..ww..w','ww.ww.ww','w.wwww.w','ww.ww.ww','w.wwww.w','ww.ww.ww','.w.ww.w.','..wwww..'],
+  claw:['......ww','.....www','....www.','...www..','..www...','.www....','.ww.....','w.......'],
+  horn:['...ww...','...ww...','..wwwB..','..wwwB..','.wwwwwB.','.wwwwwB.','NNNNNNNN','NNNNNNNN'],
+  fang:['wwwwwww.','wwwwwwwB','.wwwwwB.','..wwwB..','...wwB..','....wB..','.....B..','........'],
+  wing:['w......w','ww....ww','wtw..wtw','wttwwttw','wtttttTw','wtTtTtTw','.wTTTTw.','..wTTw..'],
+  plate:['..nnnn..','.nTTTTn.','nTTnnTTn','nTnTTnTn','nTnTTnTn','nTTnnTTn','.nTTTTn.','..nnnn..'],
+  tail:['wwww....','wwwwww..','.BwwwwB.','...wwww.','....wwww','.....wwB','......Bw','.......B'],
+  dna:['cc....uu','.cc..uu.','..cuuc..','...cc...','..uccu..','.uu..cc.','uu....cc','........'],
+  fin:['cc......','cccc....','.ccccc..','..cCCcc.','...cCCcc','....cccc','.....ccc','......cc'],
+  club:['..nnnn..','.nTTTTn.','nTwTTwTn','nTTTTTTn','nTwTTwTn','.nTTTTn.','..nTTn..','...nn...'],
+  heart:['.rr..rr.','rpRrrrrr','rrrrrrrR','rrrrrrrR','.rrrrrR.','..rrrR..','...rR...','........'],
+  heart0:['.SS..SS.','SsSSSSSS','SSSSSSSS','SSSSSSSS','.SSSSSS.','..SSSS..','...SS...','........'],
+  boots:['..nn....','..nn....','..nnnn..','.nnnnnn.','.kkkkkk.','..e..e..','..e..e..','.kkkkkk.'],
+  pick:['.eeeeee.','e..nn..e','...nn...','...nn...','...nn...','...nn...','...nn...','...NN...'],
+  compass:['..kkkk..','.kwwrwk.','kwwwrrwk','kwwrrwwk','kwwbbwwk','kwwbwwwk','.kwbwwk.','..kkkk..'],
+  egg:['..wwww..','.wwwwww.','wwgwwgww','wwwwwwww','wgwwwwgw','wwwwgwww','.wwwwww.','..wwww..'],
+  sword:['.......e','......ee','.....ee.','....ee..','y..ee...','.yee....','.nyy....','n..y....'],
+  book:['kkkkkkk.','krrrrrwk','krryyrwk','krrrrrwk','krryyrwk','krrrrrwk','kkkkkkkk','........'],
+  sonar:['..cccc..','.c....c.','c..cc..c','c.c..c.c','c.c..c.c','c..cc..c','.c....c.','..cccc..'],
+  glass:['kkkkkkkk','.kyyyyk.','..kyyk..','...kk...','..kyyk..','.kyyyyk.','kkkkkkkk','........'],
+  star:['...yy...','...yy...','yyyyyyyy','.yyyyyy.','..yyyy..','.yyyyyy.','.yy..yy.','........'],
+  lock:['..eeee..','.e....e.','.e....e.','yyyyyyyy','yyykkyyy','yyykkyyy','yyyyyyyy','........'],
+  paw:['.k.kk.k.','kkkkkkkk','.kkkkkk.','..kkkk..','.kkkkkk.','.kk..kk.','........','........'],
+  flag:['kkkk....','krrrrr..','krrrrrrr','krrrrr..','kkkk....','k.......','k.......','k.......'],
+  leaf:['......gg','....gggl','...gglll','..ggllgl','.ggllgg.','gggllg..','.ggg....','g.......']
+};
+const ICN={};for(const k in ICON_ROWS)ICN[k]=mk(ICON_ROWS[k]);
+function patternIcon(cells,scale=2){ // shovel footprint 3x3
+  const c=cv(8,8),x=c.getContext('2d');x.fillStyle='#2a1a0e';x.fillRect(0,0,8,8);x.fillStyle='#5a3517';x.fillRect(1,1,6,6);
+  cells.forEach(([dx,dy])=>{x.fillStyle='#f2c14e';x.fillRect(1+(dx+1)*2,1+(dy+1)*2,2,2);});return c;}
+const SHOVELS={s11:[[0,0]],s12:[[0,0],[1,0]],s22:[[0,0],[1,0],[0,1],[1,1]],s31:[[-1,0],[0,0],[1,0]],sx:[[0,0],[-1,0],[1,0],[0,-1],[0,1]]};
+for(const k in SHOVELS)ICN[k]=patternIcon(SHOVELS[k].map(([a,b])=>[a-(k==='s12'||k==='s22'?0:0),b]));
+
+/* ---------- CREATURES 24x16 (facing right) ---------- */
+const CR={
+ triceratops:rs(24,16,[[1,8,4,2,'g'],[0,9,2,1,'g'],[6,11,2,4,'G'],[14,11,2,4,'G'],[3,6,13,5,'g'],[3,10,13,1,'G'],[4,11,3,4,'g'],[12,11,3,4,'g'],[4,14,3,1,'G'],[12,14,3,1,'G'],[13,2,4,8,'o'],[13,2,4,1,'O'],[16,3,1,6,'O'],[14,4,1,1,'y'],[14,6,1,1,'y'],[14,8,1,1,'y'],[16,6,5,4,'g'],[20,7,3,3,'y'],[21,6,2,1,'w'],[18,3,1,3,'w'],[19,2,1,2,'w'],[21,4,1,2,'w'],[18,7,1,1,'k']],{bevel:true}),
+ pterodactyl:rs(24,16,[[5,3,7,1,'T'],[4,4,9,1,'T'],[5,5,8,1,'T'],[3,9,5,1,'o'],[1,10,3,1,'o'],[0,11,2,1,'r'],[7,7,9,4,'o'],[8,10,6,1,'O'],[2,2,10,1,'t'],[3,3,10,1,'t'],[4,4,10,1,'t'],[5,5,10,1,'t'],[5,6,9,1,'t'],[6,7,7,1,'t'],[2,1,1,6,'w'],[15,6,3,2,'o'],[17,4,3,3,'o'],[19,5,5,1,'y'],[19,6,3,1,'Y'],[14,3,4,2,'r'],[12,3,3,1,'r'],[18,5,1,1,'k'],[9,11,1,3,'T'],[12,11,1,3,'T']],{bevel:true}),
+ mammoth:rs(24,16,[[4,3,13,9,'n'],[4,3,13,2,'N'],[4,10,13,2,'N'],[6,6,1,5,'N'],[9,5,1,6,'N'],[12,6,1,5,'N'],[5,12,3,3,'N'],[10,12,3,3,'N'],[14,12,3,3,'n'],[15,4,6,8,'n'],[16,3,4,1,'N'],[16,5,3,3,'N'],[20,8,3,3,'n'],[21,11,2,3,'n'],[21,13,2,1,'N'],[18,11,3,1,'w'],[17,12,2,1,'w'],[20,10,1,1,'w'],[19,6,1,1,'k'],[3,5,1,4,'N']],{bevel:true}),
+ sabertooth:rs(24,16,[[0,4,2,3,'T'],[1,6,4,2,'t'],[5,6,11,4,'t'],[5,9,11,1,'T'],[7,6,1,3,'N'],[10,6,1,3,'N'],[13,6,1,3,'N'],[5,10,2,5,'t'],[8,10,2,4,'T'],[12,10,2,4,'T'],[14,10,2,5,'t'],[15,4,6,5,'t'],[16,3,1,2,'T'],[19,3,1,2,'T'],[20,6,2,2,'T'],[21,6,1,1,'p'],[18,9,1,3,'w'],[20,9,1,3,'w'],[18,5,1,1,'y']],{bevel:true}),
+ mosasaur:rs(24,16,[[0,3,2,3,'C'],[0,5,3,2,'c'],[2,6,4,2,'c'],[4,7,13,4,'c'],[4,10,13,1,'L'],[4,7,13,1,'C'],[9,5,3,2,'C'],[8,11,3,3,'C'],[14,11,3,3,'C'],[16,6,6,4,'c'],[21,7,2,2,'c'],[17,9,5,1,'C'],[18,10,1,1,'w'],[20,10,1,1,'w'],[22,9,1,1,'w'],[18,7,1,1,'k']],{bevel:true}),
+ ankylosaurus:rs(24,16,[[3,9,3,2,'T'],[0,8,4,5,'n'],[0,8,1,1,'w'],[3,8,1,1,'w'],[0,12,1,1,'w'],[3,12,1,1,'w'],[5,6,13,5,'T'],[5,10,13,1,'t'],[6,4,2,2,'n'],[9,4,2,2,'n'],[12,4,2,2,'n'],[15,4,2,2,'n'],[6,6,12,1,'N'],[6,11,3,4,'T'],[14,11,3,4,'T'],[17,7,5,4,'T'],[21,8,2,2,'n'],[4,7,1,1,'w'],[18,6,1,1,'w'],[19,6,1,1,'w'],[19,8,1,1,'k']],{bevel:true})
+};
+const EN={
+ beetle:rs(16,16,[[3,5,10,7,'s'],[3,5,10,1,'e'],[5,6,1,3,'S'],[8,6,1,4,'S'],[10,6,1,3,'S'],[1,8,3,3,'S'],[0,7,1,1,'w'],[2,9,1,1,'r'],[3,12,1,3,'k'],[6,12,1,3,'k'],[9,12,1,3,'k'],[12,12,1,3,'k']],{bevel:true}),
+ vine:rs(16,16,[[7,8,2,7,'g'],[4,12,3,2,'l'],[9,11,3,2,'l'],[3,2,10,5,'r'],[3,2,10,1,'R'],[4,6,8,2,'R'],[4,6,1,2,'w'],[6,6,1,2,'w'],[9,6,1,2,'w'],[11,6,1,2,'w'],[5,3,2,2,'y'],[9,3,2,2,'y'],[6,4,1,1,'k'],[10,4,1,1,'k']],{bevel:true}),
+ gator:rs(16,16,[[1,8,9,4,'G'],[9,8,6,3,'g'],[13,9,3,2,'g'],[14,10,2,1,'w'],[0,7,2,2,'G'],[3,6,1,2,'g'],[5,6,1,2,'g'],[7,6,1,2,'g'],[2,12,2,3,'G'],[8,12,2,3,'G'],[11,8,1,1,'y']],{bevel:true}),
+ tiki:rs(16,16,[[5,0,2,3,'r'],[7,0,2,2,'y'],[9,0,2,3,'c'],[3,3,10,11,'n'],[3,3,10,1,'N'],[3,13,10,1,'N'],[4,5,3,3,'y'],[9,5,3,3,'y'],[5,6,1,1,'k'],[10,6,1,1,'k'],[4,10,8,2,'k'],[5,10,1,1,'w'],[7,10,2,1,'w'],[10,10,1,1,'w'],[7,8,2,2,'T'],[1,6,2,5,'n'],[13,6,2,5,'n']],{bevel:true}),
+ macaw:rs(16,16,[[4,6,7,6,'r'],[10,3,4,5,'r'],[13,5,3,3,'y'],[14,4,1,1,'k'],[2,10,3,5,'c'],[3,12,2,3,'u'],[5,8,5,4,'c'],[1,13,2,2,'y'],[5,12,3,2,'y']],{bevel:true})
+};
+const ENEMIES=[{id:'beetle',name:'Boulder Beetle',hp:60,atk:25,def:40,spd:10},{id:'macaw',name:'Storm Macaw',hp:50,atk:35,def:20,spd:60},{id:'gator',name:'Mud Gator',hp:70,atk:30,def:35,spd:25},{id:'vine',name:'Vine Snapper',hp:80,atk:40,def:30,spd:20},{id:'tiki',name:'Tiki Wraith',hp:90,atk:50,def:45,spd:35}];
+const BEETLE_S=rs(12,8,[[1,2,10,5,'n'],[1,2,10,1,'T'],[5,3,1,3,'N'],[8,3,1,3,'N'],[0,4,2,3,'N'],[2,7,1,1,'k'],[5,7,1,1,'k'],[8,7,1,1,'k'],[0,3,1,1,'r']],{bevel:true});
+
+/* ---------- HUMANOIDS 16x16 (explorer + NPCs) ---------- */
+const HUM={
+ front:['................','.....kkkkkk.....','....khhhhhhk....','...khhhhhhhhk...','..kHHHHHHHHHHk..','..kkkkkkkkkkkk..','....kffffffk....','....kfkffkfk....','....kffffffk....','.....kkffkk.....','..kfkssssssskfk.','..kfksSssSskfk..','...kkssssssskk..'],
+ back:['................','.....kkkkkk.....','....khhhhhhk....','...khhhhhhhhk...','..kHHHHHHHHHHk..','..kkkkkkkkkkkk..','....kqqqqqqk....','....kqqqqqqk....','....kqqqqqqk....','.....kkqqkk.....','..kfkssssssskfk.','..kfkssSSsskfk..','...kkssssssskk..'],
+ side:['................','......kkkkk.....','.....khhhhhk....','....khhhhhhhk...','...kHHHHHHHHHkk.','...kkkkkkkkkkkk.','.....kfffffk....','.....kfffkfk....','.....kffffffk...','......kkffkk....','....kssssssk....','....kssSsskfk...','....kssssssk....'],
+ legsA:{fb:['....kppppppk....','....kppkkppk....','....kbbk.kbbk...'],s:['.....kppppk.....','.....kppkpk.....','.....kbbkbbk....']},
+ legsB:{fb:['....kppppppk....','....kpk..kpk....','....kbk..kbk....'],s:['.....kppppk.....','......kppk......','......kbbk......']}
+};
+const HUM_PAL={ // shared basics
+  k:'#2a1a0e',f:'#f0b98a',F:'#c98a5e',b:'#4e2d14'};
+function human(dir,frame,p){
+  dir={up:'back',down:'front'}[dir]||dir;
+  const key=dir==='left'||dir==='right'?'side':dir,legs=(frame?HUM.legsB:HUM.legsA)[key==='side'?'s':'fb'];
+  const c=mk(HUM[key].concat(legs),Object.assign({},HUM_PAL,p));
+  return dir==='left'?flipH(c):c;
+}
+const LOOKS={
+  player:{h:'#e9d8a6',H:'#b89a5a',s:'#d98a3a',S:'#a8501a',p:'#4a6a9a',q:'#5a3517'},
+  guide:{h:'#c9b06a',H:'#8a6a20',s:'#4f8a3a',S:'#2f6a2a',p:'#6a5a3a',q:'#3a2410'},
+  prospector:{h:'#c93a3a',H:'#8a2222',s:'#3b7fb8',S:'#1f5a8a',p:'#5a3517',q:'#8a8a8a'},
+  local:{h:'#3bb3b8',H:'#1f7c86',s:'#e8832e',S:'#a8501a',p:'#f6e7c1',q:'#2a1a0e'},
+  merchant:{h:'#8a5ab8',H:'#5a3a80',s:'#f2c14e',S:'#c18f26',p:'#8a2222',q:'#2a1a0e'}
+};
+const HSPR={};
+function humanSprite(look,dir,frame){const k=look+dir+frame;return HSPR[k]||(HSPR[k]=human(dir,frame,LOOKS[look]));}
+
+/* ---------- PART / UI icon lookup helpers ---------- */
+const PART_ICON={skull:'skull',frill:'plate',spine:'spine',forelimbs:'bone',hindlimbs:'bone',tail:'tail',wings:'wing',crest:'horn',torso:'rib',claws:'claw',tusks:'fang',ribs:'rib',legs:'bone',feet:'bone',dna:'dna',fangs:'fang',jaws:'fang',flippers:'fin',scales:'plate',armor:'plate',club:'club'};
+
+/* ---------- TILES ---------- */
+const GT={},OB={};
+function buildTiles(){
+  const water=f=>{const c=tex('#2a9aa0',[['#1f808a',10,3,1]],11);const x=c.getContext('2d');x.fillStyle='#7fd6d0';[[2,3],[9,7],[4,12],[12,1],[7,14]].forEach(([a,b])=>x.fillRect((a+f*3)%14,b,3,1));x.fillStyle='#d6f4ee';x.fillRect((5+f*3)%14,9,2,1);return c;};
+  const lava=f=>{const c=tex('#d2501a',[['#8a2222',14,2,2],['#f2a03a',18,2,1]],21+f*7);return c;};
+  GT.grass=tex('#3f8f3f',[['#2f7a34',26],['#5ba84a',20],['#8fcf55',6,1,2]],1);
+  GT.grass2=(()=>{const c=tex('#3f8f3f',[['#2f7a34',24],['#5ba84a',18]],2),x=c.getContext('2d');[[3,4,'#f2c14e'],[11,9,'#e88ca0'],[7,13,'#ffffff'],[13,3,'#e88ca0']].forEach(([a,b,cl])=>{x.fillStyle=cl;x.fillRect(a,b,2,1);});return c;})();
+  GT.dgrass=tex('#24602c',[['#1a4a22',28],['#3f8f3f',14],['#5ba84a',4,1,2]],3);
+  GT.dirt=tex('#c9a560',[['#a8814f',22],['#e0c47f',14],['#8b5a2b',5]],4);
+  GT.sand=tex('#e6c98a',[['#c9a560',20],['#f4e2b0',16]],5);
+  GT.water=[water(0),water(1)];
+  GT.stone=(()=>{const c=tex('#8a8070',[['#a09684',16],['#6f6558',10]],6),x=c.getContext('2d');x.fillStyle='#625a4d';x.fillRect(0,0,16,1);x.fillRect(0,8,16,1);x.fillRect(5,1,1,7);x.fillRect(11,9,1,7);return c;})();
+  GT.plank=(()=>{const c=tex('#a0662f',[['#b87a3e',14],['#8a5426',10]],7),x=c.getContext('2d');x.fillStyle='#6a3e1a';for(let y=3;y<16;y+=4)x.fillRect(0,y,16,1);x.fillStyle='#e0c47f';[[2,1],[13,5],[3,9],[12,13]].forEach(([a,b])=>x.fillRect(a,b,1,1));return c;})();
+  GT.mud=tex('#6b5a2e',[['#4e4220',24],['#8a7440',10],['#3a6a6a',3,2,1]],8);
+  GT.ash=tex('#4a3a34',[['#2e2420',22],['#6a5a50',14],['#e8832e',3]],9);
+  GT.lava=[lava(0),lava(1)];
+  /* objects (16x16, transparent) */
+  const thatch=eave=>{const c=tex('#d7a947',[['#e8c26a',18],['#c9973a',14]],31+(eave?1:0)),x=c.getContext('2d');x.fillStyle='#a8782f';for(let y=3;y<16;y+=4){for(let i=0;i<16;i+=2)x.fillRect(i+((y>>2)%2),y,1,1);}if(eave){x.fillStyle='#6e4a1c';x.fillRect(0,13,16,3);x.fillStyle='#a8782f';for(let i=0;i<16;i+=2)x.fillRect(i,15,1,1);}return c;};
+  OB.thatch=thatch(false);OB.eave=thatch(true);
+  OB.bamboo=(()=>{const c=tex('#d9b44a',[['#f0d878',6]],41),x=c.getContext('2d');for(let i=3;i<16;i+=4){x.fillStyle='#8a6a20';x.fillRect(i,0,1,16);x.fillStyle='#f0d878';x.fillRect(i-3,0,1,16);}x.fillStyle='#b08a2e';x.fillRect(0,5,16,1);x.fillRect(0,11,16,1);return c;})();
+  OB.door=(()=>{const c=OB.bamboo.cloneNode?cv(16,16):cv(16,16),x=c.getContext('2d');x.drawImage(OB.bamboo,0,0);x.fillStyle='#3b2412';x.fillRect(3,2,10,14);x.fillStyle='#5a3517';x.fillRect(4,3,8,13);x.fillStyle='#7a4a22';x.fillRect(4,3,4,13);x.fillStyle='#3b2412';x.fillRect(8,3,1,13);x.fillStyle='#f2c14e';x.fillRect(10,10,1,2);return c;})();
+  OB.palm=rs(16,16,[[7,6,2,9,'n'],[7,8,2,1,'N'],[7,11,2,1,'N'],[5,0,6,3,'l'],[2,2,5,2,'g'],[9,2,5,2,'g'],[1,4,6,2,'G'],[9,4,6,2,'G'],[4,3,8,2,'g'],[7,5,2,1,'N'],[6,5,1,1,'N'],[9,5,1,1,'N']]);
+  OB.bush=rs(16,16,[[2,7,12,7,'G'],[4,5,8,3,'g'],[3,9,3,1,'g'],[10,10,3,1,'g'],[5,8,1,1,'r'],[10,7,1,1,'r'],[8,11,1,1,'r']],{bevel:true});
+  OB.totem=rs(16,16,[[4,0,8,16,'n'],[4,0,8,1,'N'],[2,5,2,4,'g'],[12,5,2,4,'g'],[5,2,6,3,'r'],[6,3,1,1,'w'],[9,3,1,1,'w'],[5,6,6,4,'y'],[6,7,1,1,'k'],[9,7,1,1,'k'],[7,9,2,1,'k'],[5,11,6,4,'c'],[6,12,1,1,'k'],[9,12,1,1,'k'],[7,14,2,1,'k']]);
+  OB.torch=[rs(16,16,[[7,7,2,8,'N'],[6,3,4,4,'o'],[7,2,2,2,'y']]),rs(16,16,[[7,7,2,8,'N'],[6,4,4,3,'o'],[7,3,2,2,'y'],[8,2,1,1,'y']])];
+  OB.crate=rs(16,16,[[2,4,12,11,'T'],[2,4,12,1,'t'],[2,9,12,1,'N'],[7,4,1,11,'N'],[2,4,1,11,'N'],[13,4,1,11,'N']]);
+  OB.barrel=rs(16,16,[[3,3,10,12,'n'],[4,3,8,1,'T'],[3,5,10,1,'N'],[3,11,10,1,'N'],[5,6,1,5,'T']],{bevel:true});
+  OB.sign=rs(16,16,[[7,7,2,8,'N'],[2,2,12,6,'t'],[2,2,12,1,'w'],[4,4,8,1,'N'],[4,6,6,1,'N']]);
+  OB.chest=rs(16,16,[[2,6,12,8,'n'],[2,6,12,3,'N'],[2,9,12,1,'y'],[7,8,2,3,'y'],[3,7,10,1,'T']]);
+  OB.chest0=rs(16,16,[[2,8,12,6,'n'],[2,2,12,4,'N'],[3,3,10,2,'N'],[3,8,10,2,'y'],[3,10,10,3,'k'],[6,9,4,1,'Y']]);
+  OB.boulder=rs(16,16,[[2,6,12,8,'s'],[4,4,8,3,'s'],[3,6,3,2,'e'],[4,4,4,1,'e'],[8,11,5,3,'S']],{bevel:true});
+  OB.flowers=rs(16,16,[[3,9,1,4,'g'],[8,7,1,6,'g'],[12,10,1,3,'g'],[2,7,3,2,'r'],[7,5,3,2,'y'],[11,8,3,2,'p']],{outline:false});
+  OB.reeds=rs(16,16,[[3,4,1,10,'l'],[6,2,1,12,'g'],[9,5,1,9,'l'],[12,3,1,11,'g'],[2,3,3,2,'N'],[5,1,3,2,'N'],[11,2,3,2,'N']],{outline:false});
+  OB.tent=rs(16,16,[[7,1,2,2,'w'],[6,3,4,2,'r'],[4,5,8,2,'w'],[3,7,10,2,'r'],[2,9,12,2,'w'],[1,11,14,3,'r'],[6,11,4,3,'k']]);
+  OB.boat=rs(16,16,[[1,8,14,4,'n'],[2,12,12,1,'N'],[0,7,2,2,'n'],[14,7,2,2,'n'],[7,2,1,6,'N'],[8,2,5,4,'w']]);
+  OB.stump=rs(16,16,[[4,8,8,6,'n'],[4,8,8,2,'t'],[5,9,6,1,'T']]);
+  OB.fence=rs(16,16,[[1,6,2,8,'y'],[7,6,2,8,'y'],[13,6,2,8,'y'],[0,8,16,2,'Y'],[0,11,16,1,'Y']],{outline:false});
+  OB.arch=rs(16,16,[[0,0,16,16,'S']],{outline:false});
+  const cave=cv(32,16),cx=cave.getContext('2d');cx.drawImage(tex('#7a7062',[['#8a8070',30],['#5b5448',20]],51,32,16),0,0);cx.fillStyle='#2a1a0e';cx.fillRect(3,2,26,14);cx.fillStyle='#0c0805';cx.fillRect(4,3,24,13);cx.fillStyle='#2a1a0e';[[3,2],[28,2],[3,3],[28,3]].forEach(([a,b])=>{cx.fillStyle='#7a7062';cx.fillRect(a,b,1,1);});cx.fillStyle='#8a5a2b';cx.fillRect(14,10,1,6);cx.fillRect(17,10,1,6);cx.fillStyle='#f2c14e';cx.fillRect(14,9,4,1);
+  OB.caveL=crop(cave,0,0,16,16);OB.caveR=crop(cave,16,0,16,16);
+  OB.pebble=rs(16,16,[[4,10,3,2,'s'],[9,12,3,2,'S']],{outline:false});
+  OB.bed=[rs(16,16,[[1,8,14,7,'N'],[2,7,12,2,'T'],[4,6,3,2,'T'],[9,6,4,2,'T'],[5,9,6,3,'b'],[6,10,4,1,'B'],[7,8,2,1,'w']]),rs(16,16,[[1,8,14,7,'N'],[2,7,12,2,'T'],[4,6,3,2,'T'],[9,6,4,2,'T'],[5,9,6,3,'b'],[6,10,4,1,'B'],[7,8,2,1,'w'],[7,3,2,2,'y'],[3,5,1,1,'y'],[12,4,1,1,'y']])];
+  OB.bed0=rs(16,16,[[2,10,12,5,'N'],[3,10,10,1,'T'],[5,12,6,2,'k']]);
+  OB.lantern=rs(16,16,[[7,1,2,3,'e'],[5,4,6,7,'y'],[6,5,4,5,'w'],[5,11,6,1,'E']]);
+  OB.rope=rs(16,16,[[3,0,1,16,'T'],[12,0,1,16,'T'],[3,3,10,1,'n'],[3,7,10,1,'n'],[3,11,10,1,'n'],[3,15,10,1,'n']],{outline:false});
+}
+/* ============================================================
+   CORE — data, state, persistence, shared helpers
+   ============================================================ */
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const pick=(r,a)=>a[Math.floor(r()*a.length)];
+const P=(...a)=>a.map(([id,name])=>({id,name}));
+
+const STAT_KEYS=['hp','atk','def','spd','spc','stm'],STAT_NAMES=['HP','ATK','DEF','SPD','SPC','STM'];
+const STAT_COL={hp:'#c93a3a',atk:'#e8832e',def:'#3b7fb8',spd:'#f2c14e',spc:'#8a5ab8',stm:'#6adf5a'};
+
+const CREATURES=[
+ {id:'triceratops',name:'Triceratops',era:'Late Cretaceous · 68 Ma',lore:'A three-horned giant whose great frill makes it the star of every expedition photograph.',parts:P(['skull','Skull'],['frill','Frill'],['spine','Spine'],['forelimbs','Forelimbs'],['hindlimbs','Hindlimbs'],['tail','Tail']),base:{hp:85,atk:65,def:90,spd:40,spc:30,stm:80},moves:[{name:'Horn Strike',stat:'atk',power:30},{name:'Frill Display',stat:'def',power:20},{name:'Trample',stat:'hp',power:25},{name:'Headbutt',stat:'atk',power:35}]},
+ {id:'pterodactyl',name:'Pterodactyl',era:'Late Jurassic · 150 Ma',lore:'Master of the Mesozoic sky. Its shadow once crossed the river canyons in a single heartbeat.',parts:P(['skull','Skull'],['wings','Wing Bones'],['crest','Crest'],['torso','Torso'],['claws','Claws']),base:{hp:55,atk:70,def:45,spd:95,spc:60,stm:50},moves:[{name:'Dive Bomb',stat:'atk',power:40},{name:'Wind Gust',stat:'spd',power:20},{name:'Crest Gleam',stat:'spc',power:25},{name:'Talon Strike',stat:'atk',power:35}]},
+ {id:'mammoth',name:'Woolly Mammoth',era:'Pleistocene · 0.4 Ma',lore:'Shaggy ice-age wanderer. Amber resin in the old mines preserved its tusks and even its DNA.',parts:P(['skull','Skull'],['tusks','Tusks'],['spine','Spine'],['ribs','Rib Cage'],['legs','Leg Bones'],['feet','Feet'],['dna','Amber DNA']),base:{hp:100,atk:75,def:80,spd:30,spc:25,stm:95},moves:[{name:'Tusk Thrust',stat:'atk',power:45},{name:'Stampede',stat:'hp',power:30},{name:'Frozen Breath',stat:'spc',power:35},{name:'Shaggy Armor',stat:'def',power:20}]},
+ {id:'sabertooth',name:'Saber-Tooth Tiger',era:'Pleistocene · 2.5 Ma',lore:'Smilodon: canines as long as a machete, and the manners of a very large house cat.',parts:P(['skull','Skull'],['fangs','Saber Fangs'],['spine','Spine'],['forelimbs','Forelimbs'],['hindlimbs','Hindlimbs']),base:{hp:70,atk:100,def:55,spd:80,spc:50,stm:65},moves:[{name:'Saber Slash',stat:'atk',power:50},{name:'Pounce',stat:'spd',power:30},{name:'Roar',stat:'spc',power:20},{name:'Ambush',stat:'atk',power:45}]},
+ {id:'mosasaur',name:'Mosasaurus',era:'Late Cretaceous · 70 Ma',lore:'Apex predator of the warm shallow seas. Riverboat captains still whisper about it.',parts:P(['skull','Skull'],['jaws','Jaw Bones'],['spine','Spine'],['flippers','Flippers'],['tail','Tail'],['scales','Scale Casts']),base:{hp:90,atk:85,def:70,spd:60,spc:55,stm:75},moves:[{name:'Death Roll',stat:'atk',power:55},{name:'Deep Dive',stat:'def',power:25},{name:'Crushing Bite',stat:'atk',power:45},{name:'Sonar Pulse',stat:'spc',power:30}]},
+ {id:'ankylosaurus',name:'Ankylosaurus',era:'Late Cretaceous · 66 Ma',lore:'The living tank: head-to-tail bone armor and a tail club that could shatter a rival\'s leg.',parts:P(['skull','Skull'],['armor','Armor Plates'],['spine','Spine'],['club','Tail Club'],['legs','Leg Bones']),base:{hp:95,atk:55,def:110,spd:25,spc:30,stm:90},moves:[{name:'Club Swing',stat:'atk',power:40},{name:'Armor Lock',stat:'def',power:35},{name:'Ground Pound',stat:'hp',power:25},{name:'Shell Crush',stat:'def',power:30}]}
+];
+const CBY=Object.fromEntries(CREATURES.map(c=>[c.id,c]));
+
+const LOC=[
+ {id:'landing',name:'Riverboat Landing',x:34,y:150,kind:'dock',biome:'beach',tier:0,sp:['mosasaur','pterodactyl'],desc:'Creaky docks, coiled rope and the toot of a steam whistle. Every expedition starts here.'},
+ {id:'bazaar',name:'Bazaar Row',x:96,y:160,kind:'bazaar',biome:'savanna',tier:0,sp:['sabertooth','ankylosaurus'],desc:'Striped awnings, spice smoke and traders swapping tall tales about the bones they never found.'},
+ {id:'tiki',name:'Tiki Hall',x:72,y:110,kind:'tiki',biome:'jungle',tier:0,sp:['pterodactyl','sabertooth'],desc:'A thatched hall where carved birds are rumored to sing in chorus after the lanterns go out.'},
+ {id:'treehouse',name:'Treehouse Grove',x:36,y:78,kind:'tree',biome:'jungle',tier:0,sp:['triceratops','pterodactyl'],desc:'A sprawling home built into one giant banyan, with waterwheel-powered lifts between the branches.'},
+ {id:'skull',name:'Skull Cove',x:84,y:40,kind:'skull',biome:'beach',tier:1,sp:['mosasaur','sabertooth'],desc:'A hidden lagoon beneath a rock that looks suspiciously like a skull. Pirates deny everything.'},
+ {id:'village',name:"Chieftain's Village",x:122,y:96,kind:'village',biome:'jungle',tier:1,sp:['triceratops','ankylosaurus','mammoth'],desc:'Round huts ringed by drums. The elders swear giants sleep beneath the soil.'},
+ {id:'falls',name:'Misty Falls',x:150,y:50,kind:'falls',biome:'jungle',tier:1,sp:['pterodactyl','ankylosaurus'],desc:'A roaring cascade that carved the cliffs open and left their fossil seams on display.'},
+ {id:'safari',name:'Safari Outpost',x:170,y:128,kind:'safari',biome:'savanna',tier:1,sp:['triceratops','sabertooth'],desc:'Khaki tents, a lookout tower and a cook who claims the stew is "mostly vegetable".'},
+ {id:'temple',name:'Forbidden Temple',x:200,y:36,kind:'temple',biome:'ruins',tier:2,sp:['ankylosaurus','mammoth'],desc:'Moss-draped stairs and golden idols. The sign says do not touch the idols. Everyone touches the idols.'},
+ {id:'swamp',name:'Mangrove Bay',x:224,y:158,kind:'swamp',biome:'swamp',tier:2,sp:['mosasaur','ankylosaurus'],desc:'Stilt huts above tangled roots and slow green water. Things down there are very old.'},
+ {id:'amber',name:'Amber Hollow',x:252,y:96,kind:'mine',biome:'cave',tier:2,sp:['mammoth','sabertooth'],desc:'A mine where golden resin has sealed ancient life in glowing amber walls.'},
+ {id:'crater',name:'Ember Crater',x:284,y:50,kind:'volcano',biome:'volcano',tier:2,sp:['triceratops','ankylosaurus','mammoth'],desc:'A grumbling volcano whose ash buried whole herds and kept their bones safe for ages.'}
+];
+const LBY=Object.fromEntries(LOC.map(l=>[l.id,l]));
+const EDGES=[['landing','tiki'],['landing','bazaar'],['bazaar','tiki'],['bazaar','safari'],['tiki','treehouse'],['tiki','village'],['treehouse','skull'],['skull','falls'],['village','falls'],['village','safari'],['falls','temple'],['temple','amber'],['amber','crater'],['amber','swamp'],['safari','swamp']];
+LOC.forEach(l=>l.nb=[]);EDGES.forEach(([a,b])=>{LBY[a].nb.push(b);LBY[b].nb.push(a);});
+
+const DIFFS=[
+ {key:'novice',label:'Novice',size:8,mult:1.6,pps:2,crates:3,desc:'Small plot, plenty of swings'},
+ {key:'seasoned',label:'Seasoned',size:10,mult:1.2,pps:3,crates:3,desc:'Bigger plot, fair budget'},
+ {key:'expert',label:'Expert',size:12,mult:.95,pps:4,crates:2,desc:'Large plot, tight budget'},
+ {key:'legendary',label:'Legendary',size:14,mult:.75,pps:5,crates:2,desc:'Huge plot, every swing counts'}
+];
+const INV_DEFS={s12:{name:'Spade 1×2',icon:'s12'},s22:{name:'Spade 2×2',icon:'s22'},s31:{name:'Rake 3×1',icon:'s31'},sx:{name:'Cross Drill',icon:'sx'},clicks:{name:'+5 Swings',icon:'glass'},sonar:{name:'Sonar Drum',icon:'sonar'}};
+const SHOVEL_KEYS=['s11','s12','s22','s31','sx'];
+
+/* ---------- app state (single object) ---------- */
+const freshState=()=>({v:1,fossils:{},revived:{},stats:{},inv:{s12:0,s22:0,s31:0,sx:0,clicks:0,sonar:0},abil:{jump:false,pick:false},maxHp:3,visited:{landing:true},at:'landing',dig:{},chests:{}});
+const appState=freshState();
+let curTab='world';
+
+const partsFound=cid=>(appState.fossils[cid]||[]).length;
+const isExcavated=cid=>CBY[cid].parts.every(p=>(appState.fossils[cid]||[]).includes(p.id));
+const totalParts=()=>CREATURES.reduce((s,c)=>s+c.parts.length,0);
+const foundTotal=()=>CREATURES.reduce((s,c)=>s+partsFound(c.id),0);
+const missingParts=cid=>CBY[cid].parts.filter(p=>!(appState.fossils[cid]||[]).includes(p.id));
+const aliveCount=()=>Object.keys(appState.revived).filter(k=>appState.revived[k]).length;
+function addFossils(cid,pid){const a=appState.fossils[cid]||(appState.fossils[cid]=[]);if(!a.includes(pid)){a.push(pid);return true;}return false;}
+function grant(kind,n=1){appState.inv[kind]=(appState.inv[kind]||0)+n;}
+function randConsumable(r=Math.random){const k=['s12','s22','s31','sx','clicks','sonar'][Math.floor(r()*6)];const n=k==='clicks'||k==='sonar'?1:2+(r()<.4?1:0);grant(k,n);return{k,n};}
+
+/* creature sprite variants */
+const CRV={};
+function crSprite(id,mode='alive'){
+  if(mode==='alive')return CR[id];
+  const k=id+mode;return CRV[k]||(CRV[k]=mode==='bone'?boneTint(CR[id]):silhouette(CR[id],'#1a1008'));
+}
+function creatureMode(id){return appState.revived[id]?'alive':isExcavated(id)?'bone':partsFound(id)>0?'bone':'dark';}
+
+/* ---------- persistence: File System Access + localStorage ---------- */
+const SAVE_KEY='fossil_revival_jungle_expedition_v1';
+let fileHandle=null,saveTimer=0;
+const summary=()=>`${aliveCount()} revived · ${foundTotal()}/${totalParts()} parts`;
+function setStatus(t){$('status').textContent=t;}
+function loadInto(data){const f=freshState();for(const k in f)appState[k]=(data&&data[k]!==undefined)?data[k]:f[k];appState.inv=Object.assign(freshState().inv,appState.inv);appState.abil=Object.assign(freshState().abil,appState.abil);}
+function fallbackSave(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(appState));return true;}catch(e){return false;}}
+function fallbackLoad(){try{const r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+function commit(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{fallbackSave();if(window.refreshHud)refreshHud();},250);}
+async function saveToFile(){
+  const text=JSON.stringify(appState,null,2);
+  try{
+    if(!window.showSaveFilePicker)throw new Error('no-fs');
+    if(!fileHandle)fileHandle=await window.showSaveFilePicker({suggestedName:'fossil-revival-save.json',types:[{description:'JSON',accept:{'application/json':['.json']}}]});
+    const w=await fileHandle.createWritable();await w.write(text);await w.close();
+    setStatus(`Saved to ${fileHandle.name} · ${summary()}`);
+  }catch(e){
+    if(e&&e.name==='AbortError')return;
+    fallbackSave();setStatus(`Saved in browser storage · ${summary()}`);
+  }
+}
+async function loadFromFile(){
+  try{
+    if(!window.showOpenFilePicker)throw new Error('no-fs');
+    [fileHandle]=await window.showOpenFilePicker({types:[{description:'JSON',accept:{'application/json':['.json']}}]});
+    const f=await fileHandle.getFile();loadInto(JSON.parse(await f.text()));
+    setStatus(`Loaded ${fileHandle.name} · ${summary()}`);
+  }catch(e){
+    if(e&&e.name==='AbortError')return;
+    const d=fallbackLoad();if(!d){setStatus('No saved expedition found yet');return;}
+    loadInto(d);setStatus(`Loaded from browser storage · ${summary()}`);
+  }
+  afterStateReplaced();
+}
+let newArmed=0;
+function newGame(){
+  // two-step confirm (window.confirm is blocked inside sandboxed pages)
+  const b=$('btnNew');
+  if(!newArmed){newArmed=setTimeout(()=>{newArmed=0;b.textContent='New';},3500);b.textContent='Sure?';setStatus('Press New again to erase this expedition');return;}
+  clearTimeout(newArmed);newArmed=0;b.textContent='New';
+  fileHandle=null;loadInto(null);fallbackSave();setStatus('New expedition started');afterStateReplaced();
+}
+function afterStateReplaced(){
+  if(window.World)World.reset();
+  if(window.Dig)Dig.reset();
+  if(window.refreshHud)refreshHud();
+  renderTab(curTab);
+}
+
+/* ---------- UI helpers ---------- */
+let toastT=0;
+function toast(msg,ms=2600){const t=$('toast');t.textContent=msg;t.classList.remove('hidden');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.add('hidden'),ms);}
+function fitCanvas(cnv,availW,availH,max=8){
+  let s=Math.min(availW/cnv.width,availH/cnv.height);s=s>=1?Math.min(max,Math.floor(s)):s;
+  cnv.style.width=Math.round(cnv.width*s)+'px';cnv.style.height=Math.round(cnv.height*s)+'px';return s;
+}
+function popText(txt,x,y){const e=document.createElement('div');e.className='pop';e.textContent=txt;e.style.left=x+'px';e.style.top=y+'px';document.body.appendChild(e);setTimeout(()=>e.remove(),1000);}
+
+const TABS=[{id:'world',icon:'compass',label:'Expedition'},{id:'dig',icon:'pick',label:'Excavation'},{id:'revival',icon:'egg',label:'Revival'},{id:'train',icon:'sword',label:'Training'},{id:'guide',icon:'book',label:'Field Guide'}];
+function renderTabs(){
+  $('tabs').innerHTML=TABS.map(t=>`<button class="tabbtn ${t.id===curTab?'on':''}" role="tab" aria-selected="${t.id===curTab}" data-tab="${t.id}">${img(ICN[t.icon],3)}<span>${t.label}</span></button>`).join('');
+}
+const TABRENDER={};
+function renderTab(id){if(TABRENDER[id])TABRENDER[id]();}
+function switchTab(id){
+  curTab=id;
+  document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('on',s.id==='tab-'+id));
+  renderTabs();renderTab(id);
+  if(id==='world'&&window.World)World.onShow();
+}
+
+/* ---------- header banner (sunset over the jungle) ---------- */
+function drawBanner(){
+  const c=$('banner'),x=c.getContext('2d');
+  ['#f8d070','#f6b95a','#f2a04a','#ea8440','#d86a3c','#b8503e','#8a3a4a','#5a2a4a'].forEach((b,i)=>{x.fillStyle=b;x.fillRect(0,i*5,320,5);});
+  x.fillStyle='#fff3b0';for(let dy=0;dy<12;dy++){const w=Math.round(Math.sqrt(144-(12-dy)*(12-dy))*1.6);x.fillRect(236-w,16+dy,w*2,1);}
+  x.fillStyle='#fde08a';x.fillRect(228,18,16,1);
+  const r=rng(77);x.fillStyle='#6a3a4a';for(let i=0;i<320;i+=4){const h=14+Math.round(6*Math.sin(i/23)+4*Math.sin(i/9));x.fillRect(i,34-h/2,4,48);}
+  x.fillStyle='#1f4d2b';for(let i=0;i<320;i+=4){const h=8+Math.round(5*Math.sin(i/13+2)+3*Math.sin(i/5));x.fillRect(i,36-h/2,4,48);}
+  x.fillStyle='#2a9aa0';x.fillRect(0,41,320,7);x.fillStyle='#7fd6d0';for(let i=0;i<30;i++)x.fillRect(Math.floor(r()*316),42+Math.floor(r()*5),4,1);
+  x.fillStyle='#12301c';x.fillRect(0,40,320,1);
+  const palm=(px,py,s)=>{x.fillStyle='#12301c';for(let i=0;i<14*s;i++){x.fillRect(px+Math.round(Math.sin(i/9)*2*s),py-i,s,1);}
+    const tx=px+Math.round(Math.sin(14*s/9)*2*s),ty=py-14*s;
+    for(let a=0;a<7;a++){const ang=Math.PI*(a/6)+Math.PI;for(let k=0;k<7*s;k++){x.fillRect(Math.round(tx+Math.cos(ang)*k*1.2),Math.round(ty+Math.sin(ang)*k*.55+k*k*.03*(1/s)),1,1+((k>3*s)?1:0));}}};
+  palm(18,42,2);palm(44,43,1);palm(290,42,2);palm(268,43,1);palm(150,42,1);
+}
+
+/* ---------- boot ---------- */
+function bindGlobal(){
+  $('btnLoad').onclick=loadFromFile;$('btnSave').onclick=saveToFile;$('btnNew').onclick=newGame;
+  $('tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(b)switchTab(b.dataset.tab);});
+}
+/* ============================================================
+   EXCAVATION — the grid-brushing minigame (tab + fossil beds)
+   ============================================================ */
+const Ex=(()=>{
+  let st=null,sel={loc:null,diff:0},timer=0;
+  const BIO={jungle:['#6a5230','#4e3a20','#8a7240'],beach:['#d9b878','#b8955a','#ecd29a'],savanna:['#b8843a','#926428','#d4a454'],ruins:['#a8906a','#82704e','#c8b088'],swamp:['#5a5530','#3e3a20','#7a7444'],cave:['#78685a','#584a3e','#968676'],volcano:['#5a403a','#3a2622','#7a5a50']};
+  const tc={};
+  function tiles(b){
+    if(tc[b])return tc[b];const[base,dk,lt]=BIO[b]||BIO.jungle;
+    const dirt=[0,1,2].map(i=>{const c=tex(base,[[dk,22],[lt,12],[dk,5,2,2]],100+i*7+hash(b)%40),x=c.getContext('2d');x.fillStyle=lt;x.fillRect(0,0,16,1);x.fillRect(0,0,1,16);x.fillStyle=dk;x.fillRect(0,15,16,1);x.fillRect(15,0,1,16);return c;});
+    const hole=tex('#241408',[['#33200f',16],['#3d2a14',7]],9);
+    return tc[b]={dirt,hole};
+  }
+  const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+  const locProg=l=>{let f=0,t=0;l.sp.forEach(s=>{f+=partsFound(s);t+=CBY[s].parts.length;});return[f,t];};
+  const hasMissing=l=>l.sp.some(s=>missingParts(s).length>0);
+  const cfgSwings=d=>Math.round(d.size*d.size*d.mult*.22);
+
+  /* ----- setup screen ----- */
+  function renderSetup(){
+    const vis=l=>!!appState.visited[l.id];
+    if(!sel.loc||!vis(LBY[sel.loc]))sel.loc=vis(LBY[appState.at])?appState.at:'landing';
+    const sl=LBY[sel.loc],can=hasMissing(sl);
+    $('tab-dig').innerHTML=`
+    <div class="panel"><div class="h2">Excavation Plots</div>
+      <p class="sub">Pick an outpost you have visited, choose how hard to dig, then brush away the earth. Warm patches of soil mean bones are close.</p>
+      <span class="lbl">1 · Choose an outpost</span>
+      <div class="loc-grid">${LOC.map(l=>{const[f,t]=locProg(l),v=vis(l);return`<button class="loc ${sel.loc===l.id?'sel':''} ${v?'':'lock'}" data-act="loc" data-id="${l.id}" ${v?'':'disabled'}>
+        <span>${img(outIcon(l.kind),2)}</span><span class="nm">${l.name}</span>
+        <span class="spr-row">${l.sp.map(s=>img(crSprite(s,v?creatureMode(s):'dark'),1)).join('')}</span>
+        <span class="pr">${v?`${f}/${t} parts found`:'Travel here first'}</span></button>`;}).join('')}</div>
+      <span class="lbl">2 · Difficulty</span>
+      <div class="diffrow">${DIFFS.map((d,i)=>`<button class="diff ${sel.diff===i?'sel':''}" data-act="diff" data-i="${i}"><b>${d.label}</b><i>${d.size}×${d.size} · ${cfgSwings(d)} swings<br>${d.desc}</i></button>`).join('')}</div>
+      <p style="margin-top:14px"><button class="btn go" data-act="start" ${can?'':'disabled'}>${can?'Begin dig at '+sl.name:'Every fossil here is catalogued'}</button></p>
+    </div>
+    <div class="panel"><div class="h2">Supply Satchel</div>
+      <p class="sub">Spades and drills found in dig sites and chests. Use them in a plot to uncover several squares in one swing.</p>
+      <div class="spr-row">${Object.keys(INV_DEFS).map(k=>`<span class="chip ${appState.inv[k]?'':'off'}">${img(ICN[INV_DEFS[k].icon],3)}${INV_DEFS[k].name} ×${appState.inv[k]}</span>`).join('')}</div>
+    </div>`;
+  }
+
+  /* ----- starting a plot ----- */
+  function start(locId,di,ctx){
+    const loc=LBY[locId],cfg=DIFFS[clamp(di,0,3)],targets=[];
+    for(const sid of loc.sp)shuffle(missingParts(sid).slice()).slice(0,cfg.pps).forEach(p=>targets.push({cid:sid,pid:p.id}));
+    if(!targets.length){
+      if(ctx){const g=randConsumable();markBed(ctx);toast('This bed holds nothing new — you pocket '+g.n+'× '+INV_DEFS[g.k].name+'.');commit();switchTab('world');return false;}
+      toast('Every fossil from here is already catalogued.');return false;
+    }
+    const n=cfg.size,grid=Array.from({length:n},()=>Array.from({length:n},()=>({cov:true,fossil:null,crate:false,shown:false,heat:0,v:Math.floor(Math.random()*3)})));
+    const free=[];for(let r=0;r<n;r++)for(let c=0;c<n;c++)free.push([r,c]);shuffle(free);
+    targets.forEach(t=>{const[r,c]=free.pop();grid[r][c].fossil=t;});
+    for(let i=0;i<cfg.crates;i++){const[r,c]=free.pop();grid[r][c].crate=true;}
+    st={loc,cfg,n,grid,swings:cfgSwings(cfg),found:[],targets,shovel:'s11',over:null,hover:null,ctx:ctx||null,crates:0,newly:{}};
+    heat();renderActive();return true;
+  }
+  function startBed(site,bedId,diffIdx){switchTab('dig');start(site,diffIdx,{site,bedId});}
+  function markBed(ctx){const d=appState.dig[ctx.site]||(appState.dig[ctx.site]={taken:{},broken:{}});d.taken[ctx.bedId]=true;}
+
+  function heat(){
+    const n=st.n,fs=[];for(let r=0;r<n;r++)for(let c=0;c<n;c++){const g=st.grid[r][c];if(g.fossil&&!g.shown)fs.push([r,c]);}
+    for(let r=0;r<n;r++)for(let c=0;c<n;c++){let m=99;for(const[a,b]of fs)m=Math.min(m,Math.abs(a-r)+Math.abs(b-c));st.grid[r][c].heat=m===1?3:m===2?2:m===3?1:0;}
+  }
+  const cellsFor=(r,c,key)=>SHOVELS[key].map(([dx,dy])=>[r+dy,c+dx]).filter(([a,b])=>a>=0&&b>=0&&a<st.n&&b<st.n);
+
+  /* ----- active screen ----- */
+  function renderActive(){
+    const bed=st.ctx;
+    $('tab-dig').innerHTML=`
+    <div class="exlayout"><div>
+      <div class="panel"><div class="h2">${bed?'Fossil Bed · ':''}${st.loc.name}</div>
+        <div class="stat-line"><span>${img(outIcon(st.loc.kind),2)}</span><span>${st.cfg.label} · ${st.n}×${st.n}</span>${bed?'<span class="tag part">Dig-site bed</span>':''}</div>
+        <div class="stat-line" id="exStats"></div>
+        <div class="shovels" id="exShovels"></div>
+        <div class="legend"><span><i style="background:#6a5230"></i>Cold</span><span><i style="background:#8a7240"></i>Near</span><span><i style="background:#c8802a"></i>Warm</span><span><i style="background:#d8452a"></i>Hot</span><span><i style="background:#241408"></i>Dug</span></div>
+        <div class="gridwrap" id="exWrap"><canvas class="px" id="exCanvas" width="${st.n*16}" height="${st.n*16}"></canvas></div>
+      </div></div>
+      <aside><div class="panel"><div class="h2">Targets in this plot</div><div class="plist" id="exParts"></div></div>
+        <div class="panel"><div class="h2">Supplies</div><div id="exSupply"></div></div>
+        <button class="btn warn" data-act="abandon" style="width:100%">Close up the plot</button>
+      </aside></div>`;
+    const cv=$('exCanvas');
+    cv.addEventListener('mousemove',e=>{const p=cellAt(e);st.hover=p?cellsFor(p[0],p[1],st.shovel):null;});
+    cv.addEventListener('mouseleave',()=>{st.hover=null;});
+    cv.addEventListener('click',e=>{const p=cellAt(e);if(p)swing(p[0],p[1]);});
+    fit();hud();draw();
+  }
+  function fit(){const w=$('exWrap');if(!w||!st)return;const cv=$('exCanvas');fitCanvas(cv,w.clientWidth-20,Math.max(280,innerHeight-260),6);}
+  function cellAt(e){const cv=$('exCanvas'),b=cv.getBoundingClientRect();const c=Math.floor((e.clientX-b.left)/b.width*st.n),r=Math.floor((e.clientY-b.top)/b.height*st.n);return(r>=0&&c>=0&&r<st.n&&c<st.n&&!st.over)?[r,c]:null;}
+
+  function hud(){
+    if(!st)return;
+    const found=st.found.length,tot=st.targets.length;
+    $('exStats').innerHTML=`<span>Swings <b class="${st.swings<=5?'bad':''}">${st.swings}</b></span><span>Bones <b>${found}/${tot}</b></span>`;
+    $('exShovels').innerHTML=SHOVEL_KEYS.map(k=>{const cnt=k==='s11'?'∞':appState.inv[k.replace('s11','x')]|0;const key=k;const have=k==='s11'?true:(appState.inv[k]>0);
+      return`<button class="shv ${st.shovel===k?'sel':''}" data-act="shovel" data-k="${k}" ${have?'':'disabled'} title="${k==='s11'?'Hand brush':INV_DEFS[k].name}">${img(ICN[k],3)}<span>${{s11:'Brush',s12:'1×2',s22:'2×2',s31:'3×1',sx:'Cross'}[k]}</span><em>${k==='s11'?'∞':appState.inv[k]}</em></button>`;}).join('');
+    const groups={};st.targets.forEach(t=>(groups[t.cid]||(groups[t.cid]=[])).push(t));
+    $('exParts').innerHTML=Object.keys(groups).map(cid=>`<div class="grp">${img(crSprite(cid,'alive'),1)}<span>${CBY[cid].name}</span></div>`+groups[cid].map(t=>{const f=st.found.some(x=>x.cid===t.cid&&x.pid===t.pid),p=CBY[cid].parts.find(q=>q.id===t.pid);
+      return`<div class="row" style="${f?'':'opacity:.6'}">${img(f?ICN[PART_ICON[t.pid]]:silhouette(ICN[PART_ICON[t.pid]],'#1a1008'),3)}<span>${f?p.name:'Hidden bone'}</span>${f?'<span class="ok">FOUND</span>':''}</div>`;}).join('')).join('');
+    $('exSupply').innerHTML=`<div class="spr-row"><button class="btn sm act" data-act="sonar" ${appState.inv.sonar>0&&!st.over?'':'disabled'}>${img(ICN.sonar,2)} Sonar ×${appState.inv.sonar}</button><button class="btn sm act" data-act="clicks" ${appState.inv.clicks>0&&!st.over?'':'disabled'}>${img(ICN.glass,2)} +5 ×${appState.inv.clicks}</button></div><p class="sub" style="margin-top:8px;font-size:17px">Hidden crates hold spades. Sonar uncovers squares beside buried bones.</p>`;
+  }
+
+  function swing(r,c){
+    if(!st||st.over||st.swings<=0)return;
+    const g=st.grid[r][c];if(!g.cov)return;
+    const cells=cellsFor(r,c,st.shovel).filter(([a,b])=>st.grid[a][b].cov);if(!cells.length)return;
+    st.swings--;
+    if(st.shovel!=='s11'){appState.inv[st.shovel]--;if(appState.inv[st.shovel]<=0)st.shovel='s11';}
+    reveal(cells);
+    heat();hud();draw();commit();
+    afterSwing();
+  }
+  function reveal(cells){
+    for(const[a,b]of cells){
+      const g=st.grid[a][b];g.cov=false;g.shown=true;
+      if(g.fossil&&!st.found.some(f=>f.cid===g.fossil.cid&&f.pid===g.fossil.pid)){
+        st.found.push(g.fossil);const nw=addFossils(g.fossil.cid,g.fossil.pid);
+        const part=CBY[g.fossil.cid].parts.find(p=>p.id===g.fossil.pid);
+        toast(`Found: ${part.name} (${CBY[g.fossil.cid].name})${nw?'':' — a duplicate'}`);
+      }
+      if(g.crate){const gg=randConsumable();st.crates++;toast(`Crate! +${gg.n} ${INV_DEFS[gg.k].name}`);}
+    }
+  }
+  function afterSwing(){
+    if(st.found.length>=st.targets.length)return finish('win');
+    if(st.swings<=0)finish('fail');
+  }
+  function sonar(){
+    if(!st||st.over||appState.inv.sonar<=0)return;
+    appState.inv.sonar--;const cells=[];
+    for(let r=0;r<st.n;r++)for(let c=0;c<st.n;c++){const g=st.grid[r][c];if(!g.cov)continue;
+      if([[1,0],[-1,0],[0,1],[0,-1]].some(([dr,dc])=>{const q=st.grid[r+dr]&&st.grid[r+dr][c+dc];return q&&q.fossil&&q.cov;}))cells.push([r,c]);}
+    reveal(cells);toast(`Sonar pings ${cells.length} squares near buried bones`);heat();hud();draw();commit();afterSwing();
+  }
+  function moreSwings(){if(!st||st.over||appState.inv.clicks<=0)return;appState.inv.clicks--;st.swings+=5;toast('+5 swings');hud();commit();}
+
+  function finish(how){
+    st.over=how;if(st.ctx)markBed(st.ctx);commit();hud();draw();
+    const by={};st.found.forEach(f=>by[f.cid]=(by[f.cid]||0)+1);
+    const title=how==='win'?'Plot cleared!':how==='fail'?'Out of swings':'Plot closed';
+    const sub=how==='win'?'Every buried bone is accounted for.':how==='fail'?'The soil was stubborn, but your finds are safe.':'You wrapped up the site. Finds are kept.';
+    const chips=Object.keys(by).map(cid=>`<span class="chipx ${isExcavated(cid)?'done':''}">${img(crSprite(cid,'alive'),1)} ${CBY[cid].name}: ${by[cid]}${isExcavated(cid)?' · COMPLETE':''}</span>`).join('')||'<span class="sub">No bones this time.</span>';
+    const ready=CREATURES.some(c=>isExcavated(c.id)&&!appState.revived[c.id]);
+    const m=document.createElement('div');m.className='modal';m.id='exModal';
+    m.innerHTML=`<div class="panel paper box"><div class="h2" style="color:#8a2222;text-shadow:none">${title}</div><p>${sub}</p><div class="chips">${chips}</div>
+      ${st.crates?`<p>Crates opened: ${st.crates}</p>`:''}
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+      ${st.ctx?'<button class="btn go" data-act="back">Return to the dig site</button>':'<button class="btn go" data-act="again">Dig again</button>'}
+      ${ready?'<button class="btn" data-act="revive">Visit the Revival Chamber</button>':''}</div></div>`;
+    $('tab-dig').appendChild(m);
+  }
+  function close(){const m=$('exModal');if(m)m.remove();}
+
+  /* ----- drawing ----- */
+  function draw(){
+    const cv=$('exCanvas');if(!cv||!st)return;
+    const x=cv.getContext('2d'),T=tiles(st.loc.biome),t=Date.now(),hov=new Set((st.hover||[]).map(([a,b])=>a*100+b));
+    for(let r=0;r<st.n;r++)for(let c=0;c<st.n;c++){
+      const g=st.grid[r][c],px=c*16,py=r*16;
+      if(g.cov){
+        x.drawImage(T.dirt[g.v],px,py);
+        if(g.heat===1){x.fillStyle='rgba(255,230,140,.12)';x.fillRect(px,py,16,16);}
+        else if(g.heat===2){x.fillStyle='rgba(235,140,30,.28)';x.fillRect(px,py,16,16);}
+        else if(g.heat===3){x.fillStyle='rgba(225,60,30,.42)';x.fillRect(px,py,16,16);x.fillStyle='#ffb070';const k=(t/260|0)%2;x.fillRect(px+2+k,py+2,1,1);x.fillRect(px+12-k,py+12,1,1);x.fillRect(px+12,py+3+k,1,1);}
+      }else{
+        x.drawImage(T.hole,px,py);
+        if(g.fossil){x.drawImage(ICN[PART_ICON[g.fossil.pid]],px+4,py+4);if(((t/300)|0)%3===0){x.fillStyle='#f6e7c1';x.fillRect(px+2,py+3,1,1);x.fillRect(px+13,py+11,1,1);}}
+        else if(g.crate)x.drawImage(OB.chest0,px,py);
+      }
+      if(hov.has(r*100+c)){x.strokeStyle='#f2c14e';x.lineWidth=2;x.strokeRect(px+1,py+1,14,14);}
+    }
+  }
+  function onClick(e){
+    const b=e.target.closest('[data-act]');if(!b||b.disabled)return;const a=b.dataset.act;
+    if(a==='loc'){sel.loc=b.dataset.id;renderSetup();}
+    else if(a==='diff'){sel.diff=+b.dataset.i;renderSetup();}
+    else if(a==='start'){start(sel.loc,sel.diff,null);}
+    else if(a==='shovel'){st.shovel=b.dataset.k;hud();}
+    else if(a==='sonar')sonar();else if(a==='clicks')moreSwings();
+    else if(a==='abandon'){if(st&&!st.over)finish('closed');}
+    else if(a==='again'){close();st=null;renderSetup();}
+    else if(a==='back'){close();st=null;switchTab('world');}
+    else if(a==='revive'){close();st=null;switchTab('revival');}
+  }
+  function onShow(){
+    if(st&&!st.over)renderActive();else{st=null;renderSetup();}
+  }
+  function init(){
+    $('tab-dig').addEventListener('click',onClick);
+    timer=setInterval(()=>{if(st&&curTab==='dig')draw();},100);
+    addEventListener('resize',()=>{if(st&&curTab==='dig'){fit();draw();}});
+  }
+  return{init,onShow,startBed,start,reset(){st=null;sel.loc=null;}};
+})();
+/* ============================================================
+   WORLD (part 1) — outpost icons, input, dialogue, overworld map
+   ============================================================ */
+const OIC={};
+function outIcon(kind){return OIC[kind]||(OIC[kind]=buildOutIcon(kind));}
+function buildOutIcon(kind){
+  const R=(l,o)=>rs(20,20,l,Object.assign({bevel:true},o));
+  switch(kind){
+    case'dock':return R([[1,13,18,3,'T'],[1,13,18,1,'t'],[3,16,1,3,'N'],[9,16,1,3,'N'],[15,16,1,3,'N'],[9,3,1,10,'N'],[10,3,7,6,'w'],[10,8,7,1,'W'],[3,10,4,3,'n'],[3,10,4,1,'T']]);
+    case'tiki':return R([[4,2,12,3,'y'],[2,5,16,3,'Y'],[3,8,14,9,'n'],[3,8,14,1,'N'],[5,10,3,3,'w'],[12,10,3,3,'w'],[6,11,1,1,'k'],[13,11,1,1,'k'],[8,14,4,2,'r'],[8,17,4,1,'N'],[9,0,2,3,'r']]);
+    case'tree':return R([[2,1,16,9,'g'],[4,0,12,2,'l'],[3,8,14,2,'G'],[8,10,4,9,'n'],[7,17,6,2,'N'],[5,5,10,4,'t'],[4,4,12,2,'y'],[8,7,2,3,'N']]);
+    case'bazaar':return R([[8,1,4,2,'r'],[6,3,8,3,'w'],[4,6,12,3,'r'],[2,9,16,3,'w'],[2,12,16,3,'r'],[8,12,4,5,'k'],[0,15,5,4,'T'],[15,15,5,4,'n']]);
+    case'skull':return R([[3,2,14,12,'s'],[3,2,14,2,'e'],[5,7,4,4,'k'],[11,7,4,4,'k'],[9,10,2,2,'S'],[5,14,10,3,'w'],[7,14,1,3,'k'],[10,14,1,3,'k'],[12,14,1,3,'k'],[0,17,20,3,'c']]);
+    case'village':return R([[1,7,8,3,'y'],[2,5,6,2,'Y'],[1,10,8,6,'n'],[4,12,2,4,'k'],[11,5,8,3,'y'],[12,3,6,2,'Y'],[11,8,8,6,'n'],[14,10,2,4,'k'],[6,15,8,3,'y'],[7,18,6,1,'n']]);
+    case'falls':return R([[1,1,18,15,'S'],[1,1,18,2,'s'],[7,1,6,15,'c'],[9,1,2,15,'#d6f4ee'],[2,3,3,4,'G'],[15,4,3,5,'G'],[0,15,20,4,'c'],[3,16,5,1,'#d6f4ee'],[12,17,5,1,'#d6f4ee']]);
+    case'temple':return R([[1,15,18,4,'s'],[3,11,14,4,'s'],[5,7,10,4,'s'],[7,3,6,4,'s'],[8,0,4,3,'y'],[9,0,2,1,'Y'],[1,15,18,1,'e'],[3,11,14,1,'e'],[9,16,2,3,'k'],[2,17,2,1,'G'],[15,12,2,1,'G']]);
+    case'safari':return R([[9,0,1,6,'N'],[10,0,5,3,'r'],[9,5,2,2,'t'],[7,6,6,2,'t'],[4,8,12,3,'T'],[2,11,16,6,'t'],[2,11,16,1,'w'],[8,12,4,5,'k'],[14,16,5,3,'n']]);
+    case'swamp':return R([[0,15,20,5,'C'],[2,16,4,1,'G'],[13,17,5,1,'l'],[3,9,2,8,'N'],[15,9,2,8,'N'],[2,8,16,2,'N'],[3,3,14,3,'y'],[4,1,12,3,'Y'],[4,6,12,3,'n'],[9,6,3,3,'k']]);
+    case'mine':return R([[1,3,18,14,'S'],[3,1,14,3,'s'],[6,7,8,10,'k'],[5,6,10,1,'N'],[5,6,1,11,'N'],[14,6,1,11,'N'],[3,5,2,2,'y'],[15,9,2,2,'y'],[2,11,2,2,'o'],[8,14,4,3,'n'],[1,17,18,2,'T']]);
+    case'volcano':return R([[7,3,6,2,'S'],[5,5,10,3,'S'],[3,8,14,4,'S'],[1,12,18,6,'S'],[7,2,6,2,'o'],[8,1,4,1,'y'],[9,5,2,3,'o'],[10,8,1,3,'r'],[3,17,14,2,'N'],[2,14,3,2,'s'],[14,13,4,2,'s']]);
+  }
+  return R([[4,4,12,12,'n']]);
+}
+
+/* ---------- input ---------- */
+const Inp=(()=>{
+  const down=new Set(),hit=new Set();
+  const NAME={ArrowLeft:'left',a:'left',A:'left',ArrowRight:'right',d:'right',D:'right',ArrowUp:'up',w:'up',W:'up',ArrowDown:'down',s:'down',S:'down',' ':'jump',Enter:'act',e:'act',E:'act',x:'pick',X:'pick',z:'pick',Z:'pick',j:'pick',J:'pick',Escape:'esc',r:'rope',R:'rope'};
+  function press(raw){const n=NAME[raw];if(!n)return false;if(!down.has(n))hit.add(n);down.add(n);return true;}
+  function release(raw){const n=NAME[raw];if(n)down.delete(n);}
+  return{press,release,held:n=>down.has(n),pressed:n=>hit.has(n),endFrame:()=>hit.clear(),clear(){down.clear();hit.clear();}};
+})();
+
+/* ---------- dialogue box (typewriter) ---------- */
+const Dlg=(()=>{
+  let d=null,tm=0;
+  const el=()=>$('dlg');
+  function say(o){d={name:o.name||'',sprite:o.sprite||null,lines:o.lines.slice(),i:0,shown:0,choices:o.choices||null,onEnd:o.onEnd||null};Inp.clear();render();type();}
+  function render(){
+    el().classList.remove('hidden');
+    el().innerHTML=`<div class="port">${d.sprite?img(d.sprite,3):''}</div><div style="flex:1"><div class="who">${d.name}</div><div class="txt" id="dlgTxt"></div><div id="dlgTail"></div></div>`;
+  }
+  function type(){clearInterval(tm);tm=setInterval(()=>{d.shown++;upd();if(d.shown>=d.lines[d.i].length)clearInterval(tm);},20);}
+  function upd(){
+    const t=$('dlgTxt');if(!t||!d)return;const full=d.lines[d.i];t.textContent=full.slice(0,d.shown);
+    const tail=$('dlgTail');if(d.shown<full.length){tail.innerHTML='';return;}
+    if(d.i===d.lines.length-1&&d.choices)tail.innerHTML=`<div class="choices">${d.choices.map((c,i)=>`<button class="btn sm ${i?'dark':'go'}" data-ch="${i}">${c.label}</button>`).join('')}</div>`;
+    else tail.innerHTML=`<div class="more">${d.i===d.lines.length-1?'CLOSE ▸':'NEXT ▸'}</div>`;
+  }
+  function advance(){
+    if(!d)return;const full=d.lines[d.i];
+    if(d.shown<full.length){d.shown=full.length;clearInterval(tm);upd();return;}
+    if(d.i<d.lines.length-1){d.i++;d.shown=0;render();type();return;}
+    if(!d.choices)close();
+  }
+  function close(){const cb=d&&d.onEnd;d=null;clearInterval(tm);el().classList.add('hidden');Inp.clear();if(cb)cb();}
+  function choose(i){const c=d&&d.choices&&d.choices[i];if(!c)return;d=null;clearInterval(tm);el().classList.add('hidden');Inp.clear();if(c.fn)c.fn();}
+  function init(){$('dlg').addEventListener('click',e=>{const b=e.target.closest('[data-ch]');if(b){choose(+b.dataset.ch);return;}advance();});}
+  return{say,advance,close,init,get open(){return!!d;}};
+})();
+
+/* ---------- overworld map ---------- */
+const Mapv=(()=>{
+  const VW=320,VH=192;
+  let ocean=[],land=null,pos={x:34,y:150},path=[],dir='down',walk=0,hover=null,t=0,pending=0,built=false;
+  const cp=l=>({x:l.x,y:l.y});
+  function segDist(px,py,a,b){const dx=b.x-a.x,dy=b.y-a.y,l2=dx*dx+dy*dy,u=clamp(((px-a.x)*dx+(py-a.y)*dy)/l2,0,1);return Math.hypot(px-(a.x+u*dx),py-(a.y+u*dy));}
+  function build(){
+    built=true;const r=rng(2024);
+    // ocean frames
+    ocean=[0,1].map(f=>{const c=cv(VW,VH),x=c.getContext('2d');x.fillStyle='#1d7f8a';x.fillRect(0,0,VW,VH);
+      const q=rng(5);x.fillStyle='#2a9aa0';for(let i=0;i<260;i++){const px=Math.floor(q()*VW),py=Math.floor(q()*VH);x.fillRect((px+f*2)%VW,py,4+Math.floor(q()*4),1);}
+      x.fillStyle='#7fd6d0';for(let i=0;i<90;i++){const px=Math.floor(q()*VW),py=Math.floor(q()*VH);x.fillRect((px+f*3)%VW,py,2+Math.floor(q()*2),1);}return c;});
+    // land field from metaballs
+    const src=LOC.map(l=>({x:l.x,y:l.y,R:34}));EDGES.forEach(([a,b])=>{const A=LBY[a],B=LBY[b];src.push({x:(A.x+B.x)/2,y:(A.y+B.y)/2,R:20});});
+    const nz=(x,y)=>(Math.sin(x*.11+y*.07)+Math.sin(x*.05-y*.13+2)+.6*Math.sin(x*.23+y*.19))/2.6;
+    const field=new Float32Array(VW*VH);
+    for(let y=0;y<VH;y++)for(let x=0;x<VW;x++){let m=-1;for(const s of src){const d=Math.hypot(x-s.x,y-s.y)/s.R;m=Math.max(m,1-d);}field[y*VW+x]=m+nz(x,y)*.13;}
+    land=cv(VW,VH);const lx=land.getContext('2d'),id=lx.createImageData(VW,VH),D=id.data;
+    const put=(i,hex)=>{const n=parseInt(hex.slice(1),16);D[i*4]=n>>16;D[i*4+1]=(n>>8)&255;D[i*4+2]=n&255;D[i*4+3]=255;};
+    for(let y=0;y<VH;y++)for(let x=0;x<VW;x++){const i=y*VW+x,f=field[i],q=r();
+      if(f>.16)put(i,q<.5?'#3f8f3f':q<.8?'#4a9c45':q<.93?'#5ba84a':'#2f7a34');
+      else if(f>.06)put(i,q<.55?'#e6c98a':'#d9b878');
+      else if(f>.015)put(i,q<.5?'#f6f0d8':'#e8e0c0');}
+    lx.putImageData(id,0,0);
+    const isLand=(x,y)=>x>=0&&y>=0&&x<VW&&y<VH&&field[y*VW+x]>.015;
+    // river from Misty Falls to the sea
+    const river=[[150,56],[160,78],[172,92],[186,108],[200,124],[206,150],[210,192]];
+    lx.fillStyle='#2a9aa0';for(let k=0;k<river.length-1;k++){const a=river[k],b=river[k+1],n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1]));for(let i=0;i<=n;i++){const px=Math.round(a[0]+(b[0]-a[0])*i/n),py=Math.round(a[1]+(b[1]-a[1])*i/n);if(isLand(px,py)){lx.fillRect(px-2,py-1,4,3);}}}
+    lx.fillStyle='#7fd6d0';for(let k=0;k<river.length-1;k++){const a=river[k],b=river[k+1];for(let i=0;i<8;i++){const u=i/8,px=Math.round(a[0]+(b[0]-a[0])*u),py=Math.round(a[1]+(b[1]-a[1])*u);if(isLand(px,py))lx.fillRect(px,py,1,1);}}
+    // roads (bridges over water)
+    EDGES.forEach(([a,b])=>{const A=LBY[a],B=LBY[b],n=Math.ceil(Math.hypot(B.x-A.x,B.y-A.y));
+      for(let i=0;i<=n;i++){const px=Math.round(A.x+(B.x-A.x)*i/n),py=Math.round(A.y+(B.y-A.y)*i/n),bridge=!isLand(px,py)||(lx.getImageData(px,py,1,1).data[0]<80&&lx.getImageData(px,py,1,1).data[2]>120);
+        if(bridge){lx.fillStyle='#5a3517';lx.fillRect(px-2,py-2,5,5);lx.fillStyle='#a8814f';lx.fillRect(px-1,py-1,3,3);}
+        else{lx.fillStyle='#a8814f';lx.fillRect(px-2,py-1,5,3);lx.fillStyle='#c9a560';lx.fillRect(px-1,py,3,1);}}});
+    // trees & rocks
+    const near=(x,y)=>LOC.some(l=>Math.hypot(x-l.x,y-l.y)<17)||EDGES.some(([a,b])=>segDist(x,y,LBY[a],LBY[b])<6);
+    const tree=(x,y)=>{lx.fillStyle='#5a3517';lx.fillRect(x,y+3,1,3);lx.fillStyle='#24602c';lx.fillRect(x-2,y-1,5,3);lx.fillStyle='#3f8f3f';lx.fillRect(x-1,y-3,3,3);lx.fillStyle='#8fcf55';lx.fillRect(x-1,y-3,1,1);};
+    for(let i=0;i<420;i++){const x=Math.floor(r()*VW),y=Math.floor(r()*VH);if(field[y*VW+x]>.2&&!near(x,y)){const px=lx.getImageData(x,y,1,1).data;if(px[1]>120&&px[2]<90)tree(x,y);}}
+    land.dataset.ok=1;
+  }
+  function bfs(a,b){const prev={[a]:null},q=[a];while(q.length){const c=q.shift();if(c===b)break;for(const n of LBY[c].nb)if(!(n in prev)){prev[n]=c;q.push(n);}}const out=[];for(let c=b;c;c=prev[c])out.unshift(c);return out;}
+  function reset(){const l=LBY[appState.at]||LBY.landing;pos=cp(l);path=[];hover=null;pending=0;}
+  function travel(id){if(path.length||pending)return;const p=bfs(appState.at,id);path=p.slice(1).map(i=>LBY[i]);if(!path.length)return;}
+  function update(dt){
+    t+=dt;
+    if(pending>0){pending-=dt;if(pending<=0)World.enterTown(appState.at);}
+    if(Inp.pressed('act')||Inp.pressed('jump')){if(!path.length&&!pending)World.enterTown(appState.at);}
+    if(!path.length)return;
+    const tg=path[0],dx=tg.x-pos.x,dy=tg.y-pos.y,dist=Math.hypot(dx,dy),step=54*dt;walk+=dt;
+    if(Math.abs(dx)>Math.abs(dy))dir=dx<0?'left':'right';else dir=dy<0?'up':'down';
+    if(dist<=step){pos={x:tg.x,y:tg.y};appState.at=tg.id;appState.visited[tg.id]=true;path.shift();commit();if(!path.length){pending=.25;}}
+    else{pos.x+=dx/dist*step;pos.y+=dy/dist*step;}
+  }
+  function draw(x){
+    if(!built)build();
+    x.drawImage(ocean[Math.floor(t*1.6)%2],0,0);x.drawImage(land,0,0);
+    for(const l of LOC){
+      const ic=outIcon(l.kind),vis=appState.visited[l.id];
+      x.fillStyle='rgba(0,0,0,.25)';x.fillRect(l.x-8,l.y+8,16,3);
+      x.drawImage(ic,l.x-10,l.y-12);
+      if(!vis){x.fillStyle='rgba(20,10,5,.35)';x.fillRect(l.x-10,l.y-12,20,20);}
+      if(l.id===hover||l.id===appState.at){x.strokeStyle=l.id===appState.at?'#f2c14e':'#f6e7c1';x.lineWidth=1;
+        const bx=l.x-13,by=l.y-15,k=5;[[bx,by,1,1],[bx+26,by,-1,1],[bx,by+26,1,-1],[bx+26,by+26,-1,-1]].forEach(([a,b,sx,sy])=>{x.fillStyle=x.strokeStyle;x.fillRect(a,b,k*sx>0?k:1,1);x.fillRect(a,b,1,k*sy>0?k:1);x.fillRect(sx>0?a:a-k+1,b,k,1);x.fillRect(a,sy>0?b:b-k+1,1,k);});}
+    }
+    const moving=path.length>0,f=moving?(Math.floor(walk*6)%2):0;
+    const spr=humanSprite('player',dir,f);x.fillStyle='rgba(0,0,0,.35)';x.fillRect(pos.x-5,pos.y+1,10,3);
+    x.drawImage(spr,Math.round(pos.x-8),Math.round(pos.y-14-(moving&&f?1:0)));
+  }
+  function labels(){
+    $('labels').innerHTML=LOC.map(l=>`<div class="mlabel ${l.id===appState.at?'here':''} ${appState.visited[l.id]?'':'new'}" style="left:${l.x/VW*100}%;top:${(l.y+10)/VH*100}%">${l.name}</div>`).join('');
+  }
+  function info(id){
+    const l=LBY[id||appState.at],f=l.sp.reduce((s,c)=>s+partsFound(c),0),tt=l.sp.reduce((s,c)=>s+CBY[c].parts.length,0);
+    $('winfo').innerHTML=`<div>${img(outIcon(l.kind),4)}</div><div class="meta"><div class="nm">${l.name}${l.id===appState.at?' · you are here':''}</div><div>${l.desc}</div></div>
+      <div><div class="spr-row">${l.sp.map(s=>img(crSprite(s,appState.visited[l.id]?creatureMode(s):'dark'),2)).join('')}</div><div style="margin-top:4px">Parts: ${f}/${tt} · Click to ${l.id===appState.at?'enter':'travel'}</div></div>`;
+  }
+  function pointer(e,isClick){
+    const cvs=$('wc'),b=cvs.getBoundingClientRect(),x=(e.clientX-b.left)/b.width*VW,y=(e.clientY-b.top)/b.height*VH;
+    let h=null;for(const l of LOC)if(Math.hypot(x-l.x,y-(l.y-2))<14){h=l.id;break;}
+    if(h!==hover){hover=h;info(h);}
+    if(isClick&&h){if(path.length||pending)return;if(h===appState.at)World.enterTown(h);else travel(h);}
+  }
+  return{update,draw,reset,labels,info,pointer,travel,get pos(){return pos;},get moving(){return path.length>0;}};
+})();
+/* ============================================================
+   WORLD (part 2) — top-down outpost explorer (16px tiles)
+   ============================================================ */
+const Town=(()=>{
+  const VW=320,VH=192,TS=16,W=30,H=22;
+  const SOLID=new Set(['palm','bush','thatch','eave','bamboo','totem','torch','crate','barrel','sign','chest','chest0','boulder','tent','boat','stump','fence','caveBlock']);
+  const WET=new Set(['water','lava']);
+  let loc=null,G=[],O=[],npcs=[],p=null,cam={x:0,y:0},t=0,caveCool=0,huts=[],bubble=null;
+  const bub=mk(['.yyyy.','yyyyyy','yyyyyy','..yy..','..yy..','......','..yy..','..yy..'],{});
+
+  function gen(l){
+    const r=rng(hash(l.id)),b=l.biome;
+    G=Array.from({length:H},()=>Array(W).fill('grass'));O=Array.from({length:H},()=>Array(W).fill(null));
+    const base={beach:'sand',jungle:'grass',savanna:'sand',ruins:'stone',swamp:'mud',cave:'ash',volcano:'ash'}[b];
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){const q=r();G[y][x]=base==='grass'?(q<.07?'grass2':q<.2?'dgrass':'grass'):base==='sand'?(q<.12?'grass':'sand'):base==='stone'?(q<.3?'grass':q<.4?'dgrass':'stone'):base==='mud'?(q<.2?'dgrass':'mud'):(q<.1?'stone':'ash');}
+    for(let x=1;x<W-1;x++)G[11][x]='dirt';
+    for(let y=2;y<H;y++){G[y][14]='dirt';G[y][15]='dirt';}
+    const plz=l.kind==='dock'?'plank':'stone';
+    for(let y=8;y<=13;y++)for(let x=11;x<=18;x++)G[y][x]=plz;
+    // features by outpost kind
+    const water=(x0,y0,w,h)=>{for(let y=y0;y<y0+h;y++)for(let x=x0;x<x0+w;x++)G[y][x]='water';};
+    if(l.kind==='dock'){water(27,1,2,H-2);for(let x=24;x<=28;x++)G[11][x]='plank';O[13][28]='boat';}
+    if(l.kind==='skull'){water(1,2,2,H-4);G[11][1]='plank';G[11][2]='plank';O[9][2]='boulder';O[13][1]='boulder';}
+    if(l.kind==='falls'){water(4,8,5,3);O[8][3]='boulder';O[10][9]='boulder';}
+    if(l.kind==='swamp'){[[7,8,3,2],[21,8,4,2],[9,17,4,2],[19,17,4,2]].forEach(a=>water(...a));}
+    if(l.kind==='volcano')[[6,8,3,2],[23,8,3,2],[8,17,3,2]].forEach(([x0,y0,w,h])=>{for(let y=y0;y<y0+h;y++)for(let x=x0;x<x0+w;x++)G[y][x]='lava';});
+    // border ring
+    const ringPick=()=>{const q=r();return b==='cave'||b==='volcano'?(q<.7?'boulder':'palm'):b==='ruins'?(q<.5?'boulder':'palm'):(q<.7?'palm':'bush');};
+    for(let x=0;x<W;x++){O[0][x]=ringPick();if(!(x===14||x===15))O[H-1][x]=ringPick();}
+    for(let y=0;y<H;y++){O[y][0]=ringPick();O[y][W-1]=ringPick();}
+    for(let x=1;x<W-1;x++){if(!(x>=13&&x<=16)&&r()<.5)O[1][x]=ringPick();if(!(x>=13&&x<=16)&&r()<.5)O[H-2][x]=ringPick();}
+    for(let y=1;y<H-1;y++){if(r()<.5)O[y][1]=ringPick();if(r()<.5)O[y][W-2]=ringPick();}
+    O[11][0]=null;O[11][W-1]=null;
+    // clear any ring object that fell on water/path row/column
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(O[y][x]&&(WET.has(G[y][x])||G[y][x]==='plank'))O[y][x]=null;
+    O[H-1][14]=null;O[H-1][15]=null;
+    // entrance cave + sign
+    O[1][14]='caveL';O[1][15]='caveR';O[0][14]='boulder';O[0][15]='boulder';
+    O[2][12]='sign';O[2][17]='torch';
+    // huts
+    huts=[[3,3],[22,3],[3,14],[22,14]];
+    huts.forEach(([hx,hy])=>{for(let x=hx;x<hx+5;x++){O[hy][x]='thatch';O[hy+1][x]='eave';O[hy+2][x]='bamboo';}O[hy+2][hx+2]='door';
+      if(!O[hy+2][hx+5]&&hx+5<W-2)O[hy+2][hx+5]=r()<.5?'crate':'barrel';if(!O[hy+2][hx-1]&&hx>2)O[hy+2][hx-1]=r()<.5?'barrel':'crate';});
+    // landmark & torches
+    O[10][14]='totem';
+    if(l.kind==='temple')[[11,8],[18,8],[11,13],[18,13]].forEach(([x,y])=>O[y][x]='totem');
+    if(l.kind==='bazaar')[[12,6],[17,6],[12,16],[17,16],[6,9],[24,9]].forEach(([x,y])=>O[y][x]='tent');
+    if(l.kind==='safari')[[6,9],[23,9],[6,13],[23,13]].forEach(([x,y])=>O[y][x]='tent');
+    if(l.kind==='mine'||l.kind==='volcano')[[10,6],[19,6],[10,16],[19,16]].forEach(([x,y])=>O[y][x]='torch');
+    [[12,6],[17,6],[12,16],[17,16]].forEach(([x,y])=>{if(!O[y][x])O[y][x]='torch';});
+    O[14][12]='sign';
+    // decor
+    const deco={jungle:['palm','bush','flowers','stump'],savanna:['bush','boulder','stump','flowers'],beach:['palm','flowers','boulder','bush'],swamp:['reeds','palm','stump','reeds'],ruins:['boulder','bush','palm','flowers'],cave:['boulder','crate','barrel','boulder'],volcano:['boulder','boulder','stump','boulder']}[b];
+    const nearHut=(x,y)=>huts.some(([hx,hy])=>x>=hx-1&&x<=hx+6&&y>=hy-1&&y<=hy+4);
+    const okTile=(x,y)=>x>=2&&y>=3&&x<=W-3&&y<=H-3&&!O[y][x]&&['grass','grass2','dgrass','sand','mud','ash','stone'].includes(G[y][x])&&!(y>=10&&y<=12)&&!(x>=12&&x<=17)&&!nearHut(x,y);
+    for(let i=0;i<70;i++){const x=2+Math.floor(r()*(W-4)),y=3+Math.floor(r()*(H-6));if(okTile(x,y))O[y][x]=pick(r,deco);}
+    for(let i=0;i<14;i++){const x=2+Math.floor(r()*(W-4)),y=3+Math.floor(r()*(H-6));if(okTile(x,y)&&G[y][x]!=='stone')G[y][x]='grass2';}
+    // chest
+    let cx=0,cy=0;for(let i=0;i<200;i++){const x=2+Math.floor(r()*(W-4)),y=3+Math.floor(r()*(H-6));if(okTile(x,y)){cx=x;cy=y;break;}}
+    if(cx){O[cy][cx]=appState.chests[l.id]?'chest0':'chest';}
+    // make sure the plaza is open
+    for(let y=8;y<=13;y++)for(let x=11;x<=18;x++)if(!(x===14&&y===10)&&!(l.kind==='temple'&&(x===11||x===18)&&(y===8||y===13))&&!(O[y][x]==='torch'&&false))O[y][x]=(O[y][x]==='sign'&&y===14)?O[y][x]:null;
+    if(l.kind==='tiki'||l.kind==='village')O[12][12]='totem';
+  }
+
+  function enter(l,fromCave){
+    loc=l;gen(l);t=0;caveCool=fromCave?2:0;
+    const mkn=(id,name,look,x,y,home)=>({id,name,look,x:x*TS,y:y*TS-4,hx:x,hy:y,dir:'down',walk:0,timer:Math.random()*3,tx:null,ty:null});
+    npcs=[mkn('guide','Guide Marlowe','guide',12,11),mkn('prospector','Prospector Odo','prospector',17,3),mkn('local','Tala the Trader','local',5,8)];
+    // place NPCs on free tiles
+    npcs.forEach(n=>{if(solidTile(n.hx,n.hy)){n.hx++;n.x=n.hx*TS;}});
+    p={x:fromCave?15*TS-8:15*TS-8,y:fromCave?3*TS:(H-2)*TS-6,dir:fromCave?'down':'up',walk:0,moving:false};
+    Inp.clear();
+  }
+
+  const solidTile=(tx,ty)=>{if(tx<0||ty<0||tx>=W||ty>=H)return true;if(WET.has(G[ty][tx]))return true;const o=O[ty][tx];return!!o&&SOLID.has(o);};
+  function hit(x,y,ignoreNpc){
+    const bx=x+4,by=y+9,bw=8,bh=6;
+    for(let ty=Math.floor(by/TS);ty<=Math.floor((by+bh-1)/TS);ty++)for(let tx=Math.floor(bx/TS);tx<=Math.floor((bx+bw-1)/TS);tx++)if(solidTile(tx,ty))return true;
+    if(!ignoreNpc)for(const n of npcs)if(bx<n.x+12&&bx+bw>n.x+4&&by<n.y+15&&by+bh>n.y+9)return true;
+    return false;
+  }
+  const feet=e=>({x:e.x+8,y:e.y+12});
+
+  function lines(n){
+    const sp=loc.sp,names=sp.map(s=>CBY[s].name).join(' and ');
+    const f=sp.reduce((s,c)=>s+partsFound(c),0),tt=sp.reduce((s,c)=>s+CBY[c].parts.length,0);
+    if(n.id==='guide')return[`Welcome to ${loc.name}!`,loc.desc,'Walk up to people, signs and chests and press Space. The cave at the north end leads down into the dig site.'];
+    if(n.id==='prospector'){const miss=sp.flatMap(s=>missingParts(s).map(p=>p.name));return[`I have been charting the bones under ${loc.name} for years.`,`The ground here hides ${names}.`,miss.length?`You still need: ${miss.slice(0,4).join(', ')}${miss.length>4?' and more':''}. (${f} of ${tt} parts found)`:'You have catalogued every fossil from this region. Splendid work!',!appState.abil.pick?'Rumor says a pickaxe sits in the first dig chamber. Sealed walls crumble to it.':!appState.abil.jump?'Somewhere below there is a pair of spring boots. Double jump, my friend!':'With boots and pickaxe you can reach every fossil bed down there.'];}
+    const flav=['They say the old river has a mind of its own.','Mind the spikes down in the caves. They bite harder than the mosquitoes.','I once found a bone so big I used it as a bench.','The drums start at dusk. Best not to ask why.','That parrot has opinions about everyone.','Dig sites go deeper than they look. Bring bandages. Or luck.'];
+    const gifted=appState.chests[loc.id+'_gift'];
+    return gifted?[pick(Math.random,flav)]:[pick(Math.random,flav),'Here, a little something for the road.'];
+  }
+  function talk(n){
+    const f=feet(p),nf=feet(n);const dx=nf.x-f.x,dy=nf.y-f.y;n.dir=Math.abs(dx)>Math.abs(dy)?(dx>0?'left':'right'):(dy>0?'up':'down');
+    let onEnd=null;
+    if(n.id==='local'&&!appState.chests[loc.id+'_gift'])onEnd=()=>{appState.chests[loc.id+'_gift']=true;const g=randConsumable();commit();toast(`Received ${g.n}× ${INV_DEFS[g.k].name}`);};
+    Dlg.say({name:n.name,sprite:humanSprite(n.look,'down',0),lines:lines(n),onEnd});
+  }
+  function interactObj(tx,ty){
+    const o=O[ty]&&O[ty][tx];if(!o)return false;
+    const say=(l,s)=>Dlg.say({name:l,sprite:s||null,lines:Array.isArray(l)?l:[l]});
+    if(o==='sign'){const cave=ty<6;Dlg.say({name:'Wooden sign',sprite:OB.sign,lines:cave?['FOSSIL DIG SITE — cave entrance ahead.','Bring a lantern, a steady jump, and if you can, a pickaxe.']:[`Welcome to ${loc.name}.`,`Bones catalogued here: ${loc.sp.reduce((s,c)=>s+partsFound(c),0)} of ${loc.sp.reduce((s,c)=>s+CBY[c].parts.length,0)}.`]});return true;}
+    if(o==='chest'){appState.chests[loc.id]=true;O[ty][tx]='chest0';const g=randConsumable();commit();Dlg.say({name:'Treasure chest',sprite:OB.chest,lines:['You lift the creaky lid...',`Inside you find ${g.n}× ${INV_DEFS[g.k].name}!`]});return true;}
+    if(o==='chest0'){Dlg.say({name:'Treasure chest',sprite:OB.chest0,lines:['Empty now, apart from a single feather.']});return true;}
+    if(o==='totem'){Dlg.say({name:'Carved totem',sprite:OB.totem,lines:['Painted faces stare back at you. One of them seems to wink.']});return true;}
+    if(o==='door'){Dlg.say({name:'Hut door',sprite:OB.door,lines:['Shut tight. Whoever lives here is out digging.']});return true;}
+    if(o==='boat'){Dlg.say({name:'Rowboat',sprite:OB.boat,lines:['A little rowboat bobs at the pier. No oars, sadly.']});return true;}
+    if(o==='crate'||o==='barrel'){Dlg.say({name:'Supplies',sprite:OB[o],lines:['Rope, canvas and a very dented canteen. Nothing you need right now.']});return true;}
+    if(o==='torch'){Dlg.say({name:'Torch',sprite:OB.torch[0],lines:['It crackles warmly.']});return true;}
+    return false;
+  }
+  function interact(){
+    const f=feet(p);let best=null,bd=22;
+    for(const n of npcs){const nf=feet(n),d=Math.hypot(nf.x-f.x,nf.y-f.y);if(d<bd){bd=d;best=n;}}
+    if(best)return talk(best);
+    const v={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[p.dir];
+    for(const k of[8,14,20]){const tx=Math.floor((f.x+v[0]*k)/TS),ty=Math.floor((f.y+v[1]*k)/TS);if(interactObj(tx,ty))return;}
+  }
+  function update(dt){
+    t+=dt;caveCool=Math.max(0,caveCool-dt);
+    if(Dlg.open)return;
+    const dx=(Inp.held('right')?1:0)-(Inp.held('left')?1:0),dy=(Inp.held('down')?1:0)-(Inp.held('up')?1:0);
+    p.moving=!!(dx||dy);
+    if(p.moving){
+      const l=Math.hypot(dx,dy),sp=66*dt,mx=dx/l*sp,my=dy/l*sp;
+      if(!hit(p.x+mx,p.y))p.x+=mx;if(!hit(p.x,p.y+my))p.y+=my;
+      p.dir=Math.abs(dx)>=Math.abs(dy)&&dx?(dx>0?'right':'left'):(dy>0?'down':'up');p.walk+=dt;
+    }
+    if(Inp.pressed('act')||Inp.pressed('jump'))interact();
+    if(Inp.pressed('esc'))World.exitTown();
+    const f=feet(p),tx=Math.floor(f.x/TS),ty=Math.floor((f.y-2)/TS),o=O[ty]&&O[ty][tx];
+    if((o==='caveL'||o==='caveR')&&caveCool<=0&&!Dlg.open){
+      caveCool=3;
+      Dlg.say({name:'Cave mouth',sprite:OB.caveL,lines:['A cool breeze rises from the dark. This tunnel leads down to the dig site. Descend?'],choices:[{label:'Descend',fn:()=>World.enterDig(loc)},{label:'Not yet',fn:()=>{p.y+=10;}}]});
+    }
+    if(p.y+15>=(H-1)*TS+10)World.exitTown();
+    // wander NPCs
+    for(const n of npcs){
+      n.timer-=dt;
+      if(n.tx!==null){const ax=n.tx-n.x,ay=n.ty-n.y,d=Math.hypot(ax,ay),s=22*dt;n.walk+=dt;if(d<=s){n.x=n.tx;n.y=n.ty;n.tx=null;}else{n.x+=ax/d*s;n.y+=ay/d*s;}continue;}
+      if(n.timer>0)continue;n.timer=2+Math.random()*3;
+      const d=pick(Math.random,[[1,0],[-1,0],[0,1],[0,-1]]),nx=n.x+d[0]*TS,ny=n.y+d[1]*TS;
+      const ntx=Math.round(nx/TS),nty=Math.round((ny+4)/TS);
+      if(Math.abs(ntx-n.hx)>2||Math.abs(nty-n.hy)>2||solidTile(ntx,nty))continue;
+      const pf=feet(p);if(Math.hypot(pf.x-(nx+8),pf.y-(ny+12))<14)continue;
+      n.dir=d[0]>0?'right':d[0]<0?'left':d[1]>0?'down':'up';n.tx=nx;n.ty=ny;
+    }
+    // camera
+    cam.x=clamp(Math.round(p.x+8-VW/2),0,W*TS-VW);cam.y=clamp(Math.round(p.y+8-VH/2),0,H*TS-VH);
+  }
+  function draw(x){
+    const wf=Math.floor(t*2)%2,x0=Math.floor(cam.x/TS),y0=Math.floor(cam.y/TS);
+    x.save();x.translate(-cam.x,-cam.y);
+    for(let ty=y0;ty<=y0+12&&ty<H;ty++)for(let tx=x0;tx<=x0+20&&tx<W;tx++){const g=G[ty][tx],s=GT[g];x.drawImage(Array.isArray(s)?s[wf]:s,tx*TS,ty*TS);}
+    const ents=[{y:p.y+15,p,draw:()=>{const f=p.moving?Math.floor(p.walk*8)%2:0;x.fillStyle='rgba(0,0,0,.3)';x.fillRect(p.x+4,p.y+14,8,2);x.drawImage(humanSprite('player',p.dir,f),Math.round(p.x),Math.round(p.y)-(p.moving&&f?1:0));}}];
+    npcs.forEach(n=>ents.push({y:n.y+15,draw:()=>{const f=n.tx!==null?Math.floor(n.walk*6)%2:0;x.fillStyle='rgba(0,0,0,.3)';x.fillRect(Math.round(n.x)+4,Math.round(n.y)+14,8,2);x.drawImage(humanSprite(n.look,n.dir,f),Math.round(n.x),Math.round(n.y));
+      const pf=feet(p),nf=feet(n);if(!Dlg.open&&Math.hypot(pf.x-nf.x,pf.y-nf.y)<26)x.drawImage(bub,Math.round(n.x)+5,Math.round(n.y)-9+(Math.floor(t*4)%2));}}));
+    for(let ty=y0;ty<=y0+12&&ty<H;ty++){
+      for(let tx=x0;tx<=x0+20&&tx<W;tx++){const o=O[ty][tx];if(!o)continue;const s=OB[o];x.drawImage(Array.isArray(s)?s[wf]:s,tx*TS,ty*TS);}
+      ents.filter(e=>Math.floor(e.y/TS)===ty).forEach(e=>e.draw());
+    }
+    x.restore();
+  }
+  return{enter,update,draw,get loc(){return loc;},debug:()=>({p,O,G,npcs,cam,W,H,TS})};
+})();
+/* ============================================================
+   WORLD (part 3) — side-scrolling metroidvania dig site + world shell
+   ============================================================ */
+const Dig=(()=>{
+  const VW=320,VH=192,TS=16,CW=24,CH=13,NX=3,NY=3,W=NX*CW,H=NY*CH;
+  const A=0,ROCK=1,DIRT=2,PLAT=3,LAD=4,SPIKE=5,BRK=6,ROPE=7;
+  const GRAV=900,MAXF=380,SPEED=86,JUMP=-300,DJUMP=-310;
+  const DBIO={jungle:['#4a5a34','#364424','#62784a','#1a2214','#5ba84a'],beach:['#9a8458','#76643e','#b8a272','#241e12','#d9c88a'],savanna:['#8a5a32','#68401e','#a87444','#22160c','#c9a050'],ruins:['#8a7a5a','#68583c','#a8987a','#1e1a12','#b8a86a'],swamp:['#4a4a30','#34341e','#626244','#16160e','#6a9a3a'],cave:['#5a5048','#40382f','#766a60','#14110f','#8a7a6a'],volcano:['#4a2e2a','#341e1b','#6a443c','#160c0b','#c8502a']};
+  const PLAN=[[0,0,'floor','clicks'],[1,0,'chain','s12'],[2,0,'chain','heart'],[2,0,'floor','bed',1],[0,1,'chain','pick'],[0,1,'floor','bed',0],[1,1,'chain','boots'],[1,1,'floor','sonar'],[2,1,'chain','sx'],[2,1,'ledge','bed',2],[0,2,'floor','s22'],[0,2,'ledge','heart'],[1,2,'floor','s31'],[1,2,'chain','bed',1],[2,2,'chain','sonar'],[2,2,'ledge','bed',3]];
+  const LEDGE_CH=new Set(['2,1','0,2','2,2']);
+  let loc=null,t8=null,ents=[],foes=[],parts=[],P=null,cam={x:0,y:0},tm=0,spawn={x:0,y:0},th=null,hp=3,dead=false,hintT=0;
+  const bcache={},BEETLE_R=flipH(BEETLE_S);
+  const rec=()=>appState.dig[loc.id]||(appState.dig[loc.id]={taken:{},broken:{}});
+  const get=(x,y)=>(x<0||y<0||x>=W||y>=H)?ROCK:t8[y*W+x];
+  const set=(x,y,v)=>{if(x>=0&&y>=0&&x<W&&y<H)t8[y*W+x]=v;};
+  const solid=v=>v===ROCK||v===DIRT||v===BRK;
+
+  function tilesFor(b){
+    if(bcache[b])return bcache[b];const[base,dk,lt,bg,moss]=DBIO[b]||DBIO.jungle;
+    const rock=[0,1,2].map(i=>tex(base,[[dk,26],[lt,14],[dk,6,2,2],[lt,3,2,1]],200+i*13));
+    const dirt=[0,1].map(i=>tex('#6a4424',[['#4e2d14',24],['#8a5a2b',14],['#3a2410',5,2,2]],300+i*9));
+    const brk=(()=>{const c=tex('#8a8070',[['#a09684',16],['#6f6558',10]],5),x=c.getContext('2d');x.fillStyle='#4a4238';x.fillRect(0,0,16,1);x.fillRect(0,8,16,1);x.fillRect(7,1,1,7);x.fillRect(3,9,1,7);x.fillRect(11,9,1,7);x.fillStyle='#2a1a0e';[[4,3],[5,4],[6,5],[7,6],[10,3],[9,4],[8,5],[7,5]].forEach(([a,b2])=>x.fillRect(a,b2,1,1));x.fillStyle='#f2c14e';x.fillRect(2,12,1,1);x.fillRect(13,13,1,1);return c;})();
+    const plat=(()=>{const c=cv(16,16),x=c.getContext('2d');x.fillStyle='#2a1a0e';x.fillRect(0,0,16,6);x.fillStyle='#a0662f';x.fillRect(0,0,16,4);x.fillStyle='#c8864a';x.fillRect(0,0,16,1);x.fillStyle='#7a4a22';x.fillRect(0,3,16,1);x.fillStyle='#4e2d14';x.fillRect(4,0,1,4);x.fillRect(11,0,1,4);x.fillStyle='#d9b27c';x.fillRect(2,1,1,1);x.fillRect(13,1,1,1);return c;})();
+    const spike=rs(16,16,[[1,8,2,2,'e'],[0,10,4,6,'e'],[5,6,2,2,'e'],[4,8,4,8,'e'],[9,8,2,2,'e'],[8,10,4,6,'e'],[13,6,2,2,'e'],[12,8,4,8,'e'],[3,12,1,4,'E'],[7,10,1,6,'E'],[11,12,1,4,'E']],{outline:false});
+    const lad=rs(16,16,[[2,0,2,16,'n'],[12,0,2,16,'n'],[4,2,8,2,'T'],[4,8,8,2,'T'],[2,0,1,16,'t'],[12,0,1,16,'t']],{outline:false});
+    const rope=rs(16,16,[[3,0,2,16,'t'],[11,0,2,16,'t'],[3,0,1,16,'w'],[11,0,1,16,'w'],[5,3,6,2,'n'],[5,9,6,2,'n'],[5,15,6,1,'n']],{outline:false});
+    const bgt=[0,1].map(i=>tex(bg,[['#000000',10],[dk,12,2,1]],400+i*5));
+    const top=tex(moss,[[lt,5],[dk,4]],77,16,3);
+    return bcache[b]={rock,dirt,brk,plat,spike,lad,rope,bgt,top,bg};
+  }
+
+  /* ----- level generation (seeded per outpost) ----- */
+  function gen(l){
+    const r=rng(hash(l.id+'-dig'));t8=new Uint8Array(W*H).fill(ROCK);ents=[];foes=[];
+    for(let i=0;i<W*H*.14;i++){const x=Math.floor(r()*W),y=Math.floor(r()*H);if(t8[y*W+x]===ROCK)t8[y*W+x]=DIRT;}
+    for(let cy=0;cy<NY;cy++)for(let cx=0;cx<NX;cx++)for(let ly=1;ly<=CH-2;ly++)for(let lx=1;lx<=CW-2;lx++)set(cx*CW+lx,cy*CH+ly,A);
+    const lad={},av=(cx,cy)=>lad[cx+','+cy]||(lad[cx+','+cy]=[]);
+    [[0,0,1,0,'H',0],[0,0,0,1,'V',0],[1,0,2,0,'H',1],[1,0,1,1,'V',0],[0,1,1,1,'H',0],[0,1,0,2,'V',0],[1,1,2,1,'H',0],[1,1,1,2,'V',0],[2,1,2,2,'V',0],[0,2,1,2,'H',1],[1,2,2,2,'H',0]].forEach(([ax,ay,bx,by,k,gate])=>{
+      if(k==='H'){const y=ay*CH+CH-2;[ax*CW+CW-1,bx*CW].forEach(x=>[y,y-1].forEach(yy=>set(x,yy,gate?BRK:A)));}
+      else{const a=5+Math.floor(r()*(CW-10)),x=ax*CW+a;for(let y=ay*CH+CH-2;y<=by*CH+CH-2;y++)set(x,y,LAD);av(ax,ay).push(a);av(bx,by).push(a);}
+    });
+    av(0,0).push(3);for(let y=1;y<=CH-2;y++)set(3,y,ROPE);
+    const info={};
+    for(let cy=0;cy<NY;cy++)for(let cx=0;cx<NX;cx++){
+      const c={cx,cy,ox:cx*CW,oy:cy*CH,plats:[],ledge:null,used:(cx===0&&cy===0)?[8]:[],spikes:[]},avoid=av(cx,cy);info[cx+','+cy]=c;
+      let prev={x0:3+Math.floor(r()*(CW-9)),w:3,row:CH-1};
+      for(let i=0;i<2;i++){const w=3+Math.floor(r()*2),row=prev.row-2;let x0=null;
+        for(let k=0;k<20&&x0===null;k++){const cand=prev.x0-w-1+Math.floor(r()*(prev.w+w+3));if(cand<2||cand+w>CW-3)continue;if(avoid.some(a=>a>=cand-1&&a<=cand+w))continue;x0=cand;}
+        if(x0===null)break;for(let j=0;j<w;j++)set(c.ox+x0+j,c.oy+row,PLAT);const pl={x0,w,row};c.plats.push(pl);prev=pl;}
+      if(LEDGE_CH.has(cx+','+cy)&&c.plats.length){const top=c.plats[c.plats.length-1],row=top.row-4;
+        const gapTo=cand=>Math.max(top.x0-(cand+2),cand-(top.x0+top.w-1),0);
+        const cands=[];for(let cnd=2;cnd<=CW-6;cnd++)cands.push(cnd);cands.sort((a,b)=>Math.abs(a-top.x0)-Math.abs(b-top.x0)+(r()-.5)*2);
+        let x0=cands.find(cnd=>gapTo(cnd)<=3&&avoid.every(a=>a<cnd-5||a>cnd+7));
+        if(x0===undefined)x0=cands.find(cnd=>gapTo(cnd)<=3&&avoid.every(a=>a<cnd-1||a>cnd+3));
+        if(x0===undefined)x0=2;for(let j=0;j<3;j++)set(c.ox+x0+j,c.oy+row,PLAT);c.ledge={x0,w:3,row};}
+      if(!(cx===0&&cy===0)){const g=1+Math.floor(r()*2);for(let i=0;i<g;i++){const lx=4+Math.floor(r()*(CW-10));if(avoid.some(a=>Math.abs(a-lx)<=2))continue;if(c.spikes.some(s=>Math.abs(s-lx)<4))continue;c.spikes.push(lx);set(c.ox+lx,c.oy+CH-2,SPIKE);set(c.ox+lx+1,c.oy+CH-2,SPIKE);}
+        const fx=4+Math.floor(r()*(CW-9));if(!c.spikes.some(s=>Math.abs(s-fx)<4)&&!avoid.some(a=>Math.abs(a-fx)<=2))foes.push({x:(c.ox+fx)*TS,y:(c.oy+CH-2)*TS+8,dir:r()<.5?-1:1,min:(c.ox+Math.max(2,fx-4))*TS,max:(c.ox+Math.min(CW-3,fx+4))*TS,alive:true,t:0});}
+    }
+    // items
+    const R=rec();for(const k in R.broken){const[x,y]=k.split(',').map(Number);set(x,y,A);}
+    PLAN.forEach(([cx,cy,where,type,diff])=>{
+      const c=info[cx+','+cy];let tx,ty,t=type;
+      if(where==='chain'&&c.plats.length){const pl=c.plats[c.plats.length-1];tx=c.ox+pl.x0+Math.floor(pl.w/2);ty=c.oy+pl.row-1;}
+      else if(where==='ledge'&&c.ledge){tx=c.ox+c.ledge.x0+1;ty=c.oy+c.ledge.row-1;}
+      else{let lx=null;for(let k=0;k<40&&lx===null;k++){const q=4+Math.floor(r()*(CW-8));if(c.spikes.some(s=>q>=s-1&&q<=s+2))continue;if(av(cx,cy).some(a=>Math.abs(a-q)<=1))continue;if(c.used.includes(q)||c.used.some(u=>Math.abs(u-q)<2))continue;lx=q;}if(lx===null)lx=CW-5;c.used.push(lx);tx=c.ox+lx;ty=c.oy+CH-2;}
+      const id=`${cx}${cy}${where}${type}`;
+      if(t==='pick'&&appState.abil.pick)t='sx';if(t==='boots'&&appState.abil.jump)t='sonar';if(t==='heart'&&appState.maxHp>=8)t='clicks';
+      ents.push({id,type:t,x:tx*TS,y:ty*TS,diff:t==='bed'?clamp((diff||0)+loc.tier,0,3):0,ph:r()*6});
+    });
+    ents.push({id:'lantern',type:'deco',x:5*TS,y:(CH-2)*TS});
+    spawn={x:8*TS+3,y:(CH-1)*TS-14};
+  }
+
+  function enter(l){
+    loc=l;th=tilesFor(l.biome);gen(l);hp=appState.maxHp;dead=false;parts=[];tm=0;
+    P={x:spawn.x,y:spawn.y,w:10,h:14,vx:0,vy:0,ground:false,coy:0,buf:0,dj:false,face:1,climb:false,inv:0,swing:0,walk:0,drop:0,jumping:false,jt:0};
+    cam.x=clamp(P.x-VW/2,0,W*TS-VW);cam.y=clamp(P.y-VH/2,0,H*TS-VH);Inp.clear();
+    setTimeout(()=>toast(`${l.name}: dig site`,1800),100);
+  }
+  function reset(){loc=null;}
+  function respawn(){P.x=spawn.x;P.y=spawn.y;P.vx=P.vy=0;P.climb=false;P.inv=1;}
+
+  /* ----- physics ----- */
+  const isLad=(x,y)=>{const v=get(Math.floor(x/TS),Math.floor(y/TS));return v===LAD||v===ROPE;};
+  function moveX(dx){
+    P.x+=dx;const y0=Math.floor(P.y/TS),y1=Math.floor((P.y+P.h-1)/TS),tx=dx>0?Math.floor((P.x+P.w-1)/TS):Math.floor(P.x/TS);
+    for(let ty=y0;ty<=y1;ty++)if(solid(get(tx,ty))){P.x=dx>0?tx*TS-P.w:(tx+1)*TS;P.vx=0;break;}
+  }
+  function moveY(dy){
+    const pb=P.y+P.h;P.y+=dy;const x0=Math.floor(P.x/TS),x1=Math.floor((P.x+P.w-1)/TS);
+    if(dy>0){const ty=Math.floor((P.y+P.h)/TS);for(let tx=x0;tx<=x1;tx++){const v=get(tx,ty);if(solid(v)||(v===PLAT&&pb<=ty*TS+.5&&P.drop<=0&&!P.climb)){P.y=ty*TS-P.h;P.vy=0;P.ground=true;break;}}}
+    else if(dy<0){const ty=Math.floor(P.y/TS);for(let tx=x0;tx<=x1;tx++)if(solid(get(tx,ty))){P.y=(ty+1)*TS;P.vy=0;break;}}
+  }
+  function step(s){
+    const L=Inp.held('left')?1:0,R=Inp.held('right')?1:0,U=Inp.held('up')?1:0,D=Inp.held('down')?1:0;
+    const target=(R-L)*SPEED,acc=P.ground?1100:700;
+    if(P.vx<target)P.vx=Math.min(target,P.vx+acc*s);else if(P.vx>target)P.vx=Math.max(target,P.vx-acc*s);
+    if(R!==L)P.face=R?1:-1;
+    const cx=P.x+P.w/2,onLad=isLad(cx,P.y+P.h-2)||isLad(cx,P.y+P.h/2);
+    if(!P.climb&&onLad&&(U||D)){P.climb=true;P.vy=0;}
+    if(P.climb&&!onLad)P.climb=false;
+    if(P.climb){P.vy=(D-U)*52;if(P.vy<0&&!isLad(cx,P.y+P.h-3+P.vy*s))P.vy=0;P.vx*=.5;if(R!==L&&!U&&!D)P.climb=false;}
+    else P.vy=Math.min(P.vy+GRAV*s,MAXF);
+    P.coy=P.ground?.09:Math.max(0,P.coy-s);P.buf=Math.max(0,P.buf-s);P.drop=Math.max(0,P.drop-s);
+    if(P.buf>0){
+      const under=get(Math.floor(cx/TS),Math.floor((P.y+P.h)/TS));
+      if(P.climb){P.climb=false;P.vy=-190;P.buf=0;P.jumping=true;}
+      else if(D&&P.ground&&under===PLAT){P.drop=.22;P.y+=1;P.buf=0;}
+      else if(P.coy>0){P.vy=JUMP;P.coy=0;P.buf=0;P.ground=false;P.jumping=true;P.jt=0;}
+      else if(appState.abil.jump&&!P.dj){P.vy=DJUMP;P.dj=true;P.buf=0;P.jumping=true;P.jt=0;fx(P.x+5,P.y+P.h,'#f6e7c1',6);}
+    }
+    if(P.jumping){P.jt+=s;if(!Inp.held('jump')&&P.jt>.1&&P.vy<-170)P.vy=-170;}
+    moveX(P.vx*s);P.ground=false;moveY(P.vy*s);
+    if(P.ground){P.dj=false;P.jumping=false;}
+    if(P.vx&&P.ground)P.walk+=s;
+  }
+  function fx(x,y,c,n){for(let i=0;i<n;i++)parts.push({x,y,vx:(Math.random()-.5)*90,vy:-Math.random()*80-10,t:.5+Math.random()*.4,c});}
+  function hurt(){
+    if(P.inv>0||dead)return;hp--;P.inv=1.4;P.vy=-190;P.vx=-P.face*110;P.climb=false;fx(P.x+5,P.y+7,'#c93a3a',10);refreshHud();
+    if(hp<=0){dead=true;Dlg.say({name:'',sprite:humanSprite('player','front',0),lines:['Everything goes dark...','The crew drags you back to the dig-site entrance. Your finds are safe.'],onEnd:()=>{hp=appState.maxHp;dead=false;respawn();refreshHud();}});}
+  }
+  function swing(){
+    if(P.swing>0)return;
+    if(!appState.abil.pick){World.setHint('You need a pickaxe to break sealed walls',1.4);return;}
+    P.swing=.24;const tx=Math.floor((P.x+P.w/2+P.face*(P.w/2+9))/TS);let hit=false;
+    for(const y of[P.y+3,P.y+P.h-3]){const ty=Math.floor(y/TS);if(get(tx,ty)===BRK){set(tx,ty,A);rec().broken[tx+','+ty]=true;fx(tx*TS+8,ty*TS+8,'#a09684',10);hit=true;}}
+    if(hit)commit();
+  }
+  const ov=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
+
+  function collect(e){
+    rec().taken[e.id]=true;commit();fx(e.x+8,e.y+8,'#f2c14e',14);
+    const say=(name,ic,lines)=>Dlg.say({name,sprite:ic,lines});
+    if(e.type==='pick'){appState.abil.pick=true;say("Miner's Pickaxe",ICN.pick,['You found a pickaxe!','Press X to swing it. Cracked stone walls will crumble.']);}
+    else if(e.type==='boots'){appState.abil.jump=true;say('Spring Boots',ICN.boots,['You found spring boots!','Press Jump again in mid-air for a double jump. High ledges are now in reach.']);}
+    else if(e.type==='heart'){appState.maxHp=Math.min(8,appState.maxHp+1);hp=appState.maxHp;toast('Heart container! Max health up');}
+    else{const n=e.type==='clicks'||e.type==='sonar'?1:e.type==='s22'?2:3;grant(e.type,n);toast(`Found ${n}× ${INV_DEFS[e.type].name}`);}
+    refreshHud();
+  }
+  function bed(e){
+    Dlg.say({name:'Fossil bed',sprite:OB.bed[1],lines:[`Bones jut from the earth here (a ${DIFFS[e.diff].label} bed). Excavate it now?`],choices:[{label:'Excavate',fn:()=>Ex.startBed(loc.id,e.id,e.diff)},{label:'Later',fn:()=>{}}]});
+  }
+
+  function update(dt){
+    tm+=dt;if(!loc||Dlg.open)return;
+    if(Inp.pressed('esc'))return World.exitDig();
+    if(Inp.pressed('rope')){respawn();toast('You climb back to the entrance rope');}
+    if(Inp.pressed('jump'))P.buf=.12;
+    if(Inp.pressed('pick'))swing();
+    P.inv=Math.max(0,P.inv-dt);P.swing=Math.max(0,P.swing-dt);
+    let rem=dt;while(rem>0){const s=Math.min(rem,1/120);step(s);rem-=s;}
+    if(P.y>H*TS)respawn();
+    // hazards
+    const fy=Math.floor((P.y+P.h-1)/TS),fxT=Math.floor((P.x+P.w/2)/TS);
+    if(get(fxT,fy)===SPIKE&&P.y+P.h>fy*TS+7)hurt();
+    // rope exit
+    if(P.climb&&P.y<TS*2&&get(Math.floor((P.x+P.w/2)/TS),1)===ROPE){World.exitDig();return;}
+    // enemies
+    for(const f of foes){if(!f.alive)continue;f.t+=dt;f.x+=f.dir*22*dt;
+      const ax=Math.floor((f.x+(f.dir>0?12:0))/TS),ay=Math.floor((f.y+4)/TS);
+      if(f.x<f.min||f.x>f.max||solid(get(ax,ay))||get(ax,ay)===SPIKE||!solid(get(ax,ay+1)))f.dir*=-1;
+      const fr={x:f.x+1,y:f.y+1,w:10,h:7};
+      if(ov({x:P.x,y:P.y,w:P.w,h:P.h},fr)){if(P.vy>30&&P.y+P.h-fr.y<9){f.alive=false;P.vy=-220;P.dj=false;fx(f.x+6,f.y+4,'#8b5a2b',10);}else hurt();}}
+    // items
+    let near=null;
+    for(const e of ents){if(e.type==='deco')continue;const taken=rec().taken[e.id];if(taken)continue;
+      if(ov({x:P.x,y:P.y,w:P.w,h:P.h},{x:e.x+2,y:e.y+2,w:12,h:14})){if(e.type==='bed')near=e;else collect(e);}}
+    if(near){World.setHint('Press Space or Up to excavate',.2);if(Inp.pressed('jump')||Inp.pressed('up')||Inp.pressed('act')){P.buf=0;bed(near);}}
+    for(const q of parts){q.x+=q.vx*dt;q.y+=q.vy*dt;q.vy+=260*dt;q.t-=dt;}parts=parts.filter(q=>q.t>0);
+    cam.x+=(clamp(P.x+P.w/2-VW/2,0,W*TS-VW)-cam.x)*Math.min(1,dt*7);cam.y+=(clamp(P.y+P.h/2-VH/2,0,H*TS-VH)-cam.y)*Math.min(1,dt*7);
+  }
+
+  function draw(x){
+    if(!loc){x.fillStyle='#000';x.fillRect(0,0,VW,VH);return;}
+    x.fillStyle=th.bg;x.fillRect(0,0,VW,VH);
+    const cx0=Math.round(cam.x),cy0=Math.round(cam.y);x.save();x.translate(-cx0,-cy0);
+    const x0=Math.floor(cx0/TS),y0=Math.floor(cy0/TS);
+    for(let ty=y0;ty<=y0+12;ty++)for(let tx=x0;tx<=x0+20;tx++){
+      const v=get(tx,ty),px=tx*TS,py=ty*TS;if(tx<0||ty<0||tx>=W||ty>=H)continue;
+      if(!solid(v))x.drawImage(th.bgt[(tx*7+ty*3)&1],px,py);
+      if(v===ROCK){x.drawImage(th.rock[(tx*31+ty*17)%3],px,py);if(!solid(get(tx,ty-1))&&get(tx,ty-1)!==PLAT)x.drawImage(th.top,px,py);}
+      else if(v===DIRT){x.drawImage(th.dirt[(tx+ty)&1],px,py);if(!solid(get(tx,ty-1))&&get(tx,ty-1)!==PLAT)x.drawImage(th.top,px,py);}
+      else if(v===BRK)x.drawImage(th.brk,px,py);
+      else if(v===PLAT)x.drawImage(th.plat,px,py);
+      else if(v===LAD)x.drawImage(th.lad,px,py);
+      else if(v===ROPE)x.drawImage(th.rope,px,py);
+      else if(v===SPIKE)x.drawImage(th.spike,px,py);
+    }
+    // sky glimpse at rope top
+    x.fillStyle='#f6c15a';x.fillRect(3*TS+1,0,TS-2,TS);
+    const R=rec();
+    for(const e of ents){
+      if(e.type==='deco'){x.drawImage(OB.lantern,e.x,e.y);continue;}
+      const taken=R.taken[e.id];
+      if(e.type==='bed'){x.drawImage(taken?OB.bed0:OB.bed[(Math.floor(tm*3+e.ph)%2)],e.x,e.y);continue;}
+      if(taken)continue;const bob=Math.round(Math.sin(tm*3+e.ph)*1.5);
+      x.fillStyle='rgba(242,193,78,.25)';x.fillRect(e.x+2,e.y+2+bob,12,12);x.fillRect(e.x+3,e.y+1+bob,10,14);x.fillStyle='rgba(242,193,78,.5)';x.fillRect(e.x+4,e.y+3+bob,8,10);
+      x.drawImage(ICN[e.type==='clicks'?'glass':e.type==='boots'?'boots':e.type],e.x+4,e.y+4+bob);
+      if(((tm*4+e.ph)|0)%4===0){x.fillStyle='#fff';x.fillRect(e.x+1,e.y+3,1,1);x.fillRect(e.x+14,e.y+12,1,1);}
+    }
+    for(const f of foes){if(!f.alive)continue;x.fillStyle='rgba(0,0,0,.3)';x.fillRect(Math.round(f.x)+1,Math.round(f.y)+7,10,1);x.drawImage(f.dir>0?BEETLE_R:BEETLE_S,Math.round(f.x),Math.round(f.y)+(Math.floor(f.t*8)%2));}
+    // player
+    if(!(P.inv>0&&Math.floor(P.inv*14)%2)){
+      const dir=P.climb?'front':P.face>0?'right':'left',fr=P.climb?(Math.floor(P.y/5)%2):(!P.ground?1:(Math.abs(P.vx)>10?Math.floor(P.walk*9)%2:0));
+      x.fillStyle='rgba(0,0,0,.25)';x.fillRect(Math.round(P.x),Math.round(P.y+P.h-1),10,1);
+      x.drawImage(humanSprite('player',dir,fr),Math.round(P.x)-3,Math.round(P.y)-2);
+      if(P.swing>0){const k=1-P.swing/.24,px=Math.round(P.x+5+P.face*(8+k*3)),py=Math.round(P.y+2+k*6);x.save();x.translate(px,py);x.scale(P.face,1);x.rotate(-1.1+k*1.9);x.drawImage(ICN.pick,-4,-8);x.restore();}
+    }
+    for(const q of parts){x.fillStyle=q.c;x.fillRect(Math.round(q.x),Math.round(q.y),2,2);}
+    x.restore();
+  }
+  return{enter,reset,update,draw,hp:()=>hp,get loc(){return loc;},debug:()=>({P,cam,t8,ents,foes,W,H,TS,CW,CH})};
+})();
+
+/* ============================================================
+   WORLD SHELL — mode switching, loop, HUD, fades
+   ============================================================ */
+const World=(()=>{
+  const VW=320,VH=192;
+  let cvs,cx,mode='map',last=0,fade=null,hintT=0,hintEl=null;
+  function setMode(m){mode=m;Inp.clear();refreshHud();$('labels').style.display=m==='map'?'block':'none';if(m==='map'){Mapv.labels();Mapv.info();}else tips();}
+  function tips(){
+    $('winfo').innerHTML=mode==='town'?`<div>${img(ICN.compass,4)}</div><div class="meta"><div class="nm">${Town.loc.name}</div><div>Walk with arrows or WASD. Press Space beside people, signs and chests. The cave at the north end leads to the dig site; the south gap leads back to the map.</div></div>`
+      :`<div>${img(ICN.pick,4)}</div><div class="meta"><div class="nm">Dig site</div><div>Arrows move and climb ladders. Space jumps (again in mid-air with spring boots). X swings the pickaxe at cracked walls. Up or Space on a glowing fossil bed starts an excavation. R returns to the entrance rope; Esc climbs out.</div></div>`;
+  }
+  function go(m,fn){if(fade)return;fade={ph:0,t:0,fn:()=>{fn();setMode(m);}};}
+  function enterTown(id){go('town',()=>{appState.at=id;appState.visited[id]=true;commit();Town.enter(LBY[id]);setTimeout(()=>toast(LBY[id].name,1500),200);});}
+  function exitTown(){go('map',()=>{Mapv.reset();});}
+  function enterDig(l){go('dig',()=>Dig.enter(l));}
+  function exitDig(){const l=Dig.loc;go('town',()=>Town.enter(l,true));}
+  function setHint(t,s=1.2){hintEl.textContent=t;hintEl.style.display='block';hintT=s;}
+  function refreshHud(){
+    const h=$('whud');if(!h)return;
+    const hearts=mode==='dig'?Dig.hp():appState.maxHp,max=appState.maxHp;
+    const where=mode==='map'?`Isle Map · ${LBY[appState.at].name}`:mode==='town'?Town.loc.name:`${Dig.loc?Dig.loc.name:''} · Dig Site`;
+    h.innerHTML=`<div class="where">${where}</div>
+      <div class="hearts" title="Health">${Array.from({length:max},(_,i)=>img(i<hearts?ICN.heart:ICN.heart0,3)).join('')}</div>
+      <span class="chip ${appState.abil.jump?'':'off'}" title="Spring boots: double jump">${img(ICN.boots,2)}Boots</span>
+      <span class="chip ${appState.abil.pick?'':'off'}" title="Pickaxe: break cracked walls (X)">${img(ICN.pick,2)}Pickaxe</span>
+      ${Object.keys(INV_DEFS).filter(k=>appState.inv[k]>0).map(k=>`<span class="chip" title="${INV_DEFS[k].name}">${img(ICN[INV_DEFS[k].icon],2)}×${appState.inv[k]}</span>`).join('')}
+      ${mode==='town'?'<button class="btn sm dark" data-w="exitTown">Back to map</button>':''}${mode==='dig'?'<button class="btn sm dark" data-w="exitDig">Climb out</button><button class="btn sm dark" data-w="rope">Rope (R)</button>':''}`;
+  }
+  window.refreshHud=refreshHud;
+  function fitStage(){const w=$('stagewrap');if(!w||!cvs)return;fitCanvas(cvs,w.clientWidth-28,Math.max(384,innerHeight-310),6);}
+  function update(dt){
+    if(fade){fade.t+=dt;if(fade.ph===0&&fade.t>=.2){fade.fn();fade.ph=1;fade.t=0;}else if(fade.ph===1&&fade.t>=.2)fade=null;return;}
+    if(hintT>0){hintT-=dt;if(hintT<=0)hintEl.style.display='none';}
+    if(mode==='map')Mapv.update(dt);else if(mode==='town')Town.update(dt);else Dig.update(dt);
+  }
+  function draw(){
+    cx.imageSmoothingEnabled=false;
+    if(mode==='map')Mapv.draw(cx);else if(mode==='town')Town.draw(cx);else Dig.draw(cx);
+    if(fade){const a=fade.ph===0?fade.t/.2:1-fade.t/.2,q=Math.round(clamp(a,0,1)*6)/6;if(q>0){cx.fillStyle=`rgba(10,6,3,${q})`;cx.fillRect(0,0,VW,VH);}}
+  }
+  function frame(ts){
+    requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;
+    if(curTab==='world'&&!document.hidden){update(dt);draw();}
+    Inp.endFrame();
+  }
+  function onShow(){fitStage();refreshHud();$('labels').style.display=mode==='map'?'block':'none';if(mode==='map'){Mapv.labels();Mapv.info();}else tips();Inp.clear();}
+  function reset(){fade=null;mode='map';Mapv.reset();Dig.reset();setMode('map');}
+  function init(){
+    cvs=$('wc');cx=cvs.getContext('2d');
+    hintEl=document.createElement('div');hintEl.className='mlabel here';hintEl.style.cssText='display:none;top:8px;left:50%;font-size:9px;padding:5px 8px;pointer-events:none;z-index:4';$('stage').appendChild(hintEl);
+    Dlg.init();
+    addEventListener('keydown',e=>{
+      if(curTab!=='world'||/INPUT|TEXTAREA|SELECT/.test((e.target||{}).tagName||''))return;
+      if(Dlg.open){if(e.key===' '||e.key==='Enter'||e.key==='e'||e.key==='E'){Dlg.advance();e.preventDefault();}else if(e.key.startsWith('Arrow'))e.preventDefault();return;}
+      if(Inp.press(e.key))e.preventDefault();
+    });
+    addEventListener('keyup',e=>Inp.release(e.key));
+    addEventListener('blur',()=>Inp.clear());
+    $('stage').addEventListener('mousemove',e=>{if(mode==='map'&&!fade)Mapv.pointer(e,false);});
+    $('stage').addEventListener('click',e=>{if(mode==='map'&&!fade&&!Dlg.open)Mapv.pointer(e,true);});
+    $('stage').addEventListener('mouseleave',()=>{if(mode==='map')Mapv.info();});
+    $('whud').addEventListener('click',e=>{const b=e.target.closest('[data-w]');if(!b)return;const a=b.dataset.w;if(a==='exitTown')exitTown();else if(a==='exitDig')exitDig();else if(a==='rope')Inp.press('r');});
+    $('touch').querySelectorAll('[data-k]').forEach(b=>{const k=b.dataset.k;
+      b.addEventListener('pointerdown',e=>{e.preventDefault();if(Dlg.open&&k===' '){Dlg.advance();return;}Inp.press(k);});
+      const up=e=>{e.preventDefault();Inp.release(k);};b.addEventListener('pointerup',up);b.addEventListener('pointerleave',up);b.addEventListener('pointercancel',up);});
+    addEventListener('resize',()=>{if(curTab==='world')fitStage();});
+    Mapv.reset();fitStage();Mapv.labels();Mapv.info();refreshHud();requestAnimationFrame(frame);
+  }
+  return{init,onShow,reset,enterTown,exitTown,enterDig,exitDig,setHint};
+})();
+/* ============================================================
+   REVIVAL · TRAINING · FIELD GUIDE
+   ============================================================ */
+const Rev=(()=>{
+  let ov=null,tm=0;
+  function render(){
+    $('tab-revival').innerHTML=`<div class="panel"><div class="h2">Revival Chamber</div>
+      <p class="sub">When every bone of a species is catalogued, the lab can wake it. Revived creatures join your roster for training.</p>
+      <div class="cards">${CREATURES.map(card).join('')}</div></div>`;
+  }
+  function card(c){
+    const alive=!!appState.revived[c.id],exc=isExcavated(c.id),pf=partsFound(c.id),have=appState.fossils[c.id]||[];
+    const cls=alive?'alive':exc?'ready':'lock';
+    const tag=alive?'<span class="tag alive">LIVING</span>':exc?'<span class="tag ready">READY TO WAKE</span>':`<span class="tag part">${pf}/${c.parts.length} BONES</span>`;
+    const btn=alive?`<button class="btn go" data-a="train" data-id="${c.id}">Train</button>`:exc?`<button class="btn" data-a="revive" data-id="${c.id}">Revive</button>`:`<button class="btn" disabled>Need more bones</button>`;
+    return`<div class="card ${cls}"><div class="cs ${alive?'bob':''}">${img(crSprite(c.id,alive?'alive':pf?'bone':'dark'),5)}</div><div class="cn">${c.name}</div><div class="ce">${c.era}</div>
+      <div class="pchips">${c.parts.map(p=>`<span class="pchip ${have.includes(p.id)?'on':''}">${img(ICN[PART_ICON[p.id]],2)}${p.name}</span>`).join('')}</div>${tag}${btn}</div>`;
+  }
+  function sparks(host){
+    for(let i=0;i<18;i++){const s=document.createElement('div');s.className='spark';const a=Math.random()*6.28,d=60+Math.random()*90;
+      s.style.cssText=`left:50%;top:50%;--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d}px;background:${['#f2c14e','#8fcf55','#f6e7c1'][i%3]}`;host.appendChild(s);setTimeout(()=>s.remove(),1300);}
+  }
+  function ritual(id){
+    const c=CBY[id];ov=document.createElement('div');ov.className='ritual';
+    ov.innerHTML=`<h2 id="rtT">Awakening...</h2><div id="rtS" style="position:relative;padding:10px">${img(crSprite(id,'bone'),9,'','')}</div><div class="msg" id="rtM">Scanning fossilized bone...</div><div class="seg"><i id="rtB"></i></div><div id="rtX" style="min-height:56px"></div>`;
+    document.body.appendChild(ov);
+    const msgs=[[0,'Scanning fossilized bone...'],[20,'Rehydrating ancient cells...'],[45,'Weaving lost chromosomes...'],[70,'A heartbeat. Faint, but steady.'],[90,`${c.name} stirs!`]];
+    let pr=0;clearInterval(tm);
+    tm=setInterval(()=>{pr+=2;$('rtB').style.width=pr+'%';const m=[...msgs].reverse().find(x=>pr>=x[0]);$('rtM').textContent=m[1];
+      if(pr%12===0)sparks($('rtS'));
+      if(pr>=100){clearInterval(tm);$('rtT').textContent=c.name.toUpperCase()+' LIVES!';$('rtM').textContent='Ancient eyes open for the first time in millions of years.';
+        $('rtS').innerHTML=img(crSprite(id,'alive'),9,'flash bob','');sparks($('rtS'));sparks($('rtS'));
+        $('rtX').innerHTML='<button class="btn go" id="rtGo">Welcome to the isle</button>';$('rtGo').onclick=()=>finish(id);$('rtGo').focus();}
+    },60);
+  }
+  function finish(id){
+    clearInterval(tm);if(ov){ov.remove();ov=null;}
+    const c=CBY[id];appState.revived[id]=true;
+    if(!appState.stats[id])appState.stats[id]=Object.assign({},c.base,{level:1,exp:0,next:100});
+    commit();toast(`${c.name} has been revived!`);render();
+  }
+  function init(){
+    $('tab-revival').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;
+      if(b.dataset.a==='revive')ritual(b.dataset.id);else if(b.dataset.a==='train'){Train.select(b.dataset.id);switchTab('train');}});
+  }
+  return{init,render};
+})();
+
+const Train=(()=>{
+  let sel=null,bt=null;
+  const REG=[{n:'Hunting Drill',s:'atk',g:[2,4],i:'sword'},{n:'Endurance Run',s:'stm',g:[2,4],i:'leaf'},{n:'Armor Bath',s:'def',g:[2,4],i:'plate'},{n:'Sprint Circuit',s:'spd',g:[2,4],i:'boots'},{n:'Instinct Honing',s:'spc',g:[2,4],i:'sonar'},{n:'Vitality Feast',s:'hp',g:[3,6],i:'heart'}];
+  const alive=()=>CREATURES.filter(c=>appState.revived[c.id]);
+  function select(id){sel=id;bt=null;}
+  function render(){
+    const al=alive(),root=$('tab-train');
+    if(!al.length){root.innerHTML=`<div class="panel empty"><div>${img(ICN.egg,8)}</div><div class="h2" style="margin-top:12px">No creatures revived yet</div><p>Excavate every bone of a species, then wake it in the Revival Chamber.</p></div>`;return;}
+    if(!sel||!appState.revived[sel])sel=al[0].id;
+    const c=CBY[sel],s=appState.stats[sel];
+    root.innerHTML=`<div class="trlayout"><div class="panel"><span class="lbl" style="margin-top:0">Your creatures</span><div class="roster">${al.map(a=>{const st=appState.stats[a.id];return`<button class="rcard ${a.id===sel?'sel':''}" data-a="pick" data-id="${a.id}">${img(crSprite(a.id,'alive'),2)}<span class="n">${a.name}<br>Lv ${st.level}</span></button>`;}).join('')}</div></div>
+      <div><div class="panel"><div class="spr-row" style="gap:14px;align-items:flex-end;margin-bottom:8px"><div class="bob">${img(crSprite(sel,'alive'),5)}</div>
+        <div style="flex:1;min-width:160px"><div class="h2">${c.name}</div><div class="sub" style="margin:0">${c.era} · Level ${s.level}</div>
+        <div class="lbl">Experience ${s.exp}/${s.next}</div><div class="bar"><i style="width:${Math.min(100,s.exp/s.next*100)}%"></i></div></div></div>
+        <div class="sgrid">${STAT_KEYS.map((k,i)=>`<div class="srow"><div class="t"><span>${STAT_NAMES[i]}</span><b>${s[k]}</b></div><div class="sbar"><i style="width:${Math.min(100,s[k]/200*100)}%;background:${STAT_COL[k]}"></i></div></div>`).join('')}</div></div>
+      <div class="panel"><div class="h2">Training Regimens</div><div class="regs">${REG.map((r,i)=>`<button class="reg" data-a="reg" data-i="${i}">${img(ICN[r.i],3)}<b>${r.n}</b><small>+${r.g[0]}–${r.g[1]} ${r.s.toUpperCase()}</small></button>`).join('')}</div></div>
+      <div class="panel"><div class="h2">Practice Arena</div>${arena(c,s)}</div></div></div>`;
+    const log=root.querySelector('.log');if(log)log.scrollTop=log.scrollHeight;
+  }
+  function gain(id,exp){
+    const s=appState.stats[id];s.exp+=exp;let up=false;
+    while(s.exp>=s.next){s.exp-=s.next;s.level++;s.next=Math.floor(s.next*1.3);up=true;}
+    if(up)toast(`Level up! ${CBY[id].name} is now level ${s.level}`);return up;
+  }
+  function arena(c,s){
+    if(!bt){const e=ENEMIES[Math.floor(Math.random()*ENEMIES.length)];bt={pending:true,e};}
+    if(bt.pending){return`<div class="arena"><div class="fighter">${img(crSprite(c.id,'alive'),5)}<div class="nm">${c.name}</div></div><div class="fighter">${img(EN[bt.e.id],6)}<div class="nm">${bt.e.name}</div></div></div>
+      <button class="btn go" data-a="fight" style="width:100%">Challenge ${bt.e.name}</button><p class="sub" style="margin:8px 0 0;font-size:17px">Winning earns experience and a stat boost. Enemies grow stronger as your creature levels up.</p>`;}
+    const pp=Math.max(0,bt.ph/bt.pm*100),ep=Math.max(0,bt.eh/bt.em*100),hc=p=>p>50?'':p>25?'mid':'low';
+    return`<div class="arena"><div class="fighter"><div class="nm">${c.name}</div><div class="hp"><i class="${hc(pp)}" style="width:${pp}%"></i></div><div>${Math.max(0,bt.ph)}/${bt.pm}</div><div class="${bt.hp?'hit':''}">${img(crSprite(c.id,'alive'),5)}</div></div>
+      <div class="fighter"><div class="nm">${bt.e.name}</div><div class="hp"><i class="${hc(ep)}" style="width:${ep}%"></i></div><div>${Math.max(0,bt.eh)}/${bt.em}</div><div class="${bt.he?'hit':''}">${img(EN[bt.e.id],6)}</div></div></div>
+      <div class="log">${bt.log.slice(-8).map(l=>`<div class="${l[0]}">${l[1]}</div>`).join('')}</div>
+      ${bt.done?`<button class="btn ${bt.won?'go':'warn'}" data-a="end" style="width:100%">${bt.won?'Victory! Collect rewards':'Defeated. Train and try again'}</button>`
+      :`<div class="moves">${c.moves.map((m,i)=>`<button class="mv" data-a="move" data-i="${i}"><b>${m.name}</b>${m.stat==='def'?'Guard + strike':m.stat==='hp'?'Strike + recover':'Uses '+m.stat.toUpperCase()} · Power ${m.power}</button>`).join('')}</div>`}`;
+  }
+  function fight(){
+    const s=appState.stats[sel],f=1+.12*(s.level-1),e=bt.e;
+    bt={e:{...e,atk:Math.round(e.atk*f),def:Math.round(e.def*f),spd:Math.round(e.spd*f)},eh:Math.round(e.hp*f),em:Math.round(e.hp*f),ph:s.hp,pm:s.hp,log:[['s','The battle begins!']],done:false,won:null,guard:false,hp:false,he:false};
+    render();
+  }
+  function move(i){
+    if(!bt||bt.done)return;const c=CBY[sel],s=appState.stats[sel],m=c.moves[i];bt.hp=bt.he=false;
+    const key=(m.stat==='hp'||m.stat==='def')?'atk':m.stat;
+    let d=m.power*(s[key]/80)*(.85+Math.random()*.3)*(80/(80+bt.e.def))*1.6;
+    if(m.stat==='def'){d*=.55;bt.guard=true;}
+    d=Math.max(1,Math.round(d));bt.eh-=d;bt.he=true;bt.log.push(['p',`${c.name} uses ${m.name}! ${bt.e.name} takes ${d} damage.`]);
+    if(m.stat==='hp'){const h=Math.round(s.hp*.08);bt.ph=Math.min(bt.pm,bt.ph+h);bt.log.push(['p',`${c.name} recovers ${h} HP.`]);}
+    if(m.stat==='def')bt.log.push(['s','Guard raised: the next hit is halved.']);
+    if(bt.eh<=0){bt.done=true;bt.won=true;bt.log.push(['s',`${c.name} wins the battle!`]);return render();}
+    if(Math.random()<Math.min(.3,s.spd/400)){bt.log.push(['p',`${c.name} dodges ${bt.e.name}'s attack!`]);}
+    else{let e=Math.round(bt.e.atk*(.85+Math.random()*.3)*(80/(80+s.def))*1.5);if(bt.guard){e=Math.round(e*.5);bt.guard=false;}e=Math.max(1,e);bt.ph-=e;bt.hp=true;bt.log.push(['e',`${bt.e.name} strikes back for ${e} damage.`]);}
+    if(bt.ph<=0){bt.done=true;bt.won=false;bt.log.push(['s',`${c.name} was defeated...`]);}
+    render();
+  }
+  function end(){
+    if(bt.won){const s=appState.stats[sel],k=STAT_KEYS[Math.floor(Math.random()*6)],g=3+Math.floor(Math.random()*4),xp=30+Math.floor(Math.random()*20);
+      s[k]=Math.min(200,s[k]+g);const up=gain(sel,xp);if(!up)toast(`+${xp} EXP · +${g} ${k.toUpperCase()}`);commit();}
+    bt=null;render();
+  }
+  function reg(i,e){
+    const r=REG[i],s=appState.stats[sel],g=r.g[0]+Math.floor(Math.random()*(r.g[1]-r.g[0]+1));
+    s[r.s]=Math.min(200,s[r.s]+g);gain(sel,10+Math.floor(Math.random()*10));commit();
+    if(e)popText(`+${g} ${r.s.toUpperCase()}`,e.clientX-20,e.clientY-20);render();
+  }
+  function init(){
+    $('tab-train').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a;
+      if(a==='pick'){select(b.dataset.id);render();}else if(a==='reg')reg(+b.dataset.i,e);else if(a==='fight')fight();else if(a==='move')move(+b.dataset.i);else if(a==='end')end();});
+  }
+  return{init,render,select};
+})();
+
+const Guide=(()=>{
+  function render(){
+    const exc=CREATURES.filter(c=>isExcavated(c.id)).length,visited=LOC.filter(l=>appState.visited[l.id]).length;
+    const beds=Object.values(appState.dig).reduce((s,d)=>s+Object.keys(d.taken||{}).filter(k=>k.includes('bed')).length,0);
+    const lv=CREATURES.reduce((s,c)=>s+(appState.stats[c.id]?appState.stats[c.id].level:0),0);
+    $('tab-guide').innerHTML=`<div class="panel"><div class="h2">Field Guide</div><p class="sub">Your record of every species, every outpost and every discovery on the isle.</p>
+      <div class="sum"><div><b>${foundTotal()}/${totalParts()}</b><span>BONES FOUND</span></div><div><b>${exc}/${CREATURES.length}</b><span>EXCAVATED</span></div><div><b>${aliveCount()}/${CREATURES.length}</b><span>REVIVED</span></div><div><b>${visited}/${LOC.length}</b><span>OUTPOSTS</span></div><div><b>${beds}</b><span>BEDS DUG</span></div><div><b>${lv}</b><span>TOTAL LEVELS</span></div></div>
+      <div class="cards">${CREATURES.map(card).join('')}</div></div>
+      <div class="panel"><div class="h2">Outposts &amp; Gear</div>
+      <div class="spr-row" style="margin-bottom:8px"><span class="chip ${appState.abil.jump?'':'off'}">${img(ICN.boots,2)}Spring Boots</span><span class="chip ${appState.abil.pick?'':'off'}">${img(ICN.pick,2)}Miner's Pickaxe</span><span class="chip">${img(ICN.heart,2)}Max health ${appState.maxHp}</span></div>
+      <div class="loc-grid">${LOC.map(l=>{const f=l.sp.reduce((s,c)=>s+partsFound(c),0),t=l.sp.reduce((s,c)=>s+CBY[c].parts.length,0),v=appState.visited[l.id];return`<div class="loc ${v?'':'lock'}"><span>${img(outIcon(l.kind),2)}</span><span class="nm">${l.name}</span><span class="pr">${v?`Visited · ${f}/${t} bones`:'Not yet visited'}</span></div>`;}).join('')}</div></div>`;
+  }
+  function card(c){
+    const alive=!!appState.revived[c.id],have=appState.fossils[c.id]||[],pf=have.length,pct=Math.round(pf/c.parts.length*100),s=appState.stats[c.id];
+    const mode=alive?'alive':pf?'bone':'dark',known=pf>0||alive;
+    const tag=alive?'<span class="tag alive">LIVING</span>':isExcavated(c.id)?'<span class="tag ready">EXCAVATED</span>':pf?`<span class="tag part">${pf}/${c.parts.length} BONES</span>`:'<span class="tag">UNDISCOVERED</span>';
+    const where=LOC.filter(l=>l.sp.includes(c.id)).map(l=>l.name).join(', ');
+    return`<div class="card ${alive?'alive':isExcavated(c.id)?'ready':''}"><div class="cs">${img(crSprite(c.id,mode),4)}</div><div class="cn">${known?c.name:'???'}</div><div class="ce">${known?c.era:'Unknown era'}</div>${tag}
+      <div class="lore">${known?c.lore:'Find a bone of this species to learn more.'}</div>
+      <div class="pchips">${c.parts.map(p=>`<span class="pchip ${have.includes(p.id)?'on':''}">${img(ICN[PART_ICON[p.id]],2)}${p.name}</span>`).join('')}</div>
+      <div class="bar"><i style="width:${pct}%"></i></div><div class="lore" style="font-size:16px">Found at: ${where}</div>
+      ${s?`<div class="ministats">${STAT_KEYS.map((k,i)=>`<div><small>${STAT_NAMES[i]}</small>${s[k]}</div>`).join('')}</div><div class="ce">Level ${s.level} · ${s.exp}/${s.next} EXP</div>`:''}</div>`;
+  }
+  return{render};
+})();
+/* ============================================================
+   BOOT
+   ============================================================ */
+function boot(){
+  buildTiles();drawBanner();
+  const saved=fallbackLoad();if(saved){loadInto(saved);setStatus(`Welcome back · ${summary()}`);}else setStatus('New expedition · progress auto-saves in this browser');
+  TABRENDER.dig=()=>Ex.onShow();TABRENDER.revival=()=>Rev.render();TABRENDER.train=()=>Train.render();TABRENDER.guide=()=>Guide.render();TABRENDER.world=()=>{};
+  bindGlobal();renderTabs();Ex.init();Rev.init();Train.init();World.init();
+}
+document.addEventListener('DOMContentLoaded',boot);
+
+</script>
+</body>
+</html>

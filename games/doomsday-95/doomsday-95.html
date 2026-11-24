@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Doomsday 95">
+<meta name="theme-color" content="#008080">
+<title>Doomsday 95: Tesla vs. Edison</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== css: base.css ===== */
+/* Win95 chrome, tokens and layout primitives. */
+:root {
+  color-scheme: light;
+  --face: #c0c0c0; --light: #dfdfdf; --hi: #ffffff; --shadow: #808080; --dark: #0a0a0a;
+  --title: #000080; --title2: #1084d0; --title-off: #808080; --title-off2: #b5b5b5;
+  --desk: #008080; --desk2: #006e6e; --ink: #000000; --ink-soft: #3a3a3a; --field: #ffffff; --select: #000080; --select-ink: #ffffff;
+  --res-E: #fde047; --res-O: #6bbf59; --res-M: #a855f7; --res-S: #7dd3fc; --res-X: #e0464e;
+  --ui-font: Tahoma, Verdana, Geneva, "Segoe UI", sans-serif;
+  --px-font: "Pixelify Sans", "Courier New", monospace;
+  --taskbar-h: 38px;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { color-scheme: dark; --face: #b3b3b3; --light: #cfcfcf; --hi: #ececec; --desk: #005a5a; --desk2: #004a4a; --field: #ececec; }
+}
+:root[data-theme="dark"] { color-scheme: dark; --face: #b3b3b3; --light: #cfcfcf; --hi: #ececec; --desk: #005a5a; --desk2: #004a4a; --field: #ececec; }
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body { background: var(--desk); color: var(--ink); font: 12px/1.3 var(--ui-font); overflow: hidden; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+#app { position: relative; height: 100%; }
+img.px { image-rendering: pixelated; image-rendering: crisp-edges; display: block; }
+button { font: inherit; color: var(--ink); }
+:focus-visible { outline: 1px dotted var(--ink); outline-offset: -4px; }
+
+.raised { background: var(--face); box-shadow: inset -1px -1px var(--dark), inset 1px 1px var(--light), inset -2px -2px var(--shadow), inset 2px 2px var(--hi); }
+.sunken { background: var(--field); box-shadow: inset -1px -1px var(--hi), inset 1px 1px var(--shadow), inset -2px -2px var(--light), inset 2px 2px var(--dark); }
+.groove { box-shadow: inset -1px -1px var(--hi), inset 1px 1px var(--shadow); }
+
+.btn { min-height: 44px; min-width: 44px; padding: 4px 12px; border: 0; background: var(--face); cursor: pointer;
+  box-shadow: inset -1px -1px var(--dark), inset 1px 1px var(--hi), inset -2px -2px var(--shadow), inset 2px 2px var(--light); }
+.btn:active:not(:disabled), .btn.on { box-shadow: inset -1px -1px var(--hi), inset 1px 1px var(--dark), inset -2px -2px var(--light), inset 2px 2px var(--shadow); padding: 5px 11px 3px 13px; }
+.btn:disabled { color: var(--shadow); text-shadow: 1px 1px var(--hi); cursor: default; }
+.btn.primary { outline: 1px solid var(--dark); outline-offset: -1px; }
+.btn.small { min-height: 36px; padding: 2px 8px; }
+
+.win { background: var(--face); padding: 3px; display: flex; flex-direction: column;
+  box-shadow: inset -1px -1px var(--dark), inset 1px 1px var(--light), inset -2px -2px var(--shadow), inset 2px 2px var(--hi), 2px 2px 0 rgba(0,0,0,.35); }
+.titlebar { display: flex; align-items: center; gap: 6px; height: 22px; padding: 0 3px 0 4px; color: #fff; font-weight: bold;
+  background: linear-gradient(90deg, var(--title), var(--title2)); flex: none; }
+.titlebar .ttl { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--px-font); font-weight: 600; font-size: 13px; letter-spacing: .02em; }
+.titlebar img.px { width: 16px; height: 16px; }
+.tb-btn { width: 18px; height: 16px; min-width: 0; min-height: 0; padding: 0; font: bold 11px/1 var(--ui-font); display: grid; place-items: center; position: relative; }
+.tb-btn::after { content: ""; position: absolute; inset: -14px -6px; } /* 44pt touch area, Win95 look */
+.win-body { padding: 10px; overflow: auto; }
+
+.layer { position: fixed; inset: 0; display: grid; place-items: center; z-index: 50; padding: 12px; background: rgba(0,0,0,.18); }
+.layer:empty { display: none; }
+.dialog { max-width: min(560px, 96vw); max-height: 92vh; min-width: min(300px, 92vw); }
+.dialog .win-body { display: flex; flex-direction: column; gap: 10px; }
+.dialog .btn-row { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.dialog p { margin: 0; max-width: 60ch; }
+.dialog.wide { max-width: min(860px, 96vw); }
+
+#toast { position: fixed; left: 50%; bottom: calc(var(--taskbar-h) + 10px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 60;
+  padding: 6px 10px; background: #ffffe1; border: 1px solid var(--dark); max-width: 90vw; pointer-events: none; opacity: 0; transition: opacity .15s; }
+#toast.show { opacity: 1; }
+
+#rotate { position: fixed; inset: 0; z-index: 90; display: none; place-items: center; background: var(--desk); padding: 20px; }
+@media (orientation: portrait) and (max-width: 700px) { #rotate { display: grid; } }
+
+.shake { animation: shake .3s steps(6); }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 50% { transform: translateX(4px); } 75% { transform: translateX(-2px); } }
+.reduced *, .reduced *::before, .reduced *::after { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* ===== css: desktop.css ===== */
+/* Boot screen, desktop, taskbar and menu windows. */
+.boot { position: absolute; inset: 0; background: #000; color: #c0c0c0; display: grid; place-items: center; font-family: var(--px-font); text-align: center; cursor: pointer; }
+.boot h1 { font-size: clamp(28px, 6vw, 56px); margin: 0 0 8px; color: #fff; letter-spacing: .04em; }
+.boot .bar { width: 220px; height: 16px; margin: 18px auto 8px; padding: 2px; border: 1px solid #c0c0c0; }
+.boot .bar i { display: block; height: 100%; width: 0; background: repeating-linear-gradient(90deg, #000080 0 10px, transparent 10px 12px); animation: load 1.4s steps(18) forwards; }
+@keyframes load { to { width: 100%; } }
+
+.desktop { position: absolute; inset: 0 0 var(--taskbar-h) 0; padding: 10px; background: var(--desk); }
+.icons { display: grid; grid-auto-flow: column; grid-template-rows: repeat(auto-fill, 86px); gap: 6px; height: 100%; justify-content: start; }
+.dicon { width: 86px; height: 82px; border: 0; background: none; color: #fff; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px 2px; cursor: pointer; text-align: center; }
+.dicon img.px { width: 40px; height: 40px; }
+.dicon span { padding: 1px 3px; font-size: 12px; }
+.dicon:focus-visible span, .dicon:active span { background: var(--select); outline: 1px dotted #fff; }
+.desk-title { position: absolute; right: 18px; bottom: 14px; text-align: right; color: rgba(255,255,255,.88); font-family: var(--px-font); }
+.desk-title b { display: block; font-size: clamp(26px, 5vw, 48px); line-height: 1; font-weight: 700; }
+.desk-title span { font-size: 14px; }
+
+.taskbar { position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--taskbar-h) + env(safe-area-inset-bottom, 0px)); padding: 3px 3px calc(3px + env(safe-area-inset-bottom, 0px));
+  display: flex; align-items: center; gap: 4px; background: var(--face); box-shadow: inset 0 1px var(--light), inset 0 2px var(--hi); z-index: 40; }
+.taskbar .btn { min-height: 32px; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+.taskbar .btn img.px { width: 16px; height: 16px; }
+.scheme { font-weight: bold; }
+.tray { margin-left: auto; padding: 0 8px; height: 30px; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.menu { position: fixed; left: 3px; bottom: calc(var(--taskbar-h) + env(safe-area-inset-bottom, 0px)); z-index: 70; display: flex; min-width: 210px; }
+.menu .stripe { width: 24px; background: linear-gradient(0deg, var(--title), var(--title2)); color: #fff; writing-mode: vertical-rl; transform: rotate(180deg); font: bold 15px var(--px-font); padding: 8px 2px; }
+.menu ul { list-style: none; margin: 0; padding: 2px; flex: 1; }
+.menu li button { width: 100%; min-height: 40px; border: 0; background: none; text-align: left; padding: 4px 10px; display: flex; gap: 8px; align-items: center; cursor: pointer; }
+.menu li button:hover, .menu li button:focus-visible { background: var(--select); color: var(--select-ink); }
+.menu img.px { width: 20px; height: 20px; }
+
+.villains { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.dossier { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.dossier header { display: flex; gap: 10px; align-items: center; }
+.dossier header img.px { width: 64px; height: 64px; }
+.dossier h3 { margin: 0; font: 600 18px var(--px-font); }
+.dossier p { margin: 0; }
+.howto { max-width: 62ch; }
+.howto h3 { font: 600 14px var(--px-font); margin: 10px 0 4px; }
+.howto p, .howto li { margin: 0 0 6px; }
+.field-row { display: flex; align-items: center; gap: 8px; min-height: 44px; }
+.field-row input { width: 20px; height: 20px; }
+@media (max-width: 560px) { .villains { grid-template-columns: 1fr; } }
+.taskbar:empty { display: none; }
+
+/* ===== css: match.css ===== */
+/* Match window: side panels, 3x4 board, inspector and hand. */
+.match { position: absolute; inset: 0 0 calc(var(--taskbar-h) + env(safe-area-inset-bottom, 0px)) 0; }
+.match > .win { position: absolute; inset: 0; }
+.match {
+  --cell-h: clamp(54px, calc((100dvh - var(--taskbar-h) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 64px) / 4), 168px);
+  --cell-w: calc(var(--cell-h) * 0.74);
+}
+.match-body { flex: 1; min-height: 0; display: grid; grid-template-columns: clamp(170px, 23vw, 270px) auto minmax(0, 1fr); gap: 6px; padding: 4px; }
+
+.side { display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+.pbox { flex: 1; min-height: 0; padding: 8px 8px 6px; display: flex; flex-direction: column; gap: 4px; position: relative; overflow: hidden; }
+.pbox.active { outline: 2px solid var(--title); outline-offset: -2px; }
+.pbox header { display: flex; align-items: center; gap: 6px; font: 600 clamp(12px, 1.5vw, 15px) var(--px-font); }
+.pbox header img.px { width: 20px; height: 20px; }
+.pbox header .who { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.badge { font: 11px var(--ui-font); padding: 0 4px; border: 1px solid var(--dark); background: #ffffe1; }
+.badge.shield { background: #dbeafe; }
+.dev { display: flex; align-items: center; gap: 6px; padding: 2px; min-height: 26px; border: 0; background: none; text-align: left; cursor: pointer; width: 100%; }
+.dev img.px { width: 24px; height: 24px; }
+.dev .dname { font-weight: bold; font-size: 11px; line-height: 1.15; }
+.meters { display: grid; gap: 2px; }
+.meter { display: grid; grid-template-columns: 14px 1fr 38px; gap: 4px; align-items: center; font-size: 11px; min-height: 15px; border: 0; background: none; padding: 0; text-align: left; width: 100%; }
+.meter.tap { cursor: pointer; }
+.meter.tap .bar { outline: 1px dotted var(--title); }
+.meter img.px { width: 12px; height: 12px; }
+.meter .bar { height: 10px; position: relative; }
+.meter .bar i { position: absolute; inset: 2px auto 2px 2px; background: var(--c, var(--title)); transition: width .4s steps(8); max-width: calc(100% - 4px); }
+.meter .num { text-align: right; font-variant-numeric: tabular-nums; }
+.meter.done .num { font-weight: bold; }
+.resrow { display: flex; flex-wrap: wrap; gap: 2px 8px; font-size: 12px; font-variant-numeric: tabular-nums; }
+.rq { display: inline-flex; align-items: center; gap: 2px; }
+.rq img.px { width: 12px; height: 12px; }
+.stats { display: flex; gap: 8px; font-size: 11px; color: var(--ink-soft); flex-wrap: wrap; align-items: center; }
+.stats img.px { width: 14px; height: 14px; display: inline-block; vertical-align: -3px; }
+
+.board-wrap { padding: 4px; background: var(--desk2); display: flex; align-items: center; }
+.board { display: grid; grid-template-columns: repeat(3, var(--cell-w)); grid-template-rows: repeat(4, var(--cell-h)); gap: 4px; }
+.cell { position: relative; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 6px; }
+.cell::before { content: ""; position: absolute; inset: 1px; border: 1px dashed rgba(255,255,255,.35); border-radius: 6px; pointer-events: none; }
+.cell.zone-rival { background: rgba(224, 70, 78, .16); }
+.cell.zone-you { background: rgba(253, 224, 71, .14); }
+.cell .zlabel { position: absolute; inset: 0; display: grid; place-items: center; color: rgba(255,255,255,.6); font: 10px var(--px-font); text-align: center; padding: 4px; pointer-events: none; }
+.cell.filled::before { display: none; }
+.cell.can-build { box-shadow: 0 0 0 2px var(--res-E); animation: pulse 1s steps(2) infinite; }
+.cell.can-work { box-shadow: 0 0 0 2px #fff; }
+.cell.can-target { box-shadow: 0 0 0 2px var(--res-X); animation: pulse 1s steps(2) infinite; }
+.cell.can-scrap { box-shadow: 0 0 0 2px #ff9f43; animation: pulse 1s steps(2) infinite; }
+.cell.picked { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--res-X); }
+@keyframes pulse { 50% { box-shadow: 0 0 0 2px transparent; } }
+
+/* The card lies back on the table; its sprite and name stand up off it. */
+.cell .plane { position: absolute; inset: 0; transform: perspective(240px) rotateX(26deg); transform-origin: 50% 100%; }
+.cell .plane .card { position: absolute; inset: 0; --cw: var(--cell-w); }
+.popup { position: absolute; left: 0; right: 0; bottom: 30%; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+.popup img.px { width: 70%; filter: drop-shadow(0 3px 0 rgba(0,0,0,.35)); animation: bob 1.2s steps(2) infinite; }
+.popup .pname { margin-top: 1px; font: 600 clamp(8px, calc(var(--cell-w) * 0.11), 14px)/1.05 var(--px-font); color: #fff; text-align: center; padding: 0 2px;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; max-width: 100%; }
+.popup::after { content: ""; position: absolute; bottom: -4px; left: 30%; right: 30%; height: 5px; background: rgba(0,0,0,.28); border-radius: 50%; z-index: -1; }
+.lean-l img.px { transform: translateX(-3px) rotate(-10deg); animation: none; }
+.lean-r img.px { transform: translateX(3px) rotate(10deg); animation: none; }
+.lean-u img.px { transform: translateY(-4px); animation: none; }
+.lean-d img.px { transform: translateY(3px); animation: none; }
+@keyframes bob { 50% { transform: translateY(-3px); } }
+.cell .out { position: absolute; left: 3px; right: 3px; bottom: 5px; display: flex; justify-content: center; gap: 3px; flex-wrap: wrap; font: bold 10px var(--ui-font); color: #fff;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; }
+.cell .out img.px { width: 10px; height: 10px; }
+.cell .minion { position: absolute; right: 2px; top: 2px; width: 26%; animation: hop .3s steps(3); }
+@keyframes hop { 0% { transform: translateY(-10px); } 60% { transform: translateY(2px); } }
+.cell .owner { position: absolute; left: 4px; top: 4px; width: 8px; height: 8px; border: 1px solid #000; background: var(--own); }
+.cell .stamp { position: absolute; left: 6%; right: 6%; top: 38%; transform: rotate(-14deg); border: 2px solid var(--res-X); color: var(--res-X); background: rgba(255,255,255,.85);
+  font: 700 clamp(9px, calc(var(--cell-w) * .14), 14px) var(--px-font); text-align: center; pointer-events: none; }
+.cell.fresh .plane { opacity: .8; }
+.cell .fresh-tag { position: absolute; top: 3px; left: 14px; font-size: 9px; color: #fff; text-shadow: 1px 1px 0 #000; pointer-events: none; }
+.cell.arrive .plane, .cell.arrive .popup { animation: arrive .35s steps(4); }
+@keyframes arrive { 0% { transform: translateY(-30px) scale(1.3); opacity: 0; } }
+
+.rpanel { min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
+.inspector { flex: 1; min-height: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; padding: 8px; }
+.inspector .bigcard { --cw: calc(min(var(--cell-h) * 1.75, 30vh) * 0.72); width: var(--cw); height: calc(var(--cw) / 0.72); align-self: start; background: var(--desk2); border-radius: 8px; }
+.info { display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+.info .msg { font-size: 12px; }
+.info .msg b { font-family: var(--px-font); font-size: 14px; font-weight: 600; }
+.info .acts { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.info .acts .btn.small { display: inline-flex; gap: 4px; align-items: center; min-height: 40px; }
+.info .acts img.px { width: 12px; height: 12px; }
+.log { flex: 1; min-height: 40px; overflow-y: auto; padding: 4px 6px; font-size: 11px; color: var(--ink); }
+.log p { margin: 0 0 2px; }
+.handbox { flex: none; padding: 14px 6px 6px; position: relative; }
+.handbox .legend { position: absolute; top: -1px; left: 8px; background: var(--face); padding: 0 4px; font-size: 11px; }
+.hand { display: flex; gap: 6px; overflow-x: auto; padding: 8px 4px 4px; min-height: calc(var(--cell-h) * 1.05 + 14px); background: var(--desk2); }
+.hand .hcard { flex: none; border: 0; padding: 0; background: none; cursor: pointer; --cw: calc(var(--cell-h) * 1.05 * 0.72); width: var(--cw); height: calc(var(--cw) / 0.72); position: relative; }
+.hand .hcard.sel { transform: translateY(-6px); }
+.hand .hcard.sel .card { box-shadow: 0 0 0 2px #fff; }
+.hand .hcard.picked .card { box-shadow: 0 0 0 2px var(--res-X); }
+.hand .hcard.cant .card { filter: grayscale(.7) brightness(.85); }
+.hand .empty { color: rgba(255,255,255,.7); align-self: center; padding: 8px; }
+.phase-label { padding: 0 8px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 28vw; }
+
+@media (max-height: 430px) {
+  .inspector .bigcard { --cw: calc(var(--cell-h) * 1.55 * 0.72); }
+  .pbox { padding: 4px 6px; gap: 2px; }
+  .meter { min-height: 12px; }
+  .stats { font-size: 10px; }
+}
+@media (max-width: 900px) { .phase-label { display: none; } }
+
+/* ===== css: cards.css ===== */
+/* Card frame: black border, transparent body, thin rarity border inset, rarity effects. */
+.card { position: relative; width: 100%; height: 100%; border: 3px solid #000; border-radius: 7px; background: transparent; color: #fff; overflow: hidden;
+  --rar: #c0c0c0; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; font-size: calc(var(--cw) * 0.075); }
+.card::before { content: ""; position: absolute; inset: 3px; border: 1px solid var(--rar); border-radius: 3px; pointer-events: none; z-index: 2; }
+.card.rar-uncommon { --rar: #cd7f32; }
+.card.rar-rare { --rar: #ffd700; }
+.card.rar-legendary::before { border-color: transparent; background: linear-gradient(135deg, #ff4d4d, #ffd84d, #5dff7a, #4dd8ff, #8f6bff, #ff5dd8) border-box;
+  -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) padding-box exclude, linear-gradient(#000 0 0); }
+.card::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+.card.rar-uncommon::after { background: linear-gradient(115deg, transparent 42%, rgba(255,255,255,.4) 50%, transparent 58%) no-repeat; background-size: 300% 100%; animation: sweep 4.5s linear infinite; }
+@keyframes sweep { 0% { background-position: 120% 0; } 35%, 100% { background-position: -40% 0; } }
+.card.rar-rare::after { background:
+  radial-gradient(circle at 18% 22%, #fff 0 1.2px, transparent 1.8px), radial-gradient(circle at 80% 15%, #fff7a8 0 1.4px, transparent 2px),
+  radial-gradient(circle at 70% 70%, #fff 0 1.2px, transparent 1.8px), radial-gradient(circle at 26% 82%, #fff7a8 0 1.4px, transparent 2px),
+  radial-gradient(circle at 50% 45%, #fff 0 1px, transparent 1.6px); animation: twinkle 1.6s steps(3) infinite alternate; }
+@keyframes twinkle { 0% { opacity: .15; } 100% { opacity: 1; } }
+.card.rar-legendary::after { background: linear-gradient(125deg, rgba(255,60,60,.28), rgba(255,220,60,.28), rgba(60,255,120,.28), rgba(60,220,255,.28), rgba(140,90,255,.28), rgba(255,60,200,.28), rgba(255,60,60,.28));
+  background-size: 400% 400%; background-position: var(--hx, 0%) var(--hy, 0%); mix-blend-mode: screen; animation: holo 7s linear infinite; }
+.card.rar-legendary.tilted::after { animation: none; }
+@keyframes holo { to { background-position: 400% 400%; } }
+
+.card .c-top { position: absolute; top: 6%; left: 7%; right: 7%; display: flex; justify-content: space-between; align-items: flex-start; gap: 2px; z-index: 1; }
+.pips { display: flex; flex-wrap: wrap; gap: 1px; max-width: 70%; }
+.pip { min-width: calc(var(--cw) * .13); height: calc(var(--cw) * .13); padding: 0 1px; display: inline-grid; place-items: center; border: 1px solid #000; color: #000; text-shadow: none;
+  font: bold calc(var(--cw) * .085)/1 var(--ui-font); background: var(--pc); }
+.pip.free { background: #fff; }
+.card .c-name { position: absolute; top: 21%; left: 7%; right: 7%; font: 600 calc(var(--cw) * .1)/1.05 var(--px-font); text-align: center; z-index: 1; }
+.card .c-art { position: absolute; top: 33%; left: 22%; width: 56%; z-index: 1; }
+.card .c-art img.px { width: 100%; }
+.card .c-out { position: absolute; top: 72%; left: 7%; right: 7%; display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; font: bold calc(var(--cw) * .09) var(--ui-font); z-index: 1; }
+.card .c-out img.px { width: calc(var(--cw) * .09); height: calc(var(--cw) * .09); }
+.card .c-text { position: absolute; top: 80%; left: 8%; right: 8%; bottom: 10%; overflow: hidden; font: calc(var(--cw) * .062)/1.15 var(--ui-font); text-align: center; z-index: 1; }
+.card .c-type { position: absolute; left: 8%; right: 8%; bottom: 4%; display: flex; justify-content: space-between; font: calc(var(--cw) * .055) var(--ui-font); opacity: .9; z-index: 1; }
+.card.mini .c-text, .card.mini .c-type { display: none; }
+.card.mini .c-out { top: 74%; }
+.card.plane-card .c-name, .card.plane-card .c-art, .card.plane-card .c-text, .card.plane-card .c-type, .card.plane-card .c-out { display: none; }
+.card.plane-card .c-top { top: 5%; }
+.bigcard .card { font-size: calc(var(--cw) * 0.07); }
+.bigcard .card .c-text { top: 78%; font-size: calc(var(--cw) * .058); }
+.bigcard .card .c-out { top: 70%; }
+.bigcard .card .c-art { top: 31%; left: 25%; width: 50%; }
+.bigcard .c-art img.px { animation: bob 1.4s steps(2) infinite; }
+.flavor { font-style: italic; color: var(--ink-soft); font-size: 11px; }
+
+/* ===== css: fx.css ===== */
+/* Effects layer: floating numbers, combo zaps, hero flights. */
+#fx { position: fixed; inset: 0; pointer-events: none; z-index: 45; overflow: hidden; }
+#fx svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.float-txt { position: absolute; transform: translate(-50%, -50%); font: 700 14px var(--px-font); color: #fff; white-space: nowrap; display: flex; gap: 3px; align-items: center;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; animation: rise 1.1s steps(8) forwards; }
+.float-txt img.px { width: 14px; height: 14px; }
+.float-txt.bad { color: #ffb4b4; }
+@keyframes rise { 0% { opacity: 0; margin-top: 6px; } 15% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; margin-top: -34px; } }
+.flyer { position: absolute; width: 56px; height: 56px; }
+.flash { animation: flash .5s steps(2) 2; }
+@keyframes flash { 50% { filter: brightness(2.2) saturate(0); } }
+.bigwin { font: 700 clamp(24px, 5vw, 44px) var(--px-font); text-align: center; }
+.result-art { display: flex; justify-content: center; }
+.result-art img.px { width: 96px; height: 96px; animation: bob 1s steps(2) infinite; }
+</style>
+<link rel="stylesheet" href="../../portfolio-toolbar.css">
+<style id="portfolio-toolbar-theme">
+/* Back-to-portfolio bar, themed to match this game (Win95 desktop: the hub's grey chrome) */
+#portfolio-toolbar {
+    --pt-font: Tahoma, Verdana, Geneva, "Segoe UI", sans-serif;
+    --pt-size: 14px;
+    --pt-bar-color: #000;
+}
+</style>
+<style id="portfolio-fit">
+/* The game fills the window; keep it below the bar instead */
+body { box-sizing: border-box !important; }
+.layer, #rotate, #fx { top: 56px !important; }
+.match {
+  --cell-h: clamp(54px, calc((100dvh - 56px - var(--taskbar-h) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 64px) / 4), 168px) !important;
+}
+.layer, #rotate { overflow-y: auto !important; }
+</style>
+<script src="../../game-versions.js" defer></script>
+<script src="../../portfolio-toolbar.js" defer></script>
+</head>
+<body style="padding-top: 56px !important;">
+    <div id="portfolio-toolbar">
+        <a href="../../index.html" class="portfolio-back-btn"><span class="portfolio-back-arrow" aria-hidden="true">←</span>Back<span class="portfolio-back-extra"> to Portfolio</span></a>
+    </div>
+<div id="app"><div id="screen"></div></div>
+<div id="taskbar" class="taskbar"></div>
+<div id="fx" aria-hidden="true"></div>
+<div id="dialogs"></div>
+<div id="toast" role="status"></div>
+<div id="rotate"><div class="win" style="max-width:300px"><div class="titlebar"><span class="ttl">Doomsday 95</span></div><div class="win-body">Turn your phone sideways to play. The board needs landscape.</div></div></div>
+<script>
+const DATA = {"cards":[{"id":"earthquake_oscillator","name":"Earthquake Oscillator","deck":"tesla","type":"doomsday","rarity":"legendary","copies":1,"cost":{"E":14,"M":10,"S":8,"X":4},"produces":{},"tags":[],"effects":[{"trigger":"passive","action":"resonanceBonus","params":{"amount":2}}],"rulesText":"Passive: Resonance gives your cards +2 instead of +1.","flavor":"Tune it right and the planet hums along.","sprite":"earthquake_oscillator"},{"id":"teleforce_death_ray","name":"Teleforce Death Ray","deck":"tesla","type":"doomsday","rarity":"legendary","copies":1,"cost":{"E":16,"M":8,"S":8,"X":4},"produces":{},"tags":[],"effects":[{"trigger":"passive","action":"boostTag","params":{"tag":"coil","res":"E","amount":1}}],"rulesText":"Passive: your Coils produce +1 Electricity.","flavor":"Peace through overwhelming wattage.","sprite":"teleforce_death_ray"},{"id":"world_tower","name":"World Tower","deck":"tesla","type":"doomsday","rarity":"legendary","copies":1,"cost":{"E":12,"M":10,"S":10,"X":4},"produces":{},"tags":[],"effects":[{"trigger":"passive","action":"rivalTax","params":{"amount":2}}],"rulesText":"Passive: when a rival works your contraption, you get 2 of its output instead of 1.","flavor":"Free power for everyone. Briefly.","sprite":"world_tower"},{"id":"lab_assistant","name":"Lab Assistant","deck":"tesla","type":"worker","rarity":"uncommon","copies":3,"cost":{"E":2,"M":1},"produces":{},"tags":[],"effects":[{"trigger":"onPlay","action":"recruit","params":{"amount":1}}],"rulesText":"Recruit 1 permanent minion.","flavor":"Asks no questions. Wears good goggles.","sprite":"lab_assistant"},{"id":"spark_gap","name":"Spark Gap","deck":"tesla","type":"contraption","rarity":"common","copies":3,"cost":{},"produces":{"E":1},"tags":[],"effects":[],"rulesText":"","flavor":"Snap. Crackle. Profit.","sprite":"spark_gap"},{"id":"pigeon_loft","name":"Pigeon Loft","deck":"tesla","type":"contraption","rarity":"common","copies":3,"cost":{"E":1},"produces":{"O":1,"S":1},"tags":[],"effects":[],"rulesText":"","flavor":"His dearest colleagues.","sprite":"pigeon_loft"},{"id":"tesla_coil","name":"Tesla Coil","deck":"tesla","type":"contraption","rarity":"common","copies":3,"cost":{"E":1,"M":1},"produces":{"E":2},"tags":["coil"],"effects":[{"trigger":"onWork","action":"gain","condition":{"adjacentTag":"coil"},"params":{"E":1}}],"rulesText":"Coil. +1 Electricity if adjacent to another Coil.","flavor":"Indoor lightning, by appointment.","sprite":"tesla_coil"},{"id":"induction_motor","name":"Induction Motor","deck":"tesla","type":"contraption","rarity":"common","copies":3,"cost":{"E":2,"O":1},"produces":{"E":1,"M":2},"tags":[],"effects":[],"rulesText":"","flavor":"Spins on principle.","sprite":"induction_motor"},{"id":"ether_lens","name":"Ether Lens","deck":"tesla","type":"contraption","rarity":"common","copies":3,"cost":{"E":2,"S":1},"produces":{"M":2},"tags":[],"effects":[],"rulesText":"","flavor":"Focuses things science swears aren't there.","sprite":"ether_lens"},{"id":"wireless_pylon","name":"Wireless Pylon","deck":"tesla","type":"contraption","rarity":"uncommon","copies":3,"cost":{"E":3,"M":1},"produces":{"E":1,"S":1},"tags":[],"effects":[{"trigger":"aura","action":"boostAdjacent","params":{"tag":"coil","res":"E","amount":1}}],"rulesText":"Adjacent Coils produce +1 Electricity.","flavor":"No wires. No limits. No permits.","sprite":"wireless_pylon"},{"id":"resonance_chamber","name":"Resonance Chamber","deck":"tesla","type":"contraption","rarity":"common","copies":3,"cost":{"E":3,"M":2},"produces":{"S":2},"tags":[],"effects":[{"trigger":"static","action":"resonanceBonus","params":{"amount":2}}],"rulesText":"Its Resonance bonus is +2.","flavor":"Hums in a key that makes ghosts sing.","sprite":"resonance_chamber"},{"id":"ball_lightning_jar","name":"Ball Lightning Jar","deck":"tesla","type":"contraption","rarity":"uncommon","copies":1,"cost":{"E":3,"M":3},"produces":{"E":3},"tags":[],"effects":[{"trigger":"onPlay","action":"gain","params":{"E":2}}],"rulesText":"On play: gain 2 Electricity.","flavor":"Do not shake.","sprite":"ball_lightning_jar"},{"id":"egg_of_columbus","name":"Egg of Columbus","deck":"tesla","type":"contraption","rarity":"rare","copies":2,"cost":{"E":2,"M":2,"S":1},"produces":{"M":1,"X":1},"tags":[],"effects":[],"rulesText":"","flavor":"It stands on end. Everything else falls into place.","sprite":"egg_of_columbus"},{"id":"magnifying_transmitter","name":"Magnifying Transmitter","deck":"tesla","type":"contraption","rarity":"rare","copies":2,"cost":{"E":4,"M":2,"S":2},"produces":{"E":3,"X":1},"tags":["coil"],"effects":[{"trigger":"onWork","action":"shield","params":{}}],"rulesText":"Coil. When worked, your device gains a Shield.","flavor":"Turns a whisper into a weather system.","sprite":"magnifying_transmitter"},{"id":"gaslight_avenger","name":"Gaslight Avenger","deck":"tesla","type":"distraction","rarity":"common","copies":2,"cost":{"E":1,"S":1},"produces":{},"tags":["hero"],"target":{"count":1},"effects":[{"trigger":"onPlay","action":"jam","params":{}}],"rulesText":"Jam a rival contraption: it can't be worked on their next turn.","flavor":"Justice burns low and steady.","sprite":"gaslight_avenger"},{"id":"conductor","name":"Conductor","deck":"tesla","type":"distraction","rarity":"uncommon","copies":2,"cost":{"E":2,"M":2},"produces":{},"tags":["hero"],"target":{"count":1},"effects":[{"trigger":"onPlay","action":"jam","params":{"adjacent":true}}],"rulesText":"Jam a rival contraption and one rival contraption next to it.","flavor":"All machines stop on his downbeat.","sprite":"conductor"},{"id":"riveteer","name":"Riveteer","deck":"tesla","type":"distraction","rarity":"uncommon","copies":2,"cost":{"E":2,"O":1},"produces":{},"tags":["hero"],"effects":[{"trigger":"onPlay","action":"shield","params":{}},{"trigger":"onPlay","action":"draw","params":{"amount":1}}],"rulesText":"Your device gains a Shield. Draw 1 card.","flavor":"Bolted the moon shut once. Ask him.","sprite":"riveteer"},{"id":"lady_lumen","name":"Lady Lumen","deck":"tesla","type":"distraction","rarity":"rare","copies":2,"cost":{"E":2,"M":2,"S":1},"produces":{},"tags":["hero"],"target":{"count":1,"optional":true},"effects":[{"trigger":"onPlay","action":"sabotage","params":{"amount":3}},{"trigger":"onPlay","action":"jam","params":{}}],"rulesText":"Sabotage: remove up to 3 charge from the rival's device. Jam a rival contraption.","flavor":"She brings the light. You lose the dark.","sprite":"lady_lumen"},{"id":"spirit_phone","name":"Spirit Phone","deck":"edison","type":"doomsday","rarity":"legendary","copies":1,"cost":{"E":10,"O":8,"S":14,"X":4},"produces":{},"tags":[],"effects":[{"trigger":"passive","action":"boostTag","params":{"tag":"phonograph","res":"S","amount":1}}],"rulesText":"Passive: your Phonographs produce +1 Spirit essence.","flavor":"The dead have opinions. Now they have a line.","sprite":"spirit_phone"},{"id":"grid_of_bulbs","name":"Grid of Ten Thousand Bulbs","deck":"edison","type":"doomsday","rarity":"legendary","copies":1,"cost":{"E":18,"O":10,"S":4,"X":4},"produces":{},"tags":[],"effects":[{"trigger":"passive","action":"minionCap","params":{"amount":7}}],"rulesText":"Passive: your minion cap is 7.","flavor":"Lights out, forever, all at once.","sprite":"grid_of_bulbs"},{"id":"kinetoscope_of_ruin","name":"Kinetoscope of Ruin","deck":"edison","type":"doomsday","rarity":"legendary","copies":1,"cost":{"E":12,"O":10,"S":10,"X":4},"produces":{},"tags":[],"effects":[{"trigger":"passive","action":"swapAlsoJams","params":{}}],"rulesText":"Passive: whenever you Swap, also Jam one of the swapped cards.","flavor":"Now showing: the end.","sprite":"kinetoscope_of_ruin"},{"id":"menlo_mucker","name":"Menlo Park Mucker","deck":"edison","type":"worker","rarity":"uncommon","copies":3,"cost":{"E":1,"O":1},"produces":{},"tags":[],"effects":[{"trigger":"onPlay","action":"recruit","params":{"amount":1}}],"rulesText":"Recruit 1 permanent minion.","flavor":"Works nights. Works days. Works.","sprite":"menlo_mucker"},{"id":"filament_bench","name":"Filament Bench","deck":"edison","type":"contraption","rarity":"common","copies":3,"cost":{},"produces":{"E":1},"tags":[],"effects":[],"rulesText":"","flavor":"Attempt 1,001. Still glowing.","sprite":"filament_bench"},{"id":"bamboo_grove","name":"Bamboo Grove","deck":"edison","type":"contraption","rarity":"common","copies":3,"cost":{"E":1},"produces":{"O":2},"tags":[],"effects":[],"rulesText":"","flavor":"The best filaments grow on trees. Sort of.","sprite":"bamboo_grove"},{"id":"dynamo","name":"Dynamo","deck":"edison","type":"contraption","rarity":"common","copies":3,"cost":{"E":1,"O":1},"produces":{"E":2},"tags":[],"effects":[],"rulesText":"","flavor":"Direct current, direct results.","sprite":"dynamo"},{"id":"phonograph","name":"Phonograph","deck":"edison","type":"contraption","rarity":"common","copies":3,"cost":{"E":2,"O":1},"produces":{"E":1,"S":1},"tags":["phonograph"],"effects":[],"rulesText":"Phonograph.","flavor":"Mary had a little doom.","sprite":"phonograph"},{"id":"quadruplex_telegraph","name":"Quadruplex Telegraph","deck":"edison","type":"contraption","rarity":"common","copies":2,"cost":{"E":2,"O":1},"produces":{"E":2},"tags":[],"effects":[{"trigger":"onWork","action":"gainPerAdjacentOwned","params":{"res":"E","max":2}}],"rulesText":"+1 Electricity for each adjacent contraption you own (max +2).","flavor":"Four messages, one wire, zero privacy.","sprite":"quadruplex_telegraph"},{"id":"stock_ticker","name":"Stock Ticker","deck":"edison","type":"contraption","rarity":"uncommon","copies":2,"cost":{"E":2,"O":2},"produces":{"X":1},"tags":[],"effects":[],"rulesText":"","flavor":"Prints money, more or less.","sprite":"stock_ticker"},{"id":"black_maria_studio","name":"Black Maria Studio","deck":"edison","type":"contraption","rarity":"uncommon","copies":3,"cost":{"E":2,"O":2},"produces":{"O":2,"S":1},"tags":[],"effects":[],"rulesText":"","flavor":"Tar paper, sunlight, and something watching.","sprite":"black_maria_studio"},{"id":"kinetoscope_parlor","name":"Kinetoscope Parlor","deck":"edison","type":"contraption","rarity":"common","copies":3,"cost":{"E":2,"O":2,"S":1},"produces":{"S":2},"tags":[],"effects":[],"rulesText":"","flavor":"One nickel, one soul.","sprite":"kinetoscope_parlor"},{"id":"patent_office","name":"Patent Office","deck":"edison","type":"contraption","rarity":"rare","copies":2,"cost":{"E":3,"O":2,"S":1},"produces":{"X":2},"tags":[],"effects":[{"trigger":"onWork","action":"shield","params":{}}],"rulesText":"When worked, your device gains a Shield.","flavor":"Filed first. Invented eventually.","sprite":"patent_office"},{"id":"pearl_street_station","name":"Pearl Street Station","deck":"edison","type":"contraption","rarity":"rare","copies":2,"cost":{"E":4,"O":3},"produces":{"E":3},"tags":[],"effects":[{"trigger":"aura","action":"boostAdjacent","params":{"owned":true,"amount":1}}],"rulesText":"Adjacent contraptions you own produce +1 of their first resource.","flavor":"The whole block runs on him now.","sprite":"pearl_street_station"},{"id":"telegraph_kid","name":"Telegraph Kid","deck":"edison","type":"distraction","rarity":"common","copies":3,"cost":{"E":1,"O":1},"produces":{},"tags":["hero"],"effects":[{"trigger":"onPlay","action":"steal","params":{"amount":2}}],"rulesText":"Steal up to 2 of the rival's most plentiful resource.","flavor":"Message for you: it's mine now.","sprite":"telegraph_kid"},{"id":"banjo_slam","name":"Banjo Slam","deck":"edison","type":"distraction","rarity":"uncommon","copies":3,"cost":{"E":2,"O":1},"produces":{},"tags":["hero"],"target":{"count":2},"effects":[{"trigger":"onPlay","action":"swap","params":{}}],"rulesText":"Swap two rival contraptions, breaking their combos.","flavor":"Plays one chord. It's a loud one.","sprite":"banjo_slam"},{"id":"texas_sparks","name":"Texas Sparks","deck":"edison","type":"distraction","rarity":"rare","copies":2,"cost":{"E":3,"O":2},"produces":{},"tags":["hero"],"modes":["steal","bounce"],"target":{"count":1,"mode":"bounce"},"effects":[{"trigger":"onPlay","action":"steal","mode":"steal","params":{"res":"X","amount":2}},{"trigger":"onPlay","action":"bounce","mode":"bounce","params":{}}],"rulesText":"Choose one: steal up to 2 MacGuffin, or return a rival contraption to their hand.","flavor":"Fastest lasso west of the Pecos.","sprite":"texas_sparks"}],"config":{"startHand":5,"startRes":{"E":2},"handLimit":7,"carryCap":10,"minionStart":2,"minionCap":6,"recruitCost":4,"burnCards":2,"maxTurns":80,"aiDelayMs":650,"deckSize":40,"maxCopies":3,"exchangeCost":5},"decks":{"tesla":{"villain":"Nikola Tesla","short":"Tesla","style":"Tall: fewer minions, expensive high-yield machines, strong Coil combos.","heroes":"Gaslight Avenger, Conductor, Riveteer, Lady Lumen","accent":"#38BDF8","icon":"tesla_coil"},"edison":{"villain":"Thomas Edison","short":"Edison","style":"Wide: a big workforce, cheap reliable machines, steal-and-swap tricks.","heroes":"Telegraph Kid, Banjo Slam, Texas Sparks","accent":"#C0392B","icon":"phonograph"}},"sprites":{"palettes":{"tesla":["#0F172A","#334155","#64748B","#38BDF8","#E0F2FE","#FDE047","#94A3B8","#0EA5E9"],"edison":["#2A1E14","#6B4F35","#A47148","#D6B588","#F2E3C6","#C0392B","#4A3626","#8C6A4A"],"ui":["#000000","#FDE047","#6BBF59","#A855F7","#7DD3FC","#E0464E","#FFFFFF","#808080","#C0C0C0","#F2C9A0","#3A3A3A"]},"sprites":{"spark_gap":{"pal":"tesla","size":24,"ops":[["r",3,20,18,2,1],["r",6,9,3,11,6],["r",15,9,3,11,6],["c",7,8,2,4],["c",16,8,2,4],["l",9,8,11,11,5],["l",11,11,12,7,5],["l",12,7,14,9,5]]},"pigeon_loft":{"pal":"tesla","size":24,"ops":[["t",3,10,12,3,21,10,1],["r",5,10,14,11,2],["r",9,13,6,5,0],["e",12,15,2,2,4],["p",13,14,5],["r",3,20,18,2,1],["e",18,6,2,1,6],["p",19,5,4]]},"tesla_coil":{"pal":"tesla","size":24,"ops":[["r",7,19,10,3,1],["r",10,9,4,10,2],["r",10,11,4,1,6],["r",10,14,4,1,6],["r",10,17,4,1,6],["e",12,7,6,3,6],["e",12,7,4,1,4],["l",18,6,21,3,5],["l",19,5,22,6,5],["l",6,6,3,3,5],["l",5,5,2,6,5]]},"induction_motor":{"pal":"tesla","size":24,"ops":[["r",5,20,14,2,1],["c",11,13,7,2],["o",11,13,7,1],["c",11,13,4,6],["c",11,13,2,3],["r",18,12,5,2,6],["l",8,9,10,10,4]]},"ether_lens":{"pal":"tesla","size":24,"ops":[["r",7,20,10,2,1],["r",11,14,2,6,2],["c",12,9,6,7],["c",12,9,4,3],["p",10,7,4],["p",11,6,4],["l",12,1,12,2,5],["l",3,9,4,9,5],["l",20,9,21,9,5]]},"wireless_pylon":{"pal":"tesla","size":24,"ops":[["t",12,4,5,21,19,21,1],["t",12,9,9,21,15,21,2],["l",8,17,16,17,1],["l",9,13,15,13,1],["o",12,4,5,3],["c",12,4,2,5],["r",4,21,16,1,1]]},"resonance_chamber":{"pal":"tesla","size":24,"ops":[["e",12,12,8,7,6],["r",4,12,16,9,2],["r",8,14,2,3,3],["r",14,14,2,3,3],["r",11,15,2,6,1],["l",12,2,12,5,1],["p",12,1,5],["r",3,20,18,2,1]]},"ball_lightning_jar":{"pal":"tesla","size":24,"ops":[["r",8,6,8,2,1],["r",7,8,10,13,6],["r",8,9,8,11,4],["c",12,14,4,7],["c",12,14,2,5],["l",9,11,10,12,3],["l",15,17,14,16,3],["r",6,20,12,2,1]]},"egg_of_columbus":{"pal":"tesla","size":24,"ops":[["e",12,20,8,2,2],["e",12,11,5,7,4],["e",12,13,4,5,6],["e",10,8,1,2,4],["p",12,2,5],["l",6,4,7,5,5],["l",18,4,17,5,5]]},"magnifying_transmitter":{"pal":"tesla","size":24,"ops":[["r",5,20,14,2,1],["r",9,9,6,11,2],["l",9,12,14,19,1],["l",14,12,9,19,1],["e",12,6,8,4,6],["e",12,5,6,2,4],["l",3,4,2,1,5],["l",20,4,21,1,5],["p",12,0,5]]},"earthquake_oscillator":{"pal":"tesla","size":24,"ops":[["r",2,19,20,3,1],["r",5,9,14,10,2],["r",7,11,10,6,6],["r",10,3,4,6,6],["r",9,2,6,2,1],["c",12,14,2,5],["l",14,19,17,21,0],["l",1,8,2,11,3],["l",22,8,21,11,3]]},"teleforce_death_ray":{"pal":"tesla","size":24,"ops":[["l",8,14,4,21,1],["l",10,14,13,21,1],["r",3,9,13,5,2],["r",3,10,13,1,6],["c",17,11,4,6],["c",17,11,2,3],["r",20,10,3,3,5],["p",22,11,5]]},"world_tower":{"pal":"tesla","size":24,"ops":[["r",4,20,16,2,1],["r",10,9,4,11,2],["l",10,12,13,17,1],["l",13,12,10,17,1],["e",12,6,9,4,6],["e",12,5,7,2,4],["r",11,1,2,2,5]]},"lab_assistant":{"pal":"tesla","size":24,"ops":[["c",12,6,3,4],["r",9,5,6,1,3],["r",8,10,8,8,4],["r",11,10,2,8,6],["r",9,18,2,4,1],["r",13,18,2,4,1],["r",16,12,3,2,5]]},"gaslight_avenger":{"pal":"tesla","size":24,"ops":[["t",7,9,17,9,12,22,5],["c",12,6,3,4],["r",9,5,6,1,1],["r",10,9,4,9,1],["l",16,12,19,15,6],["c",19,16,2,5]]},"conductor":{"pal":"tesla","size":24,"ops":[["r",9,1,6,4,1],["r",8,5,8,1,1],["c",12,8,3,4],["r",9,11,6,8,1],["r",11,11,2,8,4],["l",15,12,20,6,4],["p",21,5,5],["r",9,19,2,3,2],["r",13,19,2,3,2]]},"riveteer":{"pal":"tesla","size":24,"ops":[["e",12,5,5,3,5],["r",7,6,10,1,5],["c",12,9,3,4],["r",8,12,8,7,3],["r",16,13,5,2,2],["p",22,14,5],["r",9,19,2,3,1],["r",13,19,2,3,1]]},"lady_lumen":{"pal":"tesla","size":24,"ops":[["o",12,6,5,5],["c",12,7,3,4],["t",12,10,5,22,19,22,7],["r",11,11,2,9,4],["l",4,8,6,10,5],["l",20,8,18,10,5]]},"filament_bench":{"pal":"edison","size":24,"ops":[["r",3,14,18,2,1],["r",4,16,2,6,6],["r",18,16,2,6,6],["c",12,8,4,4],["l",11,8,13,8,5],["l",11,9,11,10,5],["r",11,12,2,2,2],["e",6,12,1,1,3]]},"bamboo_grove":{"pal":"edison","size":24,"ops":[["r",5,5,3,17,7],["r",11,2,3,20,2],["r",17,6,3,16,7],["r",5,10,3,1,6],["r",11,8,3,1,1],["r",11,14,3,1,1],["r",17,12,3,1,6],["l",8,6,10,4,3],["l",14,5,16,3,3],["r",2,21,20,1,6]]},"dynamo":{"pal":"edison","size":24,"ops":[["r",3,19,18,3,6],["c",8,13,5,2],["c",8,13,2,5],["c",17,13,3,1],["l",8,8,17,10,6],["l",8,18,17,16,6],["r",14,6,2,2,5]]},"phonograph":{"pal":"edison","size":24,"ops":[["r",3,16,11,5,1],["r",3,15,11,1,2],["e",8,15,5,1,7],["l",9,14,13,9,6],["t",12,9,22,1,22,13,3],["e",21,7,1,5,2]]},"quadruplex_telegraph":{"pal":"edison","size":24,"ops":[["r",3,16,18,5,6],["r",3,15,18,1,1],["r",6,12,12,2,2],["c",18,11,2,5],["r",8,13,2,3,3],["l",3,10,1,6,3],["l",21,10,22,6,3],["r",14,17,4,2,4]]},"stock_ticker":{"pal":"edison","size":24,"ops":[["r",6,19,12,3,1],["r",8,16,8,3,6],["e",12,10,6,7,4],["c",12,11,3,2],["c",12,11,1,5],["r",14,17,8,2,4],["r",15,17,1,2,5],["r",18,17,1,2,5]]},"black_maria_studio":{"pal":"edison","size":24,"ops":[["r",3,9,18,12,6],["r",8,6,8,3,1],["r",9,14,6,6,0],["t",10,0,14,0,12,6,4],["r",5,11,3,2,3],["r",16,11,3,2,3],["r",2,20,20,2,1]]},"kinetoscope_parlor":{"pal":"edison","size":24,"ops":[["r",7,6,10,16,1],["r",8,7,8,14,7],["r",10,3,4,3,6],["c",12,12,3,5],["c",12,12,1,4],["r",9,18,6,2,3]]},"patent_office":{"pal":"edison","size":24,"ops":[["t",12,2,2,8,22,8,3],["r",3,8,18,1,2],["r",4,9,2,10,4],["r",9,9,2,10,4],["r",13,9,2,10,4],["r",18,9,2,10,4],["r",2,19,20,3,2],["c",12,5,1,5]]},"pearl_street_station":{"pal":"edison","size":24,"ops":[["r",3,10,18,11,2],["r",5,3,3,7,1],["r",11,5,3,5,1],["r",5,13,3,3,4],["r",11,13,3,3,4],["r",17,13,3,3,4],["e",6,1,2,1,3],["l",17,4,19,7,5],["l",19,7,16,8,5],["l",16,8,18,10,5],["r",2,21,20,1,6]]},"spirit_phone":{"pal":"edison","size":24,"ops":[["r",3,15,10,6,1],["r",3,14,10,1,2],["t",8,14,19,7,19,15,3],["e",19,11,1,4,2],["e",17,5,3,4,4],["p",16,4,0],["p",18,4,0],["l",14,9,15,10,4],["l",20,8,21,9,4]]},"grid_of_bulbs":{"pal":"edison","size":24,"ops":[["l",6,5,18,5,1],["l",6,11,18,11,1],["l",6,17,18,17,1],["c",6,7,2,4],["c",12,7,2,5],["c",18,7,2,4],["c",6,13,2,5],["c",12,13,2,4],["c",18,13,2,5],["c",6,19,2,4],["c",12,19,2,5],["c",18,19,2,4]]},"kinetoscope_of_ruin":{"pal":"edison","size":24,"ops":[["r",3,9,11,8,1],["c",6,6,3,7],["c",12,6,3,7],["c",6,6,1,6],["c",12,6,1,6],["r",14,11,3,4,2],["t",17,13,22,8,22,18,5],["l",5,17,3,21,1],["l",11,17,13,21,1]]},"menlo_mucker":{"pal":"edison","size":24,"ops":[["r",9,3,6,2,1],["r",8,5,9,1,1],["c",12,8,3,3],["r",8,11,8,8,7],["r",9,12,6,6,4],["r",9,19,2,3,6],["r",13,19,2,3,6],["r",16,13,4,2,2]]},"telegraph_kid":{"pal":"edison","size":24,"ops":[["r",9,2,6,3,5],["c",12,7,3,3],["r",9,10,6,8,2],["r",15,12,5,4,4],["l",15,12,17,14,1],["l",19,12,17,14,1],["l",3,6,6,8,5],["r",9,18,2,4,6],["r",13,18,2,4,6]]},"banjo_slam":{"pal":"edison","size":24,"ops":[["c",10,15,6,3],["c",10,15,4,4],["r",14,4,2,11,1],["r",13,2,4,3,1],["l",10,12,15,5,6],["l",3,21,6,18,5],["l",19,15,22,13,5],["l",19,18,22,19,5]]},"texas_sparks":{"pal":"edison","size":24,"ops":[["e",12,5,9,2,2],["r",8,1,8,4,2],["c",12,9,3,3],["r",9,12,6,7,5],["o",19,13,4,3],["r",9,19,2,3,6],["r",13,19,2,3,6],["p",22,10,4]]},"minion":{"pal":"ui","size":12,"ops":[["e",6,4,3,3,7],["r",4,4,4,1,1],["r",4,5,4,2,9],["r",3,7,6,3,10],["r",3,10,2,1,0],["r",7,10,2,1,0]]},"res_E":{"pal":"ui","size":10,"ops":[["l",6,1,3,5,1],["l",3,5,7,5,1],["l",7,5,4,9,1],["l",5,1,2,5,1],["l",6,5,4,8,1]]},"res_O":{"pal":"ui","size":10,"ops":[["e",5,4,3,3,2],["l",2,8,5,5,2]]},"res_M":{"pal":"ui","size":10,"ops":[["l",5,1,5,8,3],["l",1,5,8,5,3],["l",2,2,8,8,3],["l",8,2,2,8,3],["c",5,5,1,6]]},"res_S":{"pal":"ui","size":10,"ops":[["e",5,6,3,3,4],["l",5,1,6,3,4],["p",4,5,0],["p",6,5,0]]},"res_X":{"pal":"ui","size":10,"ops":[["r",1,1,8,8,5],["l",4,3,6,3,6],["p",6,4,6],["p",5,5,6],["p",5,7,6]]},"icon_new":{"pal":"ui","size":16,"ops":[["c",7,9,5,10],["r",8,2,2,3,7],["l",10,2,12,0,1],["p",5,7,6]]},"icon_continue":{"pal":"ui","size":16,"ops":[["r",1,5,14,9,1],["r",1,3,6,2,1],["r",2,7,12,1,6]]},"icon_howto":{"pal":"ui","size":16,"ops":[["r",3,1,10,14,6],["l",5,4,10,4,7],["l",5,7,10,7,7],["l",5,10,9,10,7]]},"icon_settings":{"pal":"ui","size":16,"ops":[["r",7,1,2,14,8],["r",1,7,14,2,8],["c",8,8,5,8],["c",8,8,2,10]]},"icon_skull":{"pal":"ui","size":12,"ops":[["c",6,5,4,6],["r",4,8,5,3,6],["p",4,5,0],["p",8,5,0],["p",6,9,0]]}}}};
+</script>
+<script>
+/* ===== js: state.js ===== */
+// Single app state object for the UI layer. The game itself lives in appState.game.
+const appState = {
+  screen: "boot",
+  game: null,
+  settings: { sound: true, reducedMotion: false, difficulty: "normal" },
+  ui: { selected: null, mode: null, picks: [], inspect: null, busy: false, cardMode: null, message: "" },
+};
+function resetUi() {
+  Object.assign(appState.ui, { selected: null, mode: null, picks: [], inspect: null, cardMode: null, message: "" });
+}
+
+/* ===== js: registry.js ===== */
+// Registry: the only way logic reaches card data. Validates DATA at startup.
+const Registry = {
+  cards: {},
+  errors: [],
+  init() {
+    this.cards = {};
+    this.errors = [];
+    const need = ["id", "name", "deck", "type", "rarity", "copies", "cost", "produces", "effects", "sprite"];
+    for (const c of DATA.cards) {
+      for (const k of need) if (!(k in c)) this.errors.push(`Card ${c.id || "?"} is missing "${k}"`);
+      if (c.copies > DATA.config.maxCopies) this.errors.push(`${c.id}: ${c.copies} copies is over the limit of ${DATA.config.maxCopies}`);
+      if (!DATA.sprites.sprites[c.sprite]) this.errors.push(`${c.id}: sprite "${c.sprite}" not found`);
+      this.cards[c.id] = c;
+    }
+    for (const deck of Object.keys(DATA.decks)) {
+      const n = this.deckList(deck).length;
+      if (n !== DATA.config.deckSize) this.errors.push(`Deck ${deck} has ${n} cards, expected ${DATA.config.deckSize}`);
+    }
+    return this.errors.length === 0;
+  },
+  card(id) {
+    const c = this.cards[id];
+    if (!c) throw new Error(`Unknown card ${id}`);
+    return c;
+  },
+  deckCards(deck) { return DATA.cards.filter((c) => c.deck === deck); },
+  deckList(deck) {
+    const out = [];
+    for (const c of this.deckCards(deck)) for (let i = 0; i < c.copies; i++) out.push(c.id);
+    return out;
+  },
+};
+
+/* ===== js: rng.js ===== */
+// Seeded RNG (mulberry32). State lives in game.rng so matches replay exactly.
+function rngNext(game) {
+  let t = (game.rng = (game.rng + 0x6d2b79f5) >>> 0);
+  t = Math.imul(t ^ (t >>> 15), t | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+function rngInt(game, n) { return Math.floor(rngNext(game) * n); }
+function rngShuffle(game, arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = rngInt(game, i + 1);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/* ===== js: engine-core.js ===== */
+// Engine core: constants and pure helpers over a game object. No DOM.
+const RES = ["E", "O", "M", "S", "X"];
+const RES_NAME = { E: "Electricity", O: "Organic matter", M: "Magic", S: "Spirit essence", X: "MacGuffin" };
+const COLS = 3, ROWS = 4;
+
+function cfg(k) { return DATA.config[k]; }
+function emptyRes() { return { E: 0, O: 0, M: 0, S: 0, X: 0 }; }
+function rowOf(i) { return Math.floor(i / COLS); }
+function colOf(i) { return i % COLS; }
+function backRow(p) { return p === 0 ? 0 : ROWS - 1; }
+function isPublicRow(r) { return r > 0 && r < ROWS - 1; }
+function neighborsOf(i) {
+  const r = rowOf(i), c = colOf(i), out = [];
+  if (r > 0) out.push(i - COLS);
+  if (r < ROWS - 1) out.push(i + COLS);
+  if (c > 0) out.push(i - 1);
+  if (c < COLS - 1) out.push(i + 1);
+  return out;
+}
+function sumRes(r) { return RES.reduce((a, k) => a + (r[k] || 0), 0); }
+function cardOf(game, inst) { return Registry.card(game.insts[inst].cardId); }
+function cellCard(game, i) { const cell = game.board[i]; return cell ? cardOf(game, cell.inst) : null; }
+function firstRes(card) { return RES.find((k) => card.produces[k]) || "E"; }
+function canAfford(pl, cost) { return RES.every((k) => (pl.res[k] || 0) >= (cost[k] || 0)); }
+function payCost(pl, cost) { RES.forEach((k) => { pl.res[k] -= cost[k] || 0; }); }
+function addRes(pl, r) { RES.forEach((k) => { if (r[k]) pl.res[k] += r[k]; }); }
+function rival(p) { return 1 - p; }
+
+function deviceCard(game, p) { const d = game.players[p].device; return d ? cardOf(game, d.inst) : null; }
+function deviceNeed(game, p) {
+  const n = emptyRes(), c = deviceCard(game, p);
+  if (!c) return n;
+  const ch = game.players[p].device.charge;
+  RES.forEach((k) => { n[k] = Math.max(0, (c.cost[k] || 0) - (ch[k] || 0)); });
+  return n;
+}
+function chargePct(game, p) {
+  const c = deviceCard(game, p);
+  if (!c) return 0;
+  const total = sumRes(c.cost);
+  return total ? (total - sumRes(deviceNeed(game, p))) / total : 0;
+}
+function deviceFull(game, p) { return !!deviceCard(game, p) && sumRes(deviceNeed(game, p)) === 0; }
+function passives(game, p) {
+  const c = deviceCard(game, p);
+  return c ? c.effects.filter((e) => e.trigger === "passive") : [];
+}
+function passive(game, p, action) { return passives(game, p).find((e) => e.action === action); }
+function minionCap(game, p) { const m = passive(game, p, "minionCap"); return m ? m.params.amount : cfg("minionCap"); }
+function placedCount(game, p) { return game.board.filter((c) => c && c.worker === p).length; }
+function availableMinions(game, p) {
+  const pl = game.players[p];
+  return pl.minions + pl.tempMinions - placedCount(game, p);
+}
+function canBuildAt(game, p, i) {
+  if (game.board[i]) return false;
+  const r = rowOf(i);
+  return r === backRow(p) || isPublicRow(r);
+}
+function isJammed(game, i) { const c = game.board[i]; return !!c && c.jamTurn === game.turn; }
+function canWork(game, p, i) {
+  const cell = game.board[i];
+  if (!cell || cell.worker !== null) return false;
+  if (cell.playedTurn === game.turn || cell.jamTurn === game.turn) return false;
+  const r = rowOf(i);
+  if (isPublicRow(r)) return true;
+  return r === backRow(p) && cell.owner === p;
+}
+function workableCells(game, p) { return game.board.map((_, i) => i).filter((i) => canWork(game, p, i)); }
+function rivalCells(game, p) { return game.board.map((c, i) => (c && c.owner === rival(p) ? i : -1)).filter((i) => i >= 0); }
+function gameLog(game, msg) {
+  game.log.push({ t: game.turn, msg });
+  if (game.log.length > 150) game.log.shift();
+}
+function pname(game, p) { return game.players[p].short; }
+
+/* ===== js: engine-effects.js ===== */
+// Effects: production (with combos) and on-play card effects. Mutates the game, returns events.
+
+// Output of one contraption at cell i, given the set of cells worked this turn.
+function cellOutput(game, i, worked) {
+  const cell = game.board[i], card = cardOf(game, cell.inst), owner = cell.owner;
+  const out = Object.assign(emptyRes(), card.produces);
+  const combos = [];
+  const nbrs = neighborsOf(i).filter((n) => game.board[n]);
+  const tagsOf = (n) => cellCard(game, n).tags || [];
+
+  for (const e of card.effects) {
+    if (e.trigger !== "onWork") continue;
+    if (e.action === "gain") {
+      const tag = e.condition && e.condition.adjacentTag;
+      const partner = tag ? nbrs.find((n) => tagsOf(n).includes(tag)) : null;
+      if (!tag || partner !== undefined) {
+        RES.forEach((k) => { out[k] += e.params[k] || 0; });
+        if (tag) combos.push([i, partner]);
+      }
+    }
+    if (e.action === "gainPerAdjacentOwned") {
+      const owned = nbrs.filter((n) => game.board[n].owner === owner).slice(0, e.params.max);
+      out[e.params.res] += owned.length;
+      owned.forEach((n) => combos.push([i, n]));
+    }
+  }
+  // Auras from neighbors (Wireless Pylon, Pearl Street Station).
+  for (const n of nbrs) {
+    for (const e of cellCard(game, n).effects) {
+      if (e.trigger !== "aura" || e.action !== "boostAdjacent") continue;
+      if (e.params.tag && !(card.tags || []).includes(e.params.tag)) continue;
+      if (e.params.owned && game.board[n].owner !== owner) continue;
+      out[e.params.res || firstRes(card)] += e.params.amount || 1;
+      combos.push([n, i]);
+    }
+  }
+  // Device passives that boost the owner's tagged cards.
+  for (const e of passives(game, owner)) {
+    if (e.action === "boostTag" && (card.tags || []).includes(e.params.tag)) out[e.params.res] += e.params.amount;
+  }
+  // Resonance: adjacent worked contraptions sharing an output resource.
+  const own = card.effects.find((e) => e.action === "resonanceBonus");
+  const dev = passive(game, owner, "resonanceBonus");
+  const bonus = own ? own.params.amount : dev ? dev.params.amount : 1;
+  for (const n of nbrs) {
+    if (!worked.has(n)) continue;
+    const nc = cellCard(game, n);
+    for (const k of RES) if (card.produces[k] && nc.produces[k]) { out[k] += bonus; combos.push([i, n]); }
+  }
+  return { out, combos };
+}
+
+function resolveCollect(game, p, events) {
+  const worked = new Set(game.board.map((c, i) => (c && c.worker === p ? i : -1)).filter((i) => i >= 0));
+  const seen = new Set();
+  for (const i of worked) {
+    const cell = game.board[i], card = cardOf(game, cell.inst);
+    const { out, combos } = cellOutput(game, i, worked);
+    addRes(game.players[p], out);
+    events.push({ type: "produce", cell: i, p, res: out });
+    for (const [a, b] of combos) {
+      const key = a < b ? a + "-" + b : b + "-" + a;
+      if (!seen.has(key)) { seen.add(key); events.push({ type: "combo", a, b }); }
+    }
+    if (cell.owner !== p) {
+      const tax = passive(game, cell.owner, "rivalTax");
+      const amt = tax ? tax.params.amount : 1, k = firstRes(card);
+      game.players[cell.owner].res[k] += amt;
+      events.push({ type: "tax", cell: i, p: cell.owner, res: { [k]: amt } });
+    }
+    if (card.effects.some((e) => e.trigger === "onWork" && e.action === "shield")) {
+      game.players[cell.owner].shield = true;
+      events.push({ type: "shield", p: cell.owner });
+    }
+  }
+  const total = events.filter((e) => e.type === "produce").reduce((a, e) => a + sumRes(e.res), 0);
+  gameLog(game, `${pname(game, p)} collects ${total} resource${total === 1 ? "" : "s"}.`);
+}
+
+function drawCards(game, p, n, events) {
+  const pl = game.players[p];
+  for (let i = 0; i < n; i++) {
+    if (!pl.library.length) {
+      if (!pl.discard.length) break;
+      pl.library = rngShuffle(game, pl.discard);
+      pl.discard = [];
+      pl.minions = Math.max(1, pl.minions - 1);
+      gameLog(game, `${pname(game, p)} ran out of cards: discard reshuffled, 1 minion lost.`);
+      events.push({ type: "deckout", p });
+    }
+    pl.hand.push(pl.library.pop());
+    events.push({ type: "draw", p });
+  }
+}
+
+function jamCell(game, i, events) {
+  game.board[i].jamTurn = game.turn + 1;
+  game.board[i].worker = null;
+  events.push({ type: "jam", cell: i });
+}
+
+function sabotage(game, target, amount, events) {
+  const pl = game.players[target];
+  if (pl.shield) {
+    pl.shield = false;
+    events.push({ type: "blocked", p: target });
+    gameLog(game, `${pname(game, target)}'s Shield blocks the sabotage.`);
+    return;
+  }
+  const ch = pl.device.charge;
+  let left = amount, removed = 0;
+  while (left > 0) {
+    const k = RES.slice().sort((a, b) => (ch[b] || 0) - (ch[a] || 0))[0];
+    if (!ch[k]) break;
+    ch[k]--; left--; removed++;
+  }
+  events.push({ type: "sabotage", p: target, amount: removed });
+  gameLog(game, `Sabotage! ${pname(game, target)}'s device loses ${removed} charge.`);
+}
+
+// Resolve a played distraction or worker. targets: board indices; mode: chosen mode.
+function resolveOnPlay(game, p, card, targets, mode, events) {
+  const pl = game.players[p], foe = rival(p), fp = game.players[foe];
+  for (const e of card.effects) {
+    if (e.trigger !== "onPlay") continue;
+    if (e.mode && e.mode !== mode) continue;
+    const prm = e.params || {};
+    switch (e.action) {
+      case "gain": addRes(pl, prm); events.push({ type: "gain", p, res: prm }); break;
+      case "recruit": pl.minions = Math.min(minionCap(game, p), pl.minions + (prm.amount || 1)); events.push({ type: "recruit", p }); break;
+      case "draw": drawCards(game, p, prm.amount || 1, events); break;
+      case "shield": pl.shield = true; events.push({ type: "shield", p }); break;
+      case "jam": {
+        if (targets[0] === undefined) break;
+        jamCell(game, targets[0], events);
+        if (prm.adjacent) {
+          const n = neighborsOf(targets[0]).find((x) => game.board[x] && game.board[x].owner === foe);
+          if (n !== undefined) jamCell(game, n, events);
+        }
+        break;
+      }
+      case "sabotage": sabotage(game, foe, prm.amount || 3, events); break;
+      case "steal": {
+        const k = prm.res || RES.slice().sort((a, b) => fp.res[b] - fp.res[a])[0];
+        const amt = Math.min(prm.amount || 2, fp.res[k]);
+        fp.res[k] -= amt; pl.res[k] += amt;
+        events.push({ type: "steal", from: foe, to: p, res: { [k]: amt } });
+        gameLog(game, `${pname(game, p)} steals ${amt} ${RES_NAME[k]}.`);
+        break;
+      }
+      case "swap": {
+        const [a, b] = targets;
+        [game.board[a], game.board[b]] = [game.board[b], game.board[a]];
+        game.board[a].worker = null; game.board[b].worker = null;
+        events.push({ type: "swap", a, b });
+        if (passive(game, p, "swapAlsoJams")) jamCell(game, a, events);
+        break;
+      }
+      case "bounce": {
+        const i = targets[0], cell = game.board[i];
+        game.players[cell.owner].hand.push(cell.inst);
+        game.board[i] = null;
+        events.push({ type: "bounce", cell: i });
+        break;
+      }
+    }
+  }
+}
+
+/* ===== js: engine-actions.js ===== */
+// Engine actions: newGame and applyAction(game, action) -> { ok, error?, events }.
+// Every handler validates first and mutates only once the action is legal.
+
+function newGame(seed, humanDeck) {
+  const decks = [humanDeck, humanDeck === "tesla" ? "edison" : "tesla"];
+  const game = { v: 1, seed, rng: seed >>> 0, turn: 0, active: 0, phase: "setup", first: 0,
+    players: [], board: Array(COLS * ROWS).fill(null), insts: {}, nextInst: 1, log: [], winner: null, actions: [] };
+  decks.forEach((deck, p) => {
+    const lib = [];
+    for (const id of Registry.deckList(deck)) {
+      const inst = "c" + game.nextInst++;
+      game.insts[inst] = { cardId: id, owner: p };
+      lib.push(inst);
+    }
+    const isDev = (i) => cardOf(game, i).type === "doomsday";
+    game.players.push({ deck, short: DATA.decks[deck].short, villain: DATA.decks[deck].villain, ai: p === 1,
+      deviceChoices: lib.filter(isDev), library: rngShuffle(game, lib.filter((i) => !isDev(i))), hand: [], discard: [],
+      res: Object.assign(emptyRes(), cfg("startRes")), minions: cfg("minionStart"), tempMinions: 0,
+      device: null, shield: false, setup: "device" });
+  });
+  game.first = rngInt(game, 2);
+  gameLog(game, `${pname(game, game.first)} will go first.`);
+  return game;
+}
+
+function startTurn(game, p, events) {
+  game.turn++;
+  game.active = p;
+  game.phase = "main";
+  game.players[p].tempMinions = 0;
+  events.push({ type: "turn", p });
+  if (deviceFull(game, p)) return endGame(game, p, events, "fires the doomsday device");
+  if (game.turn > cfg("maxTurns")) {
+    const w = chargePct(game, 0) >= chargePct(game, 1) ? 0 : 1;
+    return endGame(game, w, events, "wins on time with the most charge");
+  }
+  gameLog(game, `Turn ${Math.ceil(game.turn / 2)}: ${pname(game, p)}.`);
+  drawCards(game, p, 1, events);
+}
+
+function endGame(game, p, events, how) {
+  game.winner = p;
+  game.phase = "over";
+  gameLog(game, `${pname(game, p)} ${how}. The world ends.`);
+  events.push({ type: "win", p });
+}
+
+const Actions = {
+  chooseDevice(game, a, ev) {
+    const pl = game.players[a.p];
+    if (game.phase !== "setup" || pl.setup !== "device") return "Not choosing a device now.";
+    if (!pl.deviceChoices.includes(a.inst)) return "That device isn't an option.";
+    pl.device = { inst: a.inst, charge: emptyRes() };
+    pl.library.push(...pl.deviceChoices.filter((i) => i !== a.inst));
+    rngShuffle(game, pl.library);
+    pl.deviceChoices = [];
+    drawCards(game, a.p, cfg("startHand"), ev);
+    pl.setup = "mulligan";
+  },
+  mulligan(game, a, ev) {
+    const pl = game.players[a.p];
+    if (game.phase !== "setup" || pl.setup !== "mulligan") return "Not deciding a mulligan now.";
+    if (a.redraw) {
+      pl.library.push(...pl.hand);
+      pl.hand = [];
+      rngShuffle(game, pl.library);
+      drawCards(game, a.p, cfg("startHand"), ev);
+    }
+    pl.setup = "ready";
+    if (game.players.every((x) => x.setup === "ready")) game.phase = "bonus";
+  },
+  bonus(game, a, ev) {
+    const second = rival(game.first);
+    if (game.phase !== "bonus" || a.p !== second) return "No bonus to take.";
+    if (!RES.includes(a.res)) return "Unknown resource.";
+    if (a.res === "X") return "The going-second bonus can't be MacGuffin.";
+    game.players[second].res[a.res] += 1;
+    gameLog(game, `${pname(game, second)} takes 1 ${RES_NAME[a.res]} for going second.`);
+    startTurn(game, game.first, ev);
+  },
+  play(game, a, ev) {
+    if (game.phase !== "main" || game.active !== a.p) return "You can only play cards during your build step.";
+    const pl = game.players[a.p];
+    if (!pl.hand.includes(a.inst)) return "That card isn't in your hand.";
+    const card = cardOf(game, a.inst);
+    const targets = a.targets || [];
+    if (card.type !== "doomsday" && !canAfford(pl, card.cost)) return "Not enough resources.";
+    if (card.type === "contraption" && (a.cell === undefined || !canBuildAt(game, a.p, a.cell))) return "Build in your lab or in Public Works.";
+    if (card.type === "worker" && pl.minions >= minionCap(game, a.p)) return "You're at your minion cap.";
+    if (card.modes && !card.modes.includes(a.mode)) return "Choose a mode first.";
+    if (card.target && (!card.target.mode || card.target.mode === a.mode)) {
+      const legal = rivalCells(game, a.p);
+      const need = Math.min(card.target.count, card.target.optional ? legal.length : card.target.count);
+      if (targets.length < need) return legal.length < card.target.count && !card.target.optional ? "Not enough rival contraptions to target." : "Choose a target.";
+      if (new Set(targets).size !== targets.length || !targets.every((t) => legal.includes(t))) return "Target a rival contraption.";
+    }
+    pl.hand.splice(pl.hand.indexOf(a.inst), 1);
+    if (card.type !== "doomsday") payCost(pl, card.cost);
+    ev.push({ type: "play", p: a.p, inst: a.inst, cell: a.cell, targets });
+    if (card.type === "contraption") {
+      game.board[a.cell] = { inst: a.inst, owner: a.p, playedTurn: game.turn, jamTurn: -1, worker: null };
+      gameLog(game, `${pname(game, a.p)} builds ${card.name}.`);
+      resolveOnPlay(game, a.p, card, [], null, ev);
+    } else if (card.type === "doomsday") {
+      const old = pl.device, nc = emptyRes();
+      RES.forEach((k) => { nc[k] = Math.min(Math.floor((old.charge[k] || 0) / 2), card.cost[k] || 0); });
+      pl.discard.push(old.inst);
+      pl.device = { inst: a.inst, charge: nc };
+      gameLog(game, `${pname(game, a.p)} swaps in the ${card.name}.`);
+    } else {
+      gameLog(game, `${pname(game, a.p)} plays ${card.name}.`);
+      resolveOnPlay(game, a.p, card, targets, a.mode, ev);
+      pl.discard.push(a.inst);
+    }
+  },
+  place(game, a, ev) {
+    if (game.phase !== "main" || game.active !== a.p) return "Place minions during your turn.";
+    if (availableMinions(game, a.p) <= 0) return "No minions left this turn.";
+    if (!canWork(game, a.p, a.cell)) return "That contraption can't be worked right now.";
+    game.board[a.cell].worker = a.p;
+    ev.push({ type: "place", cell: a.cell, p: a.p });
+  },
+  recall(game, a, ev) {
+    const cell = game.board[a.cell];
+    if (game.phase !== "main" || game.active !== a.p || !cell || cell.worker !== a.p) return "No minion of yours there.";
+    cell.worker = null;
+    ev.push({ type: "recall", cell: a.cell });
+  },
+  recruit(game, a, ev) {
+    const pl = game.players[a.p];
+    if (game.phase !== "main" || game.active !== a.p) return "Recruit during your turn.";
+    if (pl.minions >= minionCap(game, a.p)) return "You're at your minion cap.";
+    if (sumRes(pl.res) < cfg("recruitCost")) return `Recruiting costs ${cfg("recruitCost")} resources.`;
+    for (let n = cfg("recruitCost"); n > 0; n--) {
+      const k = ["E", "O", "M", "S"].sort((x, y) => pl.res[y] - pl.res[x])[0];
+      pl.res[pl.res[k] > 0 ? k : "X"]--;
+    }
+    pl.minions++;
+    gameLog(game, `${pname(game, a.p)} recruits a minion.`);
+    ev.push({ type: "recruit", p: a.p });
+  },
+  // MacGuffin Exchange: trade resources (never MacGuffin) for 1 MacGuffin, once per turn.
+  exchange(game, a, ev) {
+    const pl = game.players[a.p], cost = cfg("exchangeCost"), kinds = ["E", "O", "M", "S"];
+    if (game.phase !== "main" || game.active !== a.p) return "Exchange during your build step.";
+    if (pl.exchangedTurn === game.turn) return "You can exchange once per turn.";
+    if (kinds.reduce((s, k) => s + pl.res[k], 0) < cost) return `The exchange costs ${cost} resources (not MacGuffin).`;
+    for (let n = cost; n > 0; n--) pl.res[kinds.slice().sort((x, y) => pl.res[y] - pl.res[x])[0]]--;
+    pl.res.X++;
+    pl.exchangedTurn = game.turn;
+    gameLog(game, `${pname(game, a.p)} trades ${cost} resources for 1 MacGuffin.`);
+    ev.push({ type: "exchange", p: a.p });
+  },
+  burn(game, a, ev) {
+    const pl = game.players[a.p], ids = a.insts || [];
+    if (game.phase !== "main" || game.active !== a.p) return "Burn cards during your turn.";
+    if (ids.length !== cfg("burnCards") || new Set(ids).size !== ids.length || !ids.every((i) => pl.hand.includes(i))) return `Choose ${cfg("burnCards")} cards from your hand.`;
+    for (const i of ids) { pl.hand.splice(pl.hand.indexOf(i), 1); pl.discard.push(i); }
+    pl.tempMinions++;
+    gameLog(game, `${pname(game, a.p)} burns ${ids.length} cards for a temporary minion.`);
+    ev.push({ type: "burn", p: a.p });
+  },
+  scrap(game, a, ev) {
+    const cell = game.board[a.cell];
+    if (game.phase !== "main" || game.active !== a.p) return "Scrap during your build step.";
+    if (!cell || cell.owner !== a.p) return "You can only scrap your own contraptions.";
+    game.players[a.p].discard.push(cell.inst);
+    game.board[a.cell] = null;
+    gameLog(game, `${pname(game, a.p)} scraps ${cardOf(game, cell.inst).name}.`);
+    ev.push({ type: "scrap", cell: a.cell });
+  },
+  collect(game, a, ev) {
+    if (game.phase !== "main" || game.active !== a.p) return "Nothing to collect right now.";
+    // Each unused minion earns 1 resource of the player's choice.
+    const idle = Math.max(0, availableMinions(game, a.p)), pick = a.idle || {};
+    if (Object.keys(pick).some((k) => !RES.includes(k) || !(pick[k] >= 0))) return "Unknown resource choice.";
+    if (pick.X) return "Idle minions can't gather MacGuffin.";
+    const n = RES.reduce((s, k) => s + (pick[k] || 0), 0);
+    if (n !== idle) return `Choose ${idle} resource${idle === 1 ? "" : "s"} for your unused minions.`;
+    resolveCollect(game, a.p, ev);
+    if (n) {
+      addRes(game.players[a.p], pick);
+      ev.push({ type: "idle", p: a.p, res: pick });
+      gameLog(game, `${pname(game, a.p)}'s ${n} idle minion${n === 1 ? "" : "s"} gather ${RES.filter((k) => pick[k]).map((k) => `${pick[k]} ${RES_NAME[k]}`).join(", ")}.`);
+    }
+    game.phase = "charge";
+  },
+  charge(game, a, ev) {
+    if (game.phase !== "charge" || game.active !== a.p) return "Charge after collecting.";
+    const pl = game.players[a.p], need = deviceNeed(game, a.p);
+    const keys = a.res ? [a.res] : RES;
+    let moved = 0;
+    for (const k of keys) {
+      const amt = Math.min(pl.res[k], need[k], a.amount === undefined ? Infinity : a.amount);
+      if (amt > 0) { pl.res[k] -= amt; pl.device.charge[k] += amt; moved += amt; ev.push({ type: "charge", p: a.p, res: k, amount: amt }); }
+    }
+    if (!moved) return "Nothing you hold can charge the device.";
+  },
+  endTurn(game, a, ev) {
+    if (game.phase !== "charge" || game.active !== a.p) return "Collect before ending your turn.";
+    const pl = game.players[a.p], dis = a.discards || [];
+    if (!dis.every((i) => pl.hand.includes(i)) || new Set(dis).size !== dis.length) return "Discard cards from your hand.";
+    if (pl.hand.length - dis.length > cfg("handLimit")) return `Discard down to ${cfg("handLimit")} cards.`;
+    for (const i of dis) { pl.hand.splice(pl.hand.indexOf(i), 1); pl.discard.push(i); }
+    RES.forEach((k) => { pl.res[k] = Math.min(pl.res[k], cfg("carryCap")); });
+    game.board.forEach((c) => { if (c) c.worker = null; });
+    pl.tempMinions = 0;
+    ev.push({ type: "endTurn", p: a.p });
+    startTurn(game, rival(a.p), ev);
+  },
+};
+
+function applyAction(game, action) {
+  const h = Actions[action.type];
+  if (!h) return { ok: false, error: `Unknown action ${action.type}`, events: [] };
+  if (game.phase === "over") return { ok: false, error: "The game is over.", events: [] };
+  const events = [];
+  const err = h(game, action, events);
+  if (err) return { ok: false, error: err, events: [] };
+  game.actions.push(action);
+  return { ok: true, events };
+}
+
+/* ===== js: ai.js ===== */
+// AI: a greedy scorer that plays through the same actions as the player. No bluffing in v1.
+const AI = {
+  weights(game, p) {
+    const need = deviceNeed(game, p), w = {};
+    RES.forEach((k) => { w[k] = 1 + (need[k] > 0 ? 0.7 : 0) + (k === "X" ? 1.5 : 0); });
+    return w;
+  },
+  val(r, w) { return RES.reduce((a, k) => a + (r[k] || 0) * w[k], 0); },
+
+  setupAction(game, p) {
+    const pl = game.players[p];
+    if (pl.setup === "device") return { type: "chooseDevice", p, inst: pl.deviceChoices[rngInt(game, pl.deviceChoices.length)] };
+    if (pl.setup === "mulligan") {
+      const cheap = pl.hand.some((i) => { const c = cardOf(game, i); return c.type === "contraption" && sumRes(c.cost) <= 2; });
+      return { type: "mulligan", p, redraw: !cheap };
+    }
+    return null;
+  },
+
+  slotScore(game, p, card, i) {
+    let s = rowOf(i) === backRow(p) ? 1 : 0;
+    for (const n of neighborsOf(i)) {
+      const nc = cellCard(game, n);
+      if (!nc) continue;
+      if (RES.some((k) => card.produces[k] && nc.produces[k])) s += 0.8;
+      const tagCombo = card.effects.some((e) => e.condition && (nc.tags || []).includes(e.condition.adjacentTag))
+        || nc.effects.some((e) => e.trigger === "aura" && ((e.params.tag && (card.tags || []).includes(e.params.tag)) || (e.params.owned && game.board[n].owner === p)));
+      if (tagCombo) s += 1.2;
+      if (card.effects.some((e) => e.action === "gainPerAdjacentOwned") && game.board[n].owner === p) s += 0.8;
+    }
+    return s;
+  },
+
+  // Score every non-placement option; return the best { score, action }.
+  bestMain(game, p) {
+    const pl = game.players[p], foe = rival(p), w = this.weights(game, p);
+    const opts = [];
+    const late = Math.max(0.25, 1 - game.turn / 44);
+    const foeCells = rivalCells(game, p);
+    const cellVal = (i) => sumRes(cellCard(game, i).produces) + (cellCard(game, i).produces.X ? 2 : 0);
+    const bestFoe = foeCells.slice().sort((a, b) => cellVal(b) - cellVal(a));
+    const myPct = chargePct(game, p), foePct = chargePct(game, foe);
+    for (const inst of pl.hand) {
+      const c = cardOf(game, inst);
+      if (c.type === "doomsday" || !canAfford(pl, c.cost)) continue;
+      const costPenalty = sumRes(c.cost) * 0.25;
+      if (c.type === "worker" && pl.minions < minionCap(game, p)) {
+        const machines = game.board.filter((cell, i) => cell && (cell.owner === p || isPublicRow(rowOf(i)))).length;
+        opts.push({ score: machines >= pl.minions ? 5 * late + 1 : 0.8, action: { type: "play", p, inst } });
+      }
+      if (c.type === "contraption") {
+        const slots = game.board.map((_, i) => i).filter((i) => canBuildAt(game, p, i));
+        if (!slots.length) {
+          // Board full: scrap our weakest machine if this card is clearly better.
+          const mine = game.board.map((cell, i) => (cell && cell.owner === p ? i : -1)).filter((i) => i >= 0);
+          mine.sort((a, b) => this.val(cellCard(game, a).produces, w) - this.val(cellCard(game, b).produces, w));
+          if (mine.length && this.val(c.produces, w) - this.val(cellCard(game, mine[0]).produces, w) >= 1.5)
+            opts.push({ score: 2 + this.val(c.produces, w) * 0.5, action: { type: "scrap", p, cell: mine[0] } });
+          continue;
+        }
+        slots.sort((a, b) => this.slotScore(game, p, c, b) - this.slotScore(game, p, c, a));
+        const score = this.val(c.produces, w) * 2.4 * late + this.slotScore(game, p, c, slots[0]) - costPenalty;
+        opts.push({ score, action: { type: "play", p, inst, cell: slots[0] } });
+      }
+      if (c.type === "distraction") {
+        const acts = c.effects.map((e) => e.action);
+        let score = 0, targets = [], mode;
+        if (c.modes) {
+          if (game.players[foe].res.X >= 1) { mode = "steal"; score = 4 + game.players[foe].res.X; }
+          else if (bestFoe.length) { mode = "bounce"; targets = [bestFoe[0]]; score = 3.5; }
+        } else if (acts.includes("sabotage")) {
+          score = game.players[foe].shield ? 2 : foePct >= 0.3 ? 6 + foePct * 6 : 0;
+          targets = bestFoe.slice(0, 1);
+        } else if (acts.includes("shield")) {
+          score = !pl.shield && myPct > 0.3 ? 5 : pl.hand.length < 3 ? 2 : 0;
+        } else if (acts.includes("jam")) {
+          if (bestFoe.length) { score = 2.5 + cellVal(bestFoe[0]) * 0.4; targets = [bestFoe[0]]; }
+        } else if (acts.includes("steal")) {
+          const most = Math.max(...RES.map((k) => game.players[foe].res[k]));
+          if (most >= 2) score = 2.5 + most * 0.5;
+        } else if (acts.includes("swap")) {
+          if (bestFoe.length >= 2) { score = 3; targets = [bestFoe[0], bestFoe[bestFoe.length - 1]]; }
+        }
+        if (score > 0) opts.push({ score: score - costPenalty, action: { type: "play", p, inst, targets, mode } });
+      }
+    }
+    const work = workableCells(game, p).length, avail = availableMinions(game, p);
+    if (pl.minions < minionCap(game, p) && sumRes(pl.res) >= cfg("recruitCost") + 2 && work > avail && game.turn < 30)
+      opts.push({ score: 3.5, action: { type: "recruit", p } });
+    if (pl.hand.length >= 5 && work > avail && game.turn < 50) {
+      const cheap = pl.hand.slice().sort((a, b) => this.keepValue(game, p, a) - this.keepValue(game, p, b)).slice(0, cfg("burnCards"));
+      opts.push({ score: 2.2, action: { type: "burn", p, insts: cheap } });
+    }
+    const nonX = pl.res.E + pl.res.O + pl.res.M + pl.res.S;
+    if (deviceNeed(game, p).X > 0 && pl.exchangedTurn !== game.turn && nonX >= cfg("exchangeCost"))
+      opts.push({ score: 2 + game.turn / 10, action: { type: "exchange", p } });
+    opts.sort((a, b) => b.score - a.score);
+    return opts.find((o) => o.score > 1.2) || null;
+  },
+
+  bestPlacement(game, p) {
+    if (availableMinions(game, p) <= 0) return null;
+    const w = this.weights(game, p);
+    const worked = new Set(game.board.map((c, i) => (c && c.worker === p ? i : -1)).filter((i) => i >= 0));
+    let best = null;
+    for (const i of workableCells(game, p)) {
+      worked.add(i);
+      let v = this.val(cellOutput(game, i, worked).out, w);
+      worked.delete(i);
+      if (game.board[i].owner !== p) v -= 0.6;
+      if (!best || v > best.v) best = { v, i };
+    }
+    const need = deviceNeed(game, p);
+    const idleVal = Math.max(...RES.filter((x) => x !== "X").map((k) => (need[k] > 0 ? w[k] : 1)));
+    return best && best.v >= idleVal ? { type: "place", p, cell: best.i } : null;
+  },
+
+  // One resource per unused minion: favor what the device still needs most.
+  idlePicks(game, p) {
+    const need = deviceNeed(game, p), w = this.weights(game, p), pick = {};
+    for (let n = availableMinions(game, p); n > 0; n--) {
+      const k = RES.filter((x) => x !== "X").sort((a, b) => (need[b] > 0) * w[b] - (need[a] > 0) * w[a] || need[b] - need[a])[0];
+      pick[k] = (pick[k] || 0) + 1;
+      need[k] = Math.max(0, need[k] - 1);
+    }
+    return pick;
+  },
+
+  keepValue(game, p, inst) {
+    const c = cardOf(game, inst);
+    if (c.type === "doomsday") return 0;
+    if (c.type === "worker") return game.players[p].minions < minionCap(game, p) ? 4 : 0.5;
+    if (c.type === "distraction") return 2.5;
+    return sumRes(c.produces) + (c.produces.X ? 2 : 0);
+  },
+
+  // The next action for p this turn, or null when the turn is over.
+  next(game, p, difficulty) {
+    if (game.phase === "main") {
+      let m = this.bestMain(game, p);
+      if (m && difficulty === "easy" && Math.random() < 0.3) m = null;
+      if (m) return m.action;
+      return this.bestPlacement(game, p) || { type: "collect", p, idle: this.idlePicks(game, p) };
+    }
+    if (game.phase === "charge") {
+      const need = deviceNeed(game, p), pl = game.players[p];
+      const reserve = game.turn < 14 ? 3 : 0;
+      for (const k of RES) {
+        const amt = Math.min(need[k], pl.res[k] - (k === "X" ? 0 : reserve));
+        if (amt > 0) return { type: "charge", p, res: k, amount: amt };
+      }
+      const over = pl.hand.length - cfg("handLimit");
+      const discards = over > 0 ? pl.hand.slice().sort((a, b) => this.keepValue(game, p, a) - this.keepValue(game, p, b)).slice(0, over) : [];
+      return { type: "endTurn", p, discards };
+    }
+    return null;
+  },
+};
+
+/* ===== js: sprites.js ===== */
+// Rasterize primitive-shape sprites (src/data/sprites.json) into crisp pixel images, cached as data URLs.
+const Sprites = {
+  cache: {},
+  raster(def) {
+    const n = def.size, px = Array.from({ length: n }, () => Array(n).fill(-1));
+    const set = (x, y, c) => { x = Math.round(x); y = Math.round(y); if (x >= 0 && y >= 0 && x < n && y < n) px[y][x] = c; };
+    const line = (x0, y0, x1, y1, c) => {
+      const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+      let err = dx + dy;
+      for (;;) { set(x0, y0, c); if (x0 === x1 && y0 === y1) break; const e2 = 2 * err; if (e2 >= dy) { err += dy; x0 += sx; } if (e2 <= dx) { err += dx; y0 += sy; } }
+    };
+    for (const op of def.ops) {
+      const [t, ...a] = op;
+      if (t === "r") { for (let y = a[1]; y < a[1] + a[3]; y++) for (let x = a[0]; x < a[0] + a[2]; x++) set(x, y, a[4]); }
+      else if (t === "p") set(a[0], a[1], a[2]);
+      else if (t === "l") line(a[0], a[1], a[2], a[3], a[4]);
+      else if (t === "c" || t === "o") {
+        const [cx, cy, r, c] = a;
+        for (let y = cy - r - 1; y <= cy + r + 1; y++) for (let x = cx - r - 1; x <= cx + r + 1; x++) {
+          const d = (x - cx) ** 2 + (y - cy) ** 2;
+          if (t === "c" ? d <= r * r + r * 0.6 : d <= r * r + r * 0.6 && d >= (r - 1) * (r - 1) + (r - 1) * 0.6) set(x, y, c);
+        }
+      } else if (t === "e") {
+        const [cx, cy, rx, ry, c] = a;
+        for (let y = cy - ry; y <= cy + ry; y++) for (let x = cx - rx; x <= cx + rx; x++)
+          if (((x - cx) / (rx + 0.4)) ** 2 + ((y - cy) / (ry + 0.4)) ** 2 <= 1) set(x, y, c);
+      } else if (t === "t") {
+        const [x1, y1, x2, y2, x3, y3, c] = a;
+        const minX = Math.min(x1, x2, x3), maxX = Math.max(x1, x2, x3), minY = Math.min(y1, y2, y3), maxY = Math.max(y1, y2, y3);
+        const area = (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1);
+        for (let y = minY; y <= maxY; y++) for (let x = minX; x <= maxX; x++) {
+          const w1 = ((x2 - x) * (y3 - y) - (x3 - x) * (y2 - y)) / area, w2 = ((x3 - x) * (y1 - y) - (x1 - x) * (y3 - y)) / area;
+          if (w1 >= -0.02 && w2 >= -0.02 && 1 - w1 - w2 >= -0.02) set(x, y, c);
+        }
+      }
+    }
+    // Auto-outline in palette color 0 so every sprite reads at small sizes.
+    const out = px.map((r) => r.slice());
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+      if (px[y][x] !== -1) continue;
+      if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => { const v = (px[y + dy] || [])[x + dx]; return v !== undefined && v > 0; })) out[y][x] = 0;
+    }
+    return out;
+  },
+  url(name) {
+    if (this.cache[name]) return this.cache[name];
+    const def = DATA.sprites.sprites[name];
+    if (!def) return "";
+    const pal = DATA.sprites.palettes[def.pal], px = this.raster(def), n = def.size;
+    const cv = document.createElement("canvas");
+    cv.width = n; cv.height = n;
+    const ctx = cv.getContext("2d");
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (px[y][x] >= 0) { ctx.fillStyle = pal[px[y][x]]; ctx.fillRect(x, y, 1, 1); }
+    return (this.cache[name] = cv.toDataURL());
+  },
+  img(name, cls = "", alt = "") { return `<img class="px ${cls}" src="${this.url(name)}" alt="${alt}" draggable="false">`; },
+};
+
+/* ===== js: audio.js ===== */
+// Tiny square-wave sound effects via Web Audio. Silent if unsupported or muted.
+const Sound = {
+  ctx: null,
+  play(kind) {
+    if (!appState.settings.sound) return;
+    try {
+      this.ctx = this.ctx || new (window.AudioContext || window.webkitAudioContext)();
+      const seq = { click: [[660, 0.04]], play: [[440, 0.05], [660, 0.06]], place: [[330, 0.05]], zap: [[880, 0.03], [1320, 0.05]],
+        error: [[220, 0.08], [160, 0.12]], collect: [[523, 0.05], [659, 0.05], [784, 0.07]], hero: [[392, 0.05], [523, 0.05], [392, 0.08]],
+        win: [[523, 0.1], [659, 0.1], [784, 0.1], [1046, 0.3]], lose: [[392, 0.15], [330, 0.15], [262, 0.4]], charge: [[294, 0.04], [392, 0.06]] }[kind] || [[440, 0.05]];
+      let t = this.ctx.currentTime;
+      for (const [f, d] of seq) {
+        const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+        o.type = "square"; o.frequency.value = f;
+        g.gain.setValueAtTime(0.05, t); g.gain.exponentialRampToValueAtTime(0.001, t + d);
+        o.connect(g).connect(this.ctx.destination); o.start(t); o.stop(t + d + 0.01);
+        t += d;
+      }
+    } catch (e) { /* audio is optional */ }
+  },
+};
+
+/* ===== js: storage.js ===== */
+// Persistence: the match autosaves to localStorage after every action; settings save separately.
+const Store = {
+  KEY: "doomsday95.match", SKEY: "doomsday95.settings",
+  saveGame() { try { if (appState.game) localStorage.setItem(this.KEY, JSON.stringify(appState.game)); } catch (e) { /* storage full or blocked */ } },
+  loadGame() { try { const s = localStorage.getItem(this.KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } },
+  clearGame() { try { localStorage.removeItem(this.KEY); } catch (e) { /* ignore */ } },
+  hasGame() { const g = this.loadGame(); return !!(g && g.phase !== "over" && g.v === 1); },
+  saveSettings() { try { localStorage.setItem(this.SKEY, JSON.stringify(appState.settings)); } catch (e) { /* ignore */ } },
+  loadSettings() { try { const s = localStorage.getItem(this.SKEY); if (s) Object.assign(appState.settings, JSON.parse(s)); } catch (e) { /* ignore */ } },
+};
+
+/* ===== js: ui-common.js ===== */
+// Shared UI helpers: escaping, resource chips, card markup, dialogs, toast.
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const RES_COLOR = { E: "var(--res-E)", O: "var(--res-O)", M: "var(--res-M)", S: "var(--res-S)", X: "var(--res-X)" };
+const TYPE_NAME = { contraption: "Contraption", distraction: "Distraction", worker: "Worker", doomsday: "Doomsday device" };
+const RARITY_NAME = { common: "Common", uncommon: "Uncommon", rare: "Rare", legendary: "Legendary" };
+
+function resIcon(k) { return Sprites.img("res_" + k, "", RES_NAME[k]); }
+function resChips(r, showZero = false) {
+  return RES.filter((k) => showZero || r[k]).map((k) => `<span class="rq" title="${RES_NAME[k]}">${resIcon(k)}${r[k] || 0}</span>`).join("");
+}
+function costPips(cost) {
+  const ks = RES.filter((k) => cost[k]);
+  if (!ks.length) return `<span class="pip free" title="Free">0</span>`;
+  return ks.map((k) => `<span class="pip" style="--pc:${RES_COLOR[k]}" title="${cost[k]} ${RES_NAME[k]}">${cost[k]}</span>`).join("");
+}
+function costText(cost) {
+  const ks = RES.filter((k) => cost[k]);
+  return ks.length ? ks.map((k) => `${cost[k]} ${RES_NAME[k]}`).join(", ") : "free";
+}
+
+// variant: "full" (hand/inspector), "mini" (small), "plane" (board plane: frame, pips, effects only)
+function cardHtml(card, variant = "full") {
+  const cls = `card rar-${card.rarity} deck-${card.deck}${variant === "mini" ? " mini" : ""}${variant === "plane" ? " plane-card" : ""}`;
+  const out = sumRes(card.produces) ? resChips(card.produces) : "";
+  return `<div class="${cls}">
+    <div class="c-top"><span class="pips">${card.type === "doomsday" ? `<span class="pip" style="--pc:#fff" title="Total cost">${sumRes(card.cost)}</span>` : costPips(card.cost)}</span></div>
+    <div class="c-name">${esc(card.name)}</div>
+    <div class="c-art">${Sprites.img(card.sprite, "", "")}</div>
+    <div class="c-out">${out}</div>
+    <div class="c-text">${esc(card.rulesText || card.flavor)}</div>
+    <div class="c-type"><span>${TYPE_NAME[card.type]}</span><span>${RARITY_NAME[card.rarity]}</span></div>
+  </div>`;
+}
+
+function winHtml(title, body, { icon = "icon_skull", cls = "", close = true } = {}) {
+  return `<div class="win ${cls}" role="dialog" aria-label="${esc(title)}">
+    <div class="titlebar">${Sprites.img(icon)}<span class="ttl">${esc(title)}</span>
+      ${close ? `<button class="btn tb-btn" data-close aria-label="Close">×</button>` : ""}</div>
+    <div class="win-body">${body}</div></div>`;
+}
+
+// buttons: [{ label, primary, onClick, keepOpen }]. Returns a close function.
+function showDialog(title, body, buttons = [], opts = {}) {
+  const layer = $("#dialogs");
+  const wrap = document.createElement("div");
+  wrap.className = "layer";
+  wrap.innerHTML = winHtml(title, `${body}<div class="btn-row">${buttons.map((b, i) => `<button class="btn${b.primary ? " primary" : ""}" data-db="${i}">${esc(b.label)}</button>`).join("")}</div>`,
+    { cls: "dialog" + (opts.wide ? " wide" : ""), close: opts.close !== false, icon: opts.icon });
+  const close = () => wrap.remove();
+  wrap.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-db]");
+    if (b) { Sound.play("click"); const def = buttons[+b.dataset.db]; if (!def.keepOpen) close(); if (def.onClick) def.onClick(); return; }
+    if (e.target.closest("[data-close]")) { close(); if (opts.onClose) opts.onClose(); }
+    const h = e.target.closest("[data-pick]");
+    if (h && opts.onPick) { opts.onPick(h.dataset.pick, close); }
+  });
+  layer.appendChild(wrap);
+  const first = wrap.querySelector(".btn.primary") || wrap.querySelector(".btn");
+  if (first) first.focus({ preventScroll: true });
+  return close;
+}
+function closeDialogs() { $("#dialogs").innerHTML = ""; }
+
+let toastTimer = null;
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+}
+function errorFeedback(msg, el) {
+  Sound.play("error");
+  toast(msg);
+  const target = el || $(".match .win") || document.body;
+  target.classList.remove("shake"); void target.offsetWidth; target.classList.add("shake");
+}
+const wait = (ms) => new Promise((r) => setTimeout(r, appState.settings.reducedMotion ? Math.min(ms, 120) : ms));
+
+/* ===== js: ui-desktop.js ===== */
+// Boot screen, desktop, Scheme menu, and the menu windows (villain select, how to play, settings).
+const Desktop = {
+  boot() {
+    appState.screen = "boot";
+    $("#screen").innerHTML = `<div class="boot" data-act="skipBoot"><div><h1>DOOMSDAY 95</h1><div>Starting your evil empire</div>
+      <div class="bar"><i></i></div><div style="font-size:12px;opacity:.7">Tap to skip</div></div></div>`;
+    $("#taskbar").innerHTML = "";
+    this.bootTimer = setTimeout(() => this.show(), appState.settings.reducedMotion ? 200 : 1600);
+  },
+  show() {
+    clearTimeout(this.bootTimer);
+    appState.screen = "desktop";
+    const cont = Store.hasGame();
+    $("#screen").innerHTML = `<div class="desktop"><div class="icons">
+      <button class="dicon" data-act="newGame">${Sprites.img("icon_new")}<span>New Game</span></button>
+      ${cont ? `<button class="dicon" data-act="continue">${Sprites.img("icon_continue")}<span>Continue</span></button>` : ""}
+      <button class="dicon" data-act="howto">${Sprites.img("icon_howto")}<span>How to Play</span></button>
+      <button class="dicon" data-act="settings">${Sprites.img("icon_settings")}<span>Settings</span></button>
+    </div><div class="desk-title"><b>Doomsday 95</b><span>Two villains. One world to end.</span></div></div>`;
+    this.taskbar();
+  },
+  taskbar(extra = "") {
+    $("#taskbar").innerHTML = `<button class="btn scheme" data-act="menu" aria-haspopup="menu">${Sprites.img("icon_skull")}Scheme</button>${extra}
+      <div class="tray sunken">${appState.settings.sound ? "♪" : ""}<span id="clock"></span></div>`;
+    this.tick();
+  },
+  tick() {
+    const c = $("#clock");
+    if (c) c.textContent = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  },
+  menu() {
+    if ($(".menu")) { $(".menu").remove(); return; }
+    const inMatch = appState.screen === "match";
+    const m = document.createElement("div");
+    m.className = "menu win";
+    m.setAttribute("role", "menu");
+    m.innerHTML = `<div class="stripe">Doomsday 95</div><ul>
+      <li><button data-act="newGame" role="menuitem">${Sprites.img("icon_new")}New Game</button></li>
+      <li><button data-act="howto" role="menuitem">${Sprites.img("icon_howto")}How to Play</button></li>
+      <li><button data-act="settings" role="menuitem">${Sprites.img("icon_settings")}Settings</button></li>
+      ${inMatch ? `<li><button data-act="toDesktop" role="menuitem">${Sprites.img("icon_continue")}Back to desktop</button></li>` : ""}
+    </ul>`;
+    document.body.appendChild(m);
+  },
+  closeMenu() { const m = $(".menu"); if (m) m.remove(); },
+  villainSelect() {
+    const dossier = (deck) => {
+      const d = DATA.decks[deck];
+      return `<section class="dossier sunken" style="background:var(--face)"><header>${Sprites.img(d.icon)}<div><h3>${esc(d.villain)}</h3><div>${esc(d.style)}</div></div></header>
+        <p>Heroes in this deck: ${esc(d.heroes)}.</p>
+        <button class="btn primary" data-act="pickDeck" data-deck="${deck}">Play as ${esc(d.short)}</button></section>`;
+    };
+    showDialog("Choose your villain", `<div class="villains">${dossier("tesla")}${dossier("edison")}</div>`, [], { wide: true });
+  },
+  howto() {
+    showDialog("How to Play.txt", `<div class="howto sunken" style="padding:10px;max-height:60vh;overflow:auto">
+      <h3>Goal</h3><p>Fill every meter on your doomsday device. A full device fires at the start of your next turn and you win. Your rival gets one turn to stop it.</p>
+      <h3>The board</h3><p>Your back row is your private lab. The two middle rows are Public Works: either villain may build there, and either may send a minion to work any machine there. When a rival works your machine, you get 1 of its output.</p>
+      <h3>Your turn</h3><p>You draw a card, then build and place in any order. Tap a card to select it, then tap a highlighted slot. Tap one of your machines to put a minion on it, and tap again to take it back. New machines can't be worked the turn they're built.</p>
+      <p>When you're done, tap Collect. Then tap a meter to charge it, or Charge all, and End turn.</p>
+      <h3>Minions</h3><p>Recruit costs 4 resources of any kind. Burn 2 cards for one extra minion this turn only. Worker cards recruit cheaply. Any minion you don't place gathers 1 resource of your choice when you Collect, except MacGuffin.</p>
+      <h3>Combos</h3><p>Two worked machines next to each other that make the same resource each make +1 more (Resonance). Some cards boost their neighbors. Combos count across owners.</p>
+      <h3>Heroes</h3><p>Distraction cards send heroes at your rival: Jam a machine for a turn, steal resources, swap machines, or sabotage their device. A Shield blocks the next sabotage.</p>
+      <h3>MacGuffin</h3><p>Every device needs 4 MacGuffin and few machines make it. Fight over them. Once per turn you can also use Exchange: trade 5 other resources for 1 MacGuffin (it takes from your biggest piles).</p></div>`, [{ label: "OK", primary: true }], { icon: "icon_howto" });
+  },
+  settings() {
+    const s = appState.settings;
+    showDialog("Settings", `<div class="field-row"><input type="checkbox" id="set-sound" ${s.sound ? "checked" : ""}><label for="set-sound">Sound effects</label></div>
+      <div class="field-row"><input type="checkbox" id="set-motion" ${s.reducedMotion ? "checked" : ""}><label for="set-motion">Reduce motion</label></div>
+      <div class="field-row"><label for="set-diff">Opponent</label><select id="set-diff" style="min-height:32px"><option value="normal" ${s.difficulty === "normal" ? "selected" : ""}>Normal</option><option value="easy" ${s.difficulty === "easy" ? "selected" : ""}>Easy</option></select></div>`,
+      [{ label: "Save settings", primary: true, onClick: () => {
+        s.sound = $("#set-sound").checked; s.reducedMotion = $("#set-motion").checked; s.difficulty = $("#set-diff").value;
+        Store.saveSettings(); document.documentElement.classList.toggle("reduced", s.reducedMotion);
+        if (appState.screen === "match") Match.render(); else this.taskbar();
+        toast("Settings saved.");
+      } }, { label: "Cancel" }], { icon: "icon_settings" });
+  },
+};
+
+/* ===== js: ui-match.js ===== */
+// Match screen rendering. Reads appState.game + appState.ui; input lives in controller.js.
+const Match = {
+  YOU: 0, FOE: 1,
+  myTurn() { const g = appState.game; return g && g.active === 0 && !appState.ui.busy && (g.phase === "main" || g.phase === "charge"); },
+
+  render() {
+    const g = appState.game;
+    if (!g) return;
+    appState.screen = "match";
+    const title = `Doomsday.exe: ${g.players[0].short} vs. ${g.players[1].short}`;
+    const round = Math.max(1, Math.ceil(g.turn / 2));
+    $("#screen").innerHTML = `<div class="match"><div class="win">
+      <div class="titlebar">${Sprites.img("icon_skull")}<span class="ttl">${esc(title)}</span><span style="font-weight:normal;font-size:11px;padding-right:4px">Round ${round}</span></div>
+      <div class="match-body">
+        <div class="side">${this.pbox(1)}${this.pbox(0)}</div>
+        <div class="board-wrap sunken"><div class="board" role="grid" aria-label="Board">${[3, 2, 1, 0].map((r) => [0, 1, 2].map((c) => this.cell(r * COLS + c)).join("")).join("")}</div></div>
+        <div class="rpanel">${this.inspector()}${this.hand()}</div>
+      </div></div></div>`;
+    this.taskbar();
+  },
+
+  pbox(p) {
+    const g = appState.game, pl = g.players[p], dev = deviceCard(g, p), ui = appState.ui;
+    const chargeable = p === 0 && g.phase === "charge" && this.myTurn();
+    const need = deviceNeed(g, p);
+    const meters = dev ? RES.filter((k) => dev.cost[k]).map((k) => {
+      const have = pl.device.charge[k], tot = dev.cost[k], can = chargeable && need[k] > 0 && pl.res[k] > 0;
+      const inner = `${resIcon(k)}<span class="bar sunken"><i style="width:${(have / tot) * 100}%;--c:${RES_COLOR[k]}"></i></span><span class="num">${have}/${tot}</span>`;
+      return can ? `<button class="meter tap${have >= tot ? " done" : ""}" data-act="charge" data-res="${k}" aria-label="Charge ${RES_NAME[k]}" data-meter="${p}${k}">${inner}</button>`
+        : `<div class="meter${have >= tot ? " done" : ""}" data-meter="${p}${k}">${inner}</div>`;
+    }).join("") : `<div class="meter">Choosing a device</div>`;
+    const active = g.active === p && g.phase !== "setup" && g.phase !== "over";
+    const minions = active ? `${availableMinions(g, p)} free of ${pl.minions + pl.tempMinions}` : `${pl.minions}`;
+    return `<section class="pbox raised${active ? " active" : ""}" data-pbox="${p}" aria-label="${esc(pl.villain)}">
+      <header>${Sprites.img(DATA.decks[pl.deck].icon)}<span class="who">${p === 0 ? "You" : "Rival"}: ${esc(pl.short)}</span>
+        ${pl.shield ? `<span class="badge shield" title="Blocks the next sabotage">Shield</span>` : ""}
+        ${active && p === 1 ? `<span class="badge">Thinking</span>` : ""}</header>
+      ${dev ? `<button class="dev" data-act="inspectDev" data-p="${p}">${Sprites.img(dev.sprite)}<span class="dname">${esc(dev.name)}<br><span style="font-weight:normal">${Math.round(chargePct(g, p) * 100)}% charged</span></span></button>` : ""}
+      <div class="meters">${meters}</div>
+      <div class="resrow" title="Resources">${resChips(pl.res, true)}</div>
+      <div class="stats"><span title="Minions">${Sprites.img("minion")} ${minions}</span><span>Hand ${pl.hand.length}</span><span>Deck ${pl.library.length}</span></div>
+    </section>`;
+  },
+
+  cell(i) {
+    const g = appState.game, ui = appState.ui, cell = g.board[i], r = rowOf(i);
+    const zone = r === 3 ? "zone-rival" : r === 0 ? "zone-you" : "zone-public";
+    const cls = ["cell", zone];
+    const mine = this.myTurn() && g.phase === "main";
+    if (mine && ui.mode === "build" && canBuildAt(g, 0, i)) cls.push("can-build");
+    if (mine && ui.mode === "target" && cell && cell.owner === 1) cls.push(ui.picks.includes(i) ? "picked" : "can-target");
+    if (mine && ui.mode === "scrap" && cell && cell.owner === 0) cls.push("can-scrap");
+    if (mine && !ui.mode && canWork(g, 0, i) && availableMinions(g, 0) > 0) cls.push("can-work");
+    if (!cell) {
+      const label = r === 3 ? "Rival lab" : r === 0 ? "Your lab" : "Public Works";
+      return `<button class="${cls.join(" ")}" data-cell="${i}" aria-label="${label}, empty"><span class="zlabel">${label}</span></button>`;
+    }
+    cls.push("filled");
+    if (cell.playedTurn === g.turn) cls.push("fresh");
+    const card = cardOf(g, cell.inst), own = DATA.decks[g.players[cell.owner].deck].accent;
+    const jammed = cell.jamTurn >= g.turn;
+    return `<button class="${cls.join(" ")}" data-cell="${i}" aria-label="${esc(card.name)}, ${cell.owner === 0 ? "yours" : "rival's"}${cell.worker !== null ? ", worked" : ""}">
+      <div class="plane">${cardHtml(card, "plane")}</div>
+      <span class="owner" style="--own:${own}" title="${esc(g.players[cell.owner].short)}"></span>
+      <div class="popup" data-pop="${i}">${Sprites.img(card.sprite)}<span class="pname">${esc(card.name)}</span></div>
+      <div class="out">${resChips(card.produces)}</div>
+      ${cell.worker !== null ? `<img class="px minion" src="${Sprites.url("minion")}" alt="minion">` : ""}
+      ${cell.playedTurn === g.turn ? `<span class="fresh-tag">New</span>` : ""}
+      ${jammed ? `<span class="stamp">Jammed</span>` : ""}
+    </button>`;
+  },
+
+  inspector() {
+    const g = appState.game, ui = appState.ui, pl = g.players[0];
+    let card = null, msg = "", acts = "";
+    if (ui.inspect) card = ui.inspect.kind === "hand" || ui.inspect.kind === "card" ? Registry.card(ui.inspect.id) : null;
+    if (!card) card = deviceCard(g, 0);
+    if (g.phase === "over") msg = `<b>${g.winner === 0 ? "The world is yours." : "The world ended without you."}</b>`;
+    else if (g.active !== 0 || ui.busy) msg = `<b>Rival's turn</b><br>${esc(g.players[1].short)} is scheming. Watch the board.`;
+    else if (ui.mode === "burn") {
+      msg = `<b>Burn cards</b><br>Pick ${cfg("burnCards")} cards to burn for one extra minion this turn.`;
+      acts = `<button class="btn primary" data-act="confirmBurn" ${ui.picks.length === cfg("burnCards") ? "" : "disabled"}>Burn ${ui.picks.length}/${cfg("burnCards")}</button><button class="btn" data-act="cancel">Cancel</button>`;
+    } else if (ui.mode === "scrap") {
+      msg = `<b>Scrap</b><br>Tap one of your machines to scrap it and free the slot.`;
+      acts = `<button class="btn" data-act="cancel">Cancel</button>`;
+    } else if (ui.mode === "discard") {
+      const over = pl.hand.length - cfg("handLimit");
+      msg = `<b>Too many cards</b><br>Pick ${over} to discard. Your hand limit is ${cfg("handLimit")}.`;
+      acts = `<button class="btn primary" data-act="confirmDiscard" ${ui.picks.length === over ? "" : "disabled"}>Discard and end turn</button><button class="btn" data-act="cancel">Cancel</button>`;
+    } else if (ui.selected) {
+      const c = cardOf(g, ui.selected), afford = c.type === "doomsday" || canAfford(pl, c.cost);
+      msg = `<b>${esc(c.name)}</b><br>${afford || c.type === "doomsday" ? "" : `You can't afford this yet (costs ${costText(c.cost)}). `}`;
+      if (afford) {
+        if (c.type === "contraption") msg += "Tap a glowing slot in your lab or Public Works.";
+        else if (c.modes && !ui.cardMode) { msg += "Choose one:"; acts = `<button class="btn" data-act="cardMode" data-mode="steal">Steal MacGuffin</button><button class="btn" data-act="cardMode" data-mode="bounce">Bounce a machine</button>`; }
+        else if (ui.mode === "target") {
+          const n = c.target.count, legal = rivalCells(g, 0).length;
+          msg += legal ? `Tap ${n === 2 ? "two rival machines" : "a rival machine"} (${ui.picks.length}/${n}).` : "Your rival has no machines to target.";
+          if (c.target.optional && !legal) acts = `<button class="btn primary" data-act="playSelected">Play anyway</button>`;
+        } else if (c.type === "doomsday") { msg += "Swap this in as your device? It keeps half your current charge."; acts = `<button class="btn primary" data-act="playSelected">Swap device</button>`; }
+        else acts = `<button class="btn primary" data-act="playSelected">Play ${esc(c.name)}</button>`;
+      }
+      acts += `<button class="btn" data-act="cancel">Cancel</button>`;
+    } else if (ui.inspect && ui.inspect.kind === "card") {
+      msg = `<b>${esc(card.name)}</b><br>${esc(card.rulesText || "")}<br><span class="flavor">${esc(card.flavor || "")}</span>`;
+    } else if (g.phase === "main") {
+      msg = `<b>Build and place</b><br>Tap a card to play it. Tap a glowing machine to send a minion (${availableMinions(g, 0)} free). Minions you leave unused each gather 1 resource of your choice (not MacGuffin) at Collect.`;
+    } else if (g.phase === "charge") {
+      msg = `<b>Charge your device</b><br>Move resources into your device, then End turn. Anything over ${cfg("carryCap")} of a kind is lost at end of turn.`;
+      const need = deviceNeed(g, 0);
+      acts = RES.filter((k) => need[k] > 0 && pl.res[k] > 0).map((k) => `<button class="btn small" data-act="charge" data-res="${k}">${resIcon(k)} Charge ${Math.min(need[k], pl.res[k])}</button>`).join("") || `<span>Nothing you hold fits the device right now.</span>`;
+    }
+    const log = g.log.slice(-6).reverse().map((l) => `<p>${esc(l.msg)}</p>`).join("");
+    return `<section class="inspector raised"><div class="bigcard" data-tilt>${card ? cardHtml(card, "full") : ""}</div>
+      <div class="info"><div class="msg" aria-live="polite">${msg}</div><div class="acts">${acts}</div><div class="log sunken" aria-label="Event log">${log}</div></div></section>`;
+  },
+
+  hand() {
+    const g = appState.game, ui = appState.ui, pl = g.players[0];
+    const cards = pl.hand.map((inst) => {
+      const c = cardOf(g, inst), cls = ["hcard"];
+      if (ui.selected === inst) cls.push("sel");
+      if (ui.picks.includes(inst)) cls.push("picked");
+      if (c.type !== "doomsday" && !canAfford(pl, c.cost)) cls.push("cant");
+      return `<button class="${cls.join(" ")}" data-hand="${inst}" aria-label="${esc(c.name)}">${cardHtml(c, "mini")}</button>`;
+    }).join("");
+    return `<section class="handbox raised"><span class="legend">Your hand (${pl.hand.length})</span><div class="hand sunken">${cards || `<span class="empty">No cards in hand.</span>`}</div></section>`;
+  },
+
+  taskbar() {
+    const g = appState.game, mine = this.myTurn(), pl = g.players[0], ui = appState.ui;
+    const main = mine && g.phase === "main", charge = mine && g.phase === "charge";
+    const label = g.phase === "over" ? "Game over" : !mine ? "Rival's turn" : main ? "Build and place" : "Charge";
+    const btns = g.phase === "over" ? `<button class="btn primary" data-act="newGame">New game</button>` : `
+      <button class="btn" data-act="recruit" ${main && pl.minions < minionCap(g, 0) && sumRes(pl.res) >= cfg("recruitCost") ? "" : "disabled"}>${Sprites.img("minion")}Recruit (${cfg("recruitCost")})</button>
+      <button class="btn" data-act="exchange" title="Trade ${cfg("exchangeCost")} resources for 1 MacGuffin, once per turn" ${main && pl.exchangedTurn !== g.turn && pl.res.E + pl.res.O + pl.res.M + pl.res.S >= cfg("exchangeCost") ? "" : "disabled"}>${resIcon("X")}Exchange (${cfg("exchangeCost")})</button>
+      <button class="btn${ui.mode === "burn" ? " on" : ""}" data-act="burnMode" ${main && pl.hand.length >= cfg("burnCards") ? "" : "disabled"}>Burn ${cfg("burnCards")}</button>
+      <button class="btn${ui.mode === "scrap" ? " on" : ""}" data-act="scrapMode" ${main && g.board.some((c) => c && c.owner === 0) ? "" : "disabled"}>Scrap</button>
+      ${charge ? `<button class="btn" data-act="chargeAll">Charge all</button><button class="btn primary" data-act="endTurn">End turn</button>`
+        : `<button class="btn primary" data-act="collect" ${main ? "" : "disabled"}>Collect</button>`}`;
+    Desktop.taskbar(`<span class="phase-label">${label}</span>${btns}`);
+  },
+};
+
+/* ===== js: fx.js ===== */
+// Animations driven by engine events, drawn on the #fx overlay after each render.
+const Fx = {
+  rect(el) { return el ? el.getBoundingClientRect() : null; },
+  center(el) { const r = this.rect(el); return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null; },
+  cellEl(i) { return $(`[data-cell="${i}"]`); },
+  boxEl(p) { return $(`[data-pbox="${p}"]`); },
+  float(el, html, bad = false, dy = 0) {
+    const c = this.center(el);
+    if (!c) return;
+    const d = document.createElement("div");
+    d.className = "float-txt" + (bad ? " bad" : "");
+    d.style.left = c.x + "px"; d.style.top = c.y + dy + "px";
+    d.innerHTML = html;
+    $("#fx").appendChild(d);
+    setTimeout(() => d.remove(), 1200);
+  },
+  zap(a, b) {
+    const A = this.center(this.cellEl(a)), B = this.center(this.cellEl(b));
+    if (!A || !B) return;
+    const pts = [];
+    for (let s = 0; s <= 6; s++) {
+      const t = s / 6, j = s === 0 || s === 6 ? 0 : (s % 2 ? 6 : -6);
+      const nx = -(B.y - A.y), ny = B.x - A.x, len = Math.hypot(nx, ny) || 1;
+      pts.push(`${Math.round(A.x + (B.x - A.x) * t + (nx / len) * j)},${Math.round(A.y + (B.y - A.y) * t + (ny / len) * j)}`);
+    }
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.innerHTML = `<polyline points="${pts.join(" ")}" fill="none" stroke="#000" stroke-width="7" shape-rendering="crispEdges"/><polyline points="${pts.join(" ")}" fill="none" stroke="#fde047" stroke-width="3" shape-rendering="crispEdges"/>`;
+    $("#fx").appendChild(svg);
+    if (!appState.settings.reducedMotion) svg.animate([{ opacity: 1 }, { opacity: 0.2 }, { opacity: 1 }, { opacity: 0 }], { duration: 700, easing: "steps(4)" });
+    setTimeout(() => svg.remove(), 700);
+    this.lean(a, b); this.lean(b, a);
+  },
+  lean(a, b) {
+    const pa = $(`[data-pop="${a}"]`), A = this.center(this.cellEl(a)), B = this.center(this.cellEl(b));
+    if (!pa || !A || !B) return;
+    const cls = Math.abs(B.x - A.x) > Math.abs(B.y - A.y) ? (B.x > A.x ? "lean-r" : "lean-l") : (B.y > A.y ? "lean-d" : "lean-u");
+    pa.classList.add(cls);
+    setTimeout(() => pa.classList.remove(cls), 700);
+  },
+  fly(sprite, fromEl, toEl) {
+    const A = this.center(fromEl), B = this.center(toEl);
+    if (!A || !B || appState.settings.reducedMotion) return;
+    const img = document.createElement("img");
+    img.className = "px flyer"; img.src = Sprites.url(sprite); img.alt = "";
+    $("#fx").appendChild(img);
+    const anim = img.animate([{ transform: `translate(${A.x - 28}px, ${A.y - 28}px) scale(.6)` }, { transform: `translate(${(A.x + B.x) / 2 - 28}px, ${Math.min(A.y, B.y) - 70}px) scale(1.4)` },
+      { transform: `translate(${B.x - 28}px, ${B.y - 28}px) scale(1)` }], { duration: 520, easing: "steps(10)" });
+    anim.onfinish = () => img.remove();
+  },
+  flash(el) { if (!el) return; el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); },
+
+  async run(events) {
+    const g = appState.game;
+    const produced = events.filter((e) => e.type === "produce");
+    if (produced.length) Sound.play("collect");
+    for (const e of events) {
+      switch (e.type) {
+        case "play": {
+          const c = cardOf(g, e.inst);
+          if (c.type === "contraption") { const el = this.cellEl(e.cell); if (el) el.classList.add("arrive"); Sound.play("play"); }
+          else if (c.type === "distraction") {
+            Sound.play("hero");
+            const to = e.targets && e.targets.length ? this.cellEl(e.targets[0]) : this.boxEl(c.effects.some((x) => x.action === "shield") ? e.p : 1 - e.p);
+            this.fly(c.sprite, this.boxEl(e.p), to);
+            await wait(380);
+          } else Sound.play("play");
+          break;
+        }
+        case "produce": this.float(this.cellEl(e.cell), resChips(e.res)); break;
+        case "idle": this.float(this.boxEl(e.p), "Idle: +" + resChips(e.res), false, 20); break;
+        case "tax": this.float(this.boxEl(e.p), "+" + resChips(e.res), false, 20); break;
+        case "combo": this.zap(e.a, e.b); Sound.play("zap"); await wait(160); break;
+        case "jam": this.flash(this.cellEl(e.cell)); break;
+        case "swap": this.flash(this.cellEl(e.a)); this.flash(this.cellEl(e.b)); break;
+        case "bounce": this.float(this.boxEl(1 - g.active), "Bounced!", true); break;
+        case "sabotage": this.flash(this.boxEl(e.p)); this.float(this.boxEl(e.p), `-${e.amount} charge`, true); break;
+        case "blocked": this.float(this.boxEl(e.p), "Shield blocked it!"); break;
+        case "steal": this.float(this.boxEl(e.to), "Stole " + resChips(e.res)); break;
+        case "shield": this.float(this.boxEl(e.p), "Shield up", false, -20); break;
+        case "exchange": this.float(this.boxEl(e.p), "+" + resChips({ X: 1 })); Sound.play("charge"); break;
+        case "recruit": this.float(this.boxEl(e.p), "+1 minion"); break;
+        case "burn": this.float(this.boxEl(e.p), "+1 minion this turn"); break;
+        case "deckout": this.float(this.boxEl(e.p), "Deck reshuffled, -1 minion", true); break;
+        case "charge": this.flash($(`[data-meter="${e.p}${e.res}"]`)); Sound.play("charge"); break;
+        case "place": Sound.play("place"); break;
+      }
+    }
+  },
+};
+
+/* ===== js: controller.js ===== */
+// Controller: turns taps into engine actions, runs setup dialogs and the AI's turns.
+const Game = {
+  async apply(action) {
+    const g = appState.game;
+    const r = applyAction(g, action);
+    if (!r.ok) { if (action.p === 0) errorFeedback(r.error); return r; }
+    Store.saveGame();
+    Match.render();
+    await Fx.run(r.events);
+    if (g.phase === "over") this.finish();
+    return r;
+  },
+
+  newMatch(deck) {
+    closeDialogs();
+    const seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
+    appState.game = newGame(seed, deck);
+    resetUi();
+    appState.ui.busy = false;
+    Store.saveGame();
+    Match.render();
+    this.setupFlow();
+  },
+  continueMatch() {
+    const g = Store.loadGame();
+    if (!g) return toast("No saved match found.");
+    appState.game = g;
+    resetUi();
+    appState.ui.busy = false;
+    Match.render();
+    this.setupFlow();
+  },
+
+  async setupFlow() {
+    const g = appState.game;
+    while (g.phase === "setup" && g.players[1].setup !== "ready") await this.apply(AI.setupAction(g, 1));
+    if (g.phase === "setup") {
+      if (g.players[0].setup === "device") return this.deviceDialog();
+      if (g.players[0].setup === "mulligan") return this.mulliganDialog();
+    }
+    if (g.phase === "bonus") {
+      if (rival(g.first) === 1) await this.apply({ type: "bonus", p: 1, res: "E" });
+      else return this.bonusDialog();
+    }
+    if (g.active === 1 && g.phase !== "over") this.aiLoop();
+  },
+  deviceDialog() {
+    const g = appState.game;
+    const opts = g.players[0].deviceChoices.map((inst) => {
+      const c = cardOf(g, inst);
+      return `<div style="display:flex;flex-direction:column;gap:6px;align-items:center;width:150px">
+        <div style="--cw:130px;width:130px;height:180px;background:var(--desk2);border-radius:8px">${cardHtml(c, "full")}</div>
+        <div style="font-size:11px;text-align:center">Needs ${esc(costText(c.cost))}</div>
+        <button class="btn primary" data-pick="${inst}">Choose</button></div>`;
+    }).join("");
+    showDialog("Choose your doomsday device", `<p>This device sits beside your lab. The other two shuffle into your deck.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">${opts}</div>`, [],
+      { wide: true, close: false, onPick: async (inst, close) => { close(); await this.apply({ type: "chooseDevice", p: 0, inst }); this.setupFlow(); } });
+  },
+  mulliganDialog() {
+    const g = appState.game, pl = g.players[0];
+    const hand = pl.hand.map((i) => `<div style="--cw:84px;width:84px;height:117px;background:var(--desk2);border-radius:7px">${cardHtml(cardOf(g, i), "mini")}</div>`).join("");
+    const firstMsg = g.first === 0 ? "You go first." : `${esc(g.players[1].short)} goes first; you'll get 1 bonus resource.`;
+    showDialog("Your opening hand", `<p>${firstMsg} Keep this hand, or shuffle it back and draw 5 new cards (once).</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">${hand}</div>`,
+      [{ label: "Keep hand", primary: true, onClick: async () => { await this.apply({ type: "mulligan", p: 0, redraw: false }); this.setupFlow(); } },
+        { label: "Mulligan", onClick: async () => { await this.apply({ type: "mulligan", p: 0, redraw: true }); this.setupFlow(); } }], { close: false });
+  },
+  bonusDialog() {
+    const btns = RES.filter((k) => k !== "X").map((k) => `<button class="btn" data-pick="${k}" style="display:flex;gap:6px;align-items:center">${resIcon(k)}${RES_NAME[k]}</button>`).join("");
+    showDialog("Going second", `<p>Take 1 extra resource of your choice (anything but MacGuffin).</p><div style="display:flex;gap:6px;flex-wrap:wrap">${btns}</div>`, [],
+      { close: false, onPick: async (res, close) => { close(); await this.apply({ type: "bonus", p: 0, res }); this.setupFlow(); } });
+  },
+
+  // Resolves with { res: count } once the player has picked n resources, or null if they go back.
+  idleDialog(n) {
+    return new Promise((resolve) => {
+      const pick = {};
+      const kinds = RES.filter((k) => k !== "X");
+      const total = () => kinds.reduce((s, k) => s + (pick[k] || 0), 0);
+      const body = () => `<p>You have ${n} unused minion${n === 1 ? "" : "s"}. Each one gathers 1 resource of your choice (anything but MacGuffin).</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px">${kinds.map((k) => `<div class="field-row sunken" style="padding:2px 6px;background:var(--face)">
+          ${resIcon(k)}<span style="flex:1">${RES_NAME[k]}</span>
+          <button class="btn small" data-pick="-${k}" aria-label="One less ${RES_NAME[k]}" ${pick[k] ? "" : "disabled"}>−</button>
+          <b style="min-width:14px;text-align:center">${pick[k] || 0}</b>
+          <button class="btn small" data-pick="+${k}" aria-label="One more ${RES_NAME[k]}" ${total() < n ? "" : "disabled"}>+</button></div>`).join("")}</div>
+        <div class="btn-row"><button class="btn primary" data-pick="ok" ${total() === n ? "" : "disabled"}>Collect (${total()}/${n} chosen)</button><button class="btn" data-pick="back">Back</button></div>`;
+      showDialog("Idle minions", `<div id="idle-body" style="display:flex;flex-direction:column;gap:10px">${body()}</div>`, [], {
+        close: false, icon: "minion",
+        onPick: (v, close) => {
+          if (v === "ok") { close(); return resolve(pick); }
+          if (v === "back") { close(); return resolve(null); }
+          const k = v.slice(1);
+          pick[k] = Math.max(0, (pick[k] || 0) + (v[0] === "+" ? 1 : -1));
+          Sound.play("click");
+          $("#idle-body").innerHTML = body();
+        },
+      });
+    });
+  },
+
+  async aiLoop() {
+    const g = appState.game;
+    if (appState.ui.busy) return;
+    appState.ui.busy = true;
+    resetUi();
+    Match.render();
+    while (g.active === 1 && g.phase !== "over" && appState.game === g) {
+      await wait(cfg("aiDelayMs"));
+      const a = AI.next(g, 1, appState.settings.difficulty);
+      if (!a) break;
+      const r = await this.apply(a);
+      if (!r.ok) { console.error("AI action failed", a, r.error); break; }
+    }
+    appState.ui.busy = false;
+    if (appState.game === g && g.phase !== "over") Match.render();
+  },
+
+  finish() {
+    const g = appState.game, won = g.winner === 0, dev = deviceCard(g, g.winner);
+    Store.clearGame();
+    Sound.play(won ? "win" : "lose");
+    setTimeout(() => showDialog(won ? "Victory" : "Defeat", `<div class="result-art">${Sprites.img(dev.sprite)}</div>
+      <div class="bigwin">${won ? "The world is yours." : `${esc(g.players[g.winner].short)} ended the world.`}</div>
+      <p style="text-align:center">${esc(dev.name)} fired after ${Math.ceil(g.turn / 2)} rounds.</p>`,
+      [{ label: "Play again", primary: true, onClick: () => Desktop.villainSelect() }, { label: "Back to desktop", onClick: () => Desktop.show() }]), 500);
+  },
+
+  // ---- Player input ----
+  tapHand(inst) {
+    const g = appState.game, ui = appState.ui, c = cardOf(g, inst);
+    if (!Match.myTurn() || g.phase === "charge" && ui.mode !== "discard") { ui.inspect = { kind: "card", id: c.id }; return Match.render(); }
+    if (ui.mode === "burn" || ui.mode === "discard") {
+      const limit = ui.mode === "burn" ? cfg("burnCards") : g.players[0].hand.length - cfg("handLimit");
+      if (ui.picks.includes(inst)) ui.picks = ui.picks.filter((x) => x !== inst);
+      else if (ui.picks.length < limit) ui.picks.push(inst);
+      ui.inspect = { kind: "card", id: c.id };
+      Sound.play("click");
+      return Match.render();
+    }
+    if (ui.selected === inst) { resetUi(); return Match.render(); }
+    resetUi();
+    ui.selected = inst;
+    ui.inspect = { kind: "hand", id: c.id };
+    const afford = c.type === "doomsday" || canAfford(g.players[0], c.cost);
+    if (afford) {
+      if (c.type === "contraption") ui.mode = "build";
+      else if (c.target && !c.modes) ui.mode = "target";
+    }
+    Sound.play("click");
+    Match.render();
+  },
+  async tapCell(i) {
+    const g = appState.game, ui = appState.ui, cell = g.board[i];
+    if (cell) ui.inspect = { kind: "card", id: cardOf(g, cell.inst).id };
+    if (!Match.myTurn() || g.phase !== "main") return Match.render();
+    if (ui.mode === "build") {
+      if (!canBuildAt(g, 0, i)) return errorFeedback("Build in a glowing slot: your lab or Public Works.");
+      const r = await this.apply({ type: "play", p: 0, inst: ui.selected, cell: i });
+      if (r.ok) { resetUi(); Match.render(); }
+      return;
+    }
+    if (ui.mode === "target") {
+      const c = cardOf(g, ui.selected);
+      if (!cell || cell.owner !== 1) return errorFeedback("Target a rival machine.");
+      ui.picks = ui.picks.includes(i) ? ui.picks.filter((x) => x !== i) : ui.picks.concat(i);
+      if (ui.picks.length >= c.target.count) {
+        const r = await this.apply({ type: "play", p: 0, inst: ui.selected, targets: ui.picks, mode: ui.cardMode || undefined });
+        if (r.ok) { resetUi(); Match.render(); } else { ui.picks = []; Match.render(); }
+      } else Match.render();
+      return;
+    }
+    if (ui.mode === "scrap") {
+      if (!cell || cell.owner !== 0) return errorFeedback("Tap one of your own machines.");
+      const r = await this.apply({ type: "scrap", p: 0, cell: i });
+      if (r.ok) { resetUi(); Match.render(); }
+      return;
+    }
+    if (!ui.selected && cell) {
+      if (cell.worker === 0) return this.apply({ type: "recall", p: 0, cell: i });
+      if (canWork(g, 0, i)) {
+        if (availableMinions(g, 0) <= 0) return errorFeedback("No free minions. Recruit, or burn 2 cards.");
+        return this.apply({ type: "place", p: 0, cell: i });
+      }
+      if (cell.playedTurn === g.turn) toast("New machines can be worked next turn.");
+      else if (cell.jamTurn >= g.turn) toast("That machine is jammed this turn.");
+      else if (cell.worker === null && rowOf(i) === backRow(1)) toast("That's your rival's private lab.");
+    }
+    Match.render();
+  },
+  async act(name, el) {
+    const g = appState.game, ui = appState.ui;
+    switch (name) {
+      case "playSelected": { const r = await this.apply({ type: "play", p: 0, inst: ui.selected, targets: ui.picks, mode: ui.cardMode || undefined }); if (r.ok) { resetUi(); Match.render(); } break; }
+      case "cardMode": {
+        const c = cardOf(g, ui.selected), m = el.dataset.mode;
+        ui.cardMode = m;
+        if (c.target && c.target.mode === m) { ui.mode = "target"; Match.render(); }
+        else { const r = await this.apply({ type: "play", p: 0, inst: ui.selected, mode: m }); if (r.ok) { resetUi(); Match.render(); } }
+        break;
+      }
+      case "cancel": resetUi(); Match.render(); break;
+      case "recruit": await this.apply({ type: "recruit", p: 0 }); break;
+      case "exchange": await this.apply({ type: "exchange", p: 0 }); break;
+      case "burnMode": { const on = ui.mode === "burn"; resetUi(); if (!on) ui.mode = "burn"; Match.render(); break; }
+      case "confirmBurn": { const r = await this.apply({ type: "burn", p: 0, insts: ui.picks }); if (r.ok) { resetUi(); Match.render(); } break; }
+      case "scrapMode": { const on = ui.mode === "scrap"; resetUi(); if (!on) ui.mode = "scrap"; Match.render(); break; }
+      case "collect": {
+        const n = availableMinions(g, 0);
+        const idle = n > 0 ? await this.idleDialog(n) : {};
+        if (!idle) break;
+        const r = await this.apply({ type: "collect", p: 0, idle });
+        if (r.ok) { resetUi(); Match.render(); }
+        break;
+      }
+      case "charge": await this.apply({ type: "charge", p: 0, res: el.dataset.res }); break;
+      case "chargeAll": await this.apply({ type: "charge", p: 0 }); break;
+      case "endTurn": {
+        if (g.players[0].hand.length > cfg("handLimit")) { resetUi(); ui.mode = "discard"; Match.render(); break; }
+        const r = await this.apply({ type: "endTurn", p: 0, discards: [] });
+        if (r.ok) this.aiLoop();
+        break;
+      }
+      case "confirmDiscard": { const r = await this.apply({ type: "endTurn", p: 0, discards: ui.picks }); if (r.ok) this.aiLoop(); break; }
+      case "inspectDev": { ui.inspect = { kind: "card", id: deviceCard(g, +el.dataset.p).id }; Match.render(); break; }
+    }
+  },
+};
+
+/* ===== js: main.js ===== */
+// Startup and global input wiring.
+function startApp() {
+  if (!Registry.init()) {
+    $("#screen").innerHTML = `<div class="layer">${winHtml("Card data error", `<p>The card data didn't pass validation:</p><ul>${Registry.errors.map((e) => `<li>${esc(e)}</li>`).join("")}</ul>`, { close: false })}</div>`;
+    return;
+  }
+  Store.loadSettings();
+  document.documentElement.classList.toggle("reduced", appState.settings.reducedMotion);
+  Desktop.boot();
+  setInterval(() => Desktop.tick(), 20000);
+
+  document.addEventListener("click", (e) => {
+    const menuBtn = e.target.closest('[data-act="menu"]');
+    if (!menuBtn && !e.target.closest(".menu")) Desktop.closeMenu();
+    const el = e.target.closest("[data-act], [data-hand], [data-cell]");
+    if (!el || e.target.closest(".layer") && !el.dataset.act) return;
+    if (el.dataset.hand) { if (!appState.ui.busy) Game.tapHand(el.dataset.hand); return; }
+    if (el.dataset.cell !== undefined) { Game.tapCell(+el.dataset.cell); return; }
+    const act = el.dataset.act;
+    switch (act) {
+      case "skipBoot": Desktop.show(); return;
+      case "menu": Sound.play("click"); Desktop.menu(); return;
+      case "newGame":
+        Desktop.closeMenu();
+        if (appState.screen === "match" && appState.game && appState.game.phase !== "over")
+          showDialog("Start a new game?", "<p>Your current match is saved. Starting a new one replaces it.</p>", [{ label: "New game", primary: true, onClick: () => Desktop.villainSelect() }, { label: "Cancel" }]);
+        else Desktop.villainSelect();
+        return;
+      case "pickDeck": Game.newMatch(el.dataset.deck); return;
+      case "continue": Game.continueMatch(); return;
+      case "howto": Desktop.closeMenu(); Desktop.howto(); return;
+      case "settings": Desktop.closeMenu(); Desktop.settings(); return;
+      case "toDesktop": Desktop.closeMenu(); appState.ui.busy = false; appState.game = null; Desktop.show(); return;
+    }
+    if (!appState.ui.busy && appState.screen === "match") Game.act(act, el);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { Desktop.closeMenu(); if (appState.screen === "match" && !appState.ui.busy) { resetUi(); Match.render(); } }
+  });
+
+  // Legendary holo follows the pointer on the inspector card.
+  document.addEventListener("pointermove", (e) => {
+    const t = e.target.closest("[data-tilt] .card.rar-legendary");
+    if (!t) return;
+    const r = t.getBoundingClientRect();
+    t.classList.add("tilted");
+    t.style.setProperty("--hx", ((e.clientX - r.left) / r.width) * 300 + "%");
+    t.style.setProperty("--hy", ((e.clientY - r.top) / r.height) * 300 + "%");
+  });
+}
+startApp();
+</script>
+</body>
+</html>
